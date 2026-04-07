@@ -272,6 +272,10 @@ export default function DashboardPage() {
     const novo = await loadFullState();
     if (novo.authenticated) {
       setEstado(novo);
+      // Simple plan users go directly to chat
+      if ((novo.profile?.plan || "simple") !== "plus") {
+        router.push("/chat");
+      }
     } else {
       await auth.signOut();
       router.push("/login");

@@ -4,20 +4,79 @@ import { useRouter, usePathname } from "next/navigation";
 import { T } from "@/lib/tokens";
 
 const NAV = [
-  { page: "dashboard", emoji: "🏠", label: "Dashboard" },
-  { page: "series",    emoji: "📚", label: "Series Plan",      step: 1 },
-  { page: "study",     emoji: "🧠", label: "Study & Context",  step: 2 },
-  { page: "builder",   emoji: "🛠",  label: "Sermon Structure", step: 3 },
-  { page: "illustrations", emoji: "💡", label: "Illustrations", step: 4 },
-  { page: "application",  emoji: "🎯", label: "Applications",  step: 5 },
-  { page: "final",     emoji: "✅", label: "Final Sermon" },
-  { page: "chat",      emoji: "💬", label: "Pastor Rhema" },
+  { page: "dashboard",     emoji: "🏠", label: "Dashboard",        plan: "plus" },
+  { page: "series",        emoji: "📚", label: "Series Plan",       plan: "plus", step: 1 },
+  { page: "study",         emoji: "🧠", label: "Study & Context",   plan: "plus", step: 2 },
+  { page: "builder",       emoji: "🛠",  label: "Sermon Structure",  plan: "plus", step: 3 },
+  { page: "illustrations", emoji: "💡", label: "Illustrations",      plan: "plus", step: 4 },
+  { page: "application",   emoji: "🎯", label: "Applications",       plan: "plus", step: 5 },
+  { page: "final",         emoji: "✅", label: "Final Sermon",       plan: "plus" },
+  { page: "chat",          emoji: "💬", label: "Pastor Rhema",       plan: "simple" },
 ];
+
+// Pages that require the Plus plan
+const PLUS_PAGES = new Set(["dashboard", "series", "study", "builder", "illustrations", "application", "final"]);
+
+function UpgradeWall({ router }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "center",
+      minHeight: "60vh",
+    }}>
+      <div style={{ textAlign: "center", maxWidth: 480 }}>
+        <div style={{
+          width: 72, height: 72, borderRadius: "20px", margin: "0 auto 20px",
+          background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
+          display: "grid", placeItems: "center", fontSize: "32px",
+        }}>🔒</div>
+        <h2 style={{ margin: "0 0 10px", fontFamily: T.font, color: T.primary, fontSize: "26px" }}>
+          Recurso Plus
+        </h2>
+        <p style={{ margin: "0 0 24px", color: T.muted, fontFamily: T.fontSans, lineHeight: 1.7, fontSize: "15px" }}>
+          O fluxo completo de preparo de sermões — séries, estudo, estrutura, ilustrações e aplicações — está disponível no plano <strong>Rhema Plus</strong>.
+        </p>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+          <button
+            onClick={() => router.push("/chat")}
+            style={{
+              padding: "12px 24px", borderRadius: "14px", border: "none",
+              background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
+              color: "#fff", fontFamily: T.fontSans, fontSize: "14px",
+              fontWeight: 700, cursor: "pointer",
+            }}
+          >
+            Usar Pastor Rhema Chat
+          </button>
+          <button
+            onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
+            style={{
+              padding: "12px 24px", borderRadius: "14px",
+              border: `1.5px solid ${T.line}`,
+              background: "#fff", color: T.primary, fontFamily: T.fontSans,
+              fontSize: "14px", fontWeight: 700, cursor: "pointer",
+            }}
+          >
+            Fazer Upgrade →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AppLayout({ children, profile }) {
   const router = useRouter();
   const pathname = usePathname();
   const current = pathname.replace("/", "") || "dashboard";
+
+  const plan = profile?.plan || "simple";
+  const isPlus = plan === "plus";
+
+  // Simple users only see the chat item
+  const visibleNav = isPlus ? NAV : NAV.filter(n => n.plan === "simple");
+
+  // Show upgrade wall if Simple user tries to access a Plus page
+  const needsUpgrade = !isPlus && PLUS_PAGES.has(current);
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: T.bg }}>
@@ -40,18 +99,29 @@ export default function AppLayout({ children, profile }) {
             }}>R</div>
             <div>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: "14px", fontFamily: T.fontSans }}>
-                Rhema PLUS
+                {isPlus ? "Rhema PLUS" : "Rhema"}
               </div>
               <div style={{ color: "rgba(255,255,255,.5)", fontSize: "11px", fontFamily: T.fontSans }}>
                 {profile?.full_name || "Pastor"}
               </div>
             </div>
           </div>
+          {/* Plan badge */}
+          <div style={{
+            marginTop: "10px",
+            display: "inline-flex", alignItems: "center", gap: "5px",
+            padding: "4px 10px", borderRadius: "999px",
+            background: isPlus ? "rgba(202,161,74,.2)" : "rgba(255,255,255,.08)",
+            color: isPlus ? T.gold : "rgba(255,255,255,.45)",
+            fontSize: "10px", fontWeight: 800, fontFamily: T.fontSans,
+          }}>
+            {isPlus ? "✦ PLUS" : "SIMPLE"}
+          </div>
         </div>
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: "16px 12px", display: "flex", flexDirection: "column", gap: "4px" }}>
-          {NAV.map(({ page, emoji, label, step }) => {
+          {visibleNav.map(({ page, emoji, label, step }) => {
             const active = current === page;
             return (
               <button
@@ -79,6 +149,37 @@ export default function AppLayout({ children, profile }) {
               </button>
             );
           })}
+
+          {/* Upgrade CTA for Simple users */}
+          {!isPlus && (
+            <div style={{
+              marginTop: "auto", padding: "12px",
+              borderRadius: "14px", border: "1px solid rgba(202,161,74,.25)",
+              background: "rgba(202,161,74,.08)",
+            }}>
+              <p style={{
+                margin: "0 0 8px", color: T.gold, fontSize: "12px",
+                fontWeight: 700, fontFamily: T.fontSans,
+              }}>Upgrade para Plus</p>
+              <p style={{
+                margin: "0 0 10px", color: "rgba(255,255,255,.5)", fontSize: "11px",
+                fontFamily: T.fontSans, lineHeight: 1.5,
+              }}>
+                Acesse séries, estudo bíblico, estrutura de sermão e muito mais.
+              </p>
+              <button
+                onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
+                style={{
+                  width: "100%", padding: "8px", borderRadius: "10px", border: "none",
+                  background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
+                  color: "#1f2937", fontFamily: T.fontSans, fontSize: "12px",
+                  fontWeight: 800, cursor: "pointer",
+                }}
+              >
+                Ver planos →
+              </button>
+            </div>
+          )}
         </nav>
 
         {/* Sign out */}
@@ -102,7 +203,7 @@ export default function AppLayout({ children, profile }) {
       {/* Main content */}
       <div style={{ flex: 1, padding: "28px", overflowY: "auto" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          {children}
+          {needsUpgrade ? <UpgradeWall router={router} /> : children}
         </div>
       </div>
     </div>

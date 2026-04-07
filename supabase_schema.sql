@@ -15,6 +15,7 @@ create table if not exists public.profiles (
   full_name text,
   email text unique,
   avatar_url text,
+  plan text default 'simple' check (plan in ('simple', 'plus')),
   weekly_streak integer default 0,
   sermons_this_month integer default 0,
   total_sermons_generated integer default 0,
@@ -269,11 +270,11 @@ create policy "Users can delete their own podcast exports"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, email)
-  values (new.id, new.raw_user_meta_data->>'full_name', new.email);
+  insert into public.profiles (id, full_name, email, plan)
+  values (new.id, new.raw_user_meta_data->>'full_name', new.email, 'simple');
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 -- Trigger que dispara ao inserir novo user
 create trigger on_auth_user_created
