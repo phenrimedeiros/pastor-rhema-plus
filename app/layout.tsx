@@ -9,6 +9,14 @@ export const metadata: Metadata = {
   title: "Pastor Rhema PLUS",
   description: "Your AI-powered sermon preparation platform",
   metadataBase: new URL(siteUrl),
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: ["/logo.png"],
+    apple: [{ url: "/logo.png", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
