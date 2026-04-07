@@ -90,11 +90,16 @@ export default function AppLayout({ children, profile }) {
       }}>
         {/* Logo */}
         <div style={{ padding: "0 20px 20px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
-          <img
-            src="/logo.png"
-            alt="Pastor Rhema"
-            style={{ width: 130, display: "block", marginBottom: "10px", filter: "brightness(0) invert(1)" }}
-          />
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%",
+            background: "#fff",
+            display: "grid", placeItems: "center",
+            marginBottom: "10px",
+            padding: "8px", boxSizing: "border-box",
+            boxShadow: "0 4px 12px rgba(0,0,0,.2)",
+          }}>
+            <img src="/logo.png" alt="Pastor Rhema" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ color: "rgba(255,255,255,.5)", fontSize: "11px", fontFamily: T.fontSans }}>
               {profile?.full_name || "Pastor"}

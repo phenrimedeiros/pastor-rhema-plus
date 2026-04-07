@@ -53,16 +53,17 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
-          <img
-            src="/logo.png"
-            alt="Pastor Rhema"
-            style={{
-              width: 160,
-              display: "block",
-              margin: "0 auto 16px",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
+          <div style={{
+            width: 120, height: 120, borderRadius: "50%",
+            background: "#fff",
+            display: "grid", placeItems: "center",
+            margin: "0 auto 16px",
+            boxShadow: "0 8px 32px rgba(0,0,0,.2)",
+            padding: "14px",
+            boxSizing: "border-box",
+          }}>
+            <img src="/logo.png" alt="Pastor Rhema" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+          </div>
           <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
             {isSignUp ? "Crie sua conta" : "Entre na sua conta"}
           </p>
