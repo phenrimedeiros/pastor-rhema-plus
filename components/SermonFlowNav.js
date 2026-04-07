@@ -127,7 +127,7 @@ export default function SermonFlowNav({ currentStepKey, week, canContinue, saved
             >
               <div style={{ textAlign: "left" }}>
                 <p style={{ margin: "0 0 2px", fontSize: "11px", color: style.text, fontWeight: 800, fontFamily: T.fontSans }}>
-                  Step {index + 2}
+                  Step {index + 1}
                 </p>
                 <p style={{ margin: 0, color: isCurrent ? T.primary : style.text, fontSize: "13px", fontWeight: isCurrent ? 800 : 700, fontFamily: T.fontSans }}>
                   {step.label}

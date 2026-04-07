@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/supabase_client";
+import { T } from "@/lib/tokens";
 
 export default function Home() {
   const router = useRouter();
@@ -11,21 +12,42 @@ export default function Home() {
     const verificar = async () => {
       const session = await auth.getSession();
       if (session) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
-        router.push("/login");
+        router.replace("/login");
       }
     };
     verificar();
   }, [router]);
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-          Redirecionando...
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(160deg, #0b2a5b 0%, #0d3268 100%)",
+        color: "rgba(255,255,255,.82)",
+        fontFamily: T.fontSans,
+      }}
+    >
+      <div style={{ display: "grid", justifyItems: "center", gap: "14px" }}>
+        <div
+          style={{
+            width: 38,
+            height: 38,
+            border: "3px solid rgba(255,255,255,.18)",
+            borderTopColor: T.gold,
+            borderRadius: "50%",
+            animation: "spin 0.8s linear infinite",
+          }}
+        />
+        <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, letterSpacing: ".02em" }}>
+          Entrando no Pastor Rhema...
         </p>
-      </main>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   );
 }
