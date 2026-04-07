@@ -1,0 +1,119 @@
+"use client";
+
+import { useState } from "react";
+import { auth } from "@/lib/supabase_client";
+import { T, inputStyle } from "@/lib/tokens";
+import { Btn, Field, Notice } from "@/components/ui";
+
+const TONS = ["Pastoral", "Teaching", "Evangelistic", "Expository", "Devotional"];
+const PUBLICOS = [
+  "General Sunday congregation",
+  "New believers",
+  "Families",
+  "Youth",
+  "Leadership",
+];
+
+export default function SeriesForm({ onSuccess }) {
+  const [form, setForm] = useState({
+    theme: "",
+    weeks: "6",
+    audience: "General Sunday congregation",
+    tone: "Pastoral",
+    goal: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const session = await auth.getSession();
+      if (!session) throw new Error("You need to be logged in.");
+
+      const res = await fetch("/api/gerar-serie", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ ...form, weeks: Number(form.weeks) }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unknown error");
+
+      onSuccess(data.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      {error && <Notice color="red">{error}</Notice>}
+
+      <Field label="Theme or Book *">
+        <input
+          name="theme"
+          value={form.theme}
+          onChange={handleChange}
+          required
+          placeholder="e.g. Philippians, Faith, Psalms..."
+          style={inputStyle}
+        />
+      </Field>
+
+      <Field label="Primary Goal *">
+        <textarea
+          name="goal"
+          value={form.goal}
+          onChange={handleChange}
+          required
+          rows={3}
+          placeholder="What transformation do you want this series to produce in your church?"
+          style={{ ...inputStyle, resize: "vertical" }}
+        />
+      </Field>
+
+      <div style={{ display: "flex", gap: "16px" }}>
+        <Field label="Number of Weeks">
+          <select name="weeks" value={form.weeks} onChange={handleChange} style={inputStyle}>
+            {[4, 5, 6, 7, 8].map((n) => (
+              <option key={n} value={n}>{n} weeks</option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Tone">
+          <select name="tone" value={form.tone} onChange={handleChange} style={inputStyle}>
+            {TONS.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <Field label="Church Profile">
+        <select name="audience" value={form.audience} onChange={handleChange} style={inputStyle}>
+          {PUBLICOS.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      </Field>
+
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Btn type="submit" disabled={loading || !form.theme || !form.goal}>
+          {loading ? "Generating series..." : "Generate Series"}
+        </Btn>
+      </div>
+    </form>
+  );
+}
