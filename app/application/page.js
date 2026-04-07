@@ -43,7 +43,8 @@ export default function ApplicationPage() {
       setEstado(novo);
 
       const activeSerie = novo.series?.find((s) => !s.is_archived);
-      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      const currentWeek = activeSerie?.current_week ?? 1;
+      const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.builder) setBuilderData(week.builder.content);
       if (week?.application?.content) {
         setApplication(week.application.content);
@@ -56,7 +57,8 @@ export default function ApplicationPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
-  const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
+  const currentWeek = activeSerie?.current_week ?? 1;
+  const week = activeSerie?.weeks?.[currentWeek - 1];
   const approvedWeeklyChallenge = application?.approvedWeeklyChallenge || application?.weeklyChallenge || "";
 
   const generate = async () => {

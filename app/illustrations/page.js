@@ -43,7 +43,8 @@ export default function IllustrationsPage() {
       setEstado(novo);
 
       const activeSerie = novo.series?.find((s) => !s.is_archived);
-      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      const currentWeek = activeSerie?.current_week ?? 1;
+      const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.builder) setBuilderPoints(week.builder.content?.approvedPoints || week.builder.content?.points);
       if (week?.illustrations?.content) {
         setIllustrations(week.illustrations.content);
@@ -56,7 +57,8 @@ export default function IllustrationsPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
-  const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
+  const currentWeek = activeSerie?.current_week ?? 1;
+  const week = activeSerie?.weeks?.[currentWeek - 1];
 
   const generate = async () => {
     if (!week || !builderPoints) return;

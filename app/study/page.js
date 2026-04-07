@@ -39,7 +39,8 @@ export default function StudyPage() {
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
       const activeSerie = novo.series?.find((s) => !s.is_archived);
-      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      const currentWeek = activeSerie?.current_week ?? 1;
+      const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.study?.content) {
         setStudy(week.study.content);
         await loadVersions(week.id);
@@ -50,7 +51,8 @@ export default function StudyPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
-  const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
+  const currentWeek = activeSerie?.current_week ?? 1;
+  const week = activeSerie?.weeks?.[currentWeek - 1];
   const keyTerms = Array.isArray(study?.keyTerms) ? study.keyTerms : [];
   const crossReferences = Array.isArray(study?.crossReferences) ? study.crossReferences : [];
 
@@ -133,7 +135,7 @@ export default function StudyPage() {
           </div>
 
           {week
-            ? <Notice color="blue">{week.passage} · {t("dash_week_of")} {activeSerie.current_week} — {week.title}</Notice>
+            ? <Notice color="blue">{week.passage} · {t("dash_week_of")} {currentWeek} — {week.title}</Notice>
             : <Notice color="gold">{t("study_no_series")}</Notice>
           }
 

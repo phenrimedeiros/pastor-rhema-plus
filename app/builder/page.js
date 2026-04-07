@@ -41,7 +41,8 @@ export default function BuilderPage() {
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
       const activeSerie = novo.series?.[0];
-      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      const currentWeek = activeSerie?.current_week ?? 1;
+      const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.builder?.content) {
         setBuilder(week.builder.content);
         await loadVersions(week.id);
@@ -52,7 +53,8 @@ export default function BuilderPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeSerie = estado?.series?.[0];
-  const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+  const currentWeek = activeSerie?.current_week ?? 1;
+  const week = activeSerie?.weeks?.[currentWeek - 1];
   const selectedTitle = builder?.selectedTitle || builder?.titleOptions?.[0] || "";
   const approvedBigIdea = builder?.approvedBigIdea || builder?.bigIdea || "";
   const approvedPoints = builder?.approvedPoints || builder?.points || [];
@@ -69,7 +71,7 @@ export default function BuilderPage() {
         focus: week.focus,
         bigIdea: week.big_idea,
         seriesId: activeSerie.id,
-        weekNumber: activeSerie.current_week,
+        weekNumber: currentWeek,
       });
       setBuilder(data.content);
       setEstado((prev) => upsertCurrentWeekStep(prev, "builder", data.content));
