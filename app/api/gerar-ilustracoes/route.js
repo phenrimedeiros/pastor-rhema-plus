@@ -2,9 +2,8 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 export async function POST(request) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return Response.json({ error: "Não autorizado" }, { status: 401 });
 
