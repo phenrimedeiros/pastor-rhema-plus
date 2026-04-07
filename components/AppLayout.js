@@ -11,6 +11,7 @@ const NAV = [
   { page: "illustrations", emoji: "💡", label: "Illustrations", step: 4 },
   { page: "application",  emoji: "🎯", label: "Applications",  step: 5 },
   { page: "final",     emoji: "✅", label: "Final Sermon" },
+  { page: "chat",      emoji: "💬", label: "Pastor Rhema" },
 ];
 
 export default function AppLayout({ children, profile }) {

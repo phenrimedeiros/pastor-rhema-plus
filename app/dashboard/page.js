@@ -25,7 +25,7 @@ function Dashboard({ profile, activeSerie, onNewSerie }) {
   const completedSteps = 1; // series defined; future: calc from week content
 
   // Only navigate to pages that are implemented
-  const READY_PAGES = new Set(["series", "study", "builder", "illustrations", "application", "final"]);
+  const READY_PAGES = new Set(["series", "study", "builder", "illustrations", "application", "final", "chat"]);
   const goTo = (page) => {
     if (READY_PAGES.has(page)) {
       router.push(`/${page}`);
