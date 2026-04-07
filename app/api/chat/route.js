@@ -60,6 +60,8 @@ E) USER CONTROL
 - Always ask: "Do you want it simpler, deeper, or shorter?"
 - Offer a "Make it for youth / new believers / advanced" option.`;
 
+const DAILY_LIMIT = 20;
+
 export async function POST(request) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return Response.json({ error: "Não autorizado" }, { status: 401 });
@@ -72,6 +74,40 @@ export async function POST(request) {
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return Response.json({ error: "Sessão inválida" }, { status: 401 });
+
+  // Fetch profile to check plan and daily usage
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, chat_messages_today, chat_messages_reset_date")
+    .eq("id", user.id)
+    .single();
+
+  const isSimple = (profile?.plan || "simple") === "simple";
+
+  if (isSimple) {
+    const today = new Date().toISOString().split("T")[0];
+    const resetDate = profile?.chat_messages_reset_date;
+    const currentCount = resetDate === today ? (profile?.chat_messages_today || 0) : 0;
+
+    if (currentCount >= DAILY_LIMIT) {
+      return Response.json({
+        error: "limit_reached",
+        messagesLeft: 0,
+      }, { status: 429 });
+    }
+
+    // Increment counter
+    await supabase
+      .from("profiles")
+      .update({
+        chat_messages_today: currentCount + 1,
+        chat_messages_reset_date: today,
+      })
+      .eq("id", user.id);
+
+    // Will return messagesLeft at the end
+    var messagesLeft = DAILY_LIMIT - (currentCount + 1);
+  }
 
   let body;
   try { body = await request.json(); } catch {
@@ -94,7 +130,10 @@ export async function POST(request) {
     });
 
     const reply = completion.choices[0].message.content;
-    return Response.json({ reply });
+    return Response.json({
+      reply,
+      ...(isSimple && { messagesLeft }),
+    });
   } catch (err) {
     console.error("Erro no chat:", err);
     return Response.json({ error: "Falha ao gerar resposta: " + err.message }, { status: 500 });

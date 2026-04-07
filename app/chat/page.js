@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/supabase_client";
+import { auth, supabase } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
 import { Btn } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 
 const WELCOME = "Hi, I'm Pastor Rhema. What are you preparing today — a sermon, a Bible study, or help with a specific passage?";
+const DAILY_LIMIT = 20;
 
 function Message({ msg }) {
   const isUser = msg.role === "user";
@@ -47,8 +48,78 @@ function Message({ msg }) {
   );
 }
 
+function LimitBar({ used, limit }) {
+  const pct = Math.min((used / limit) * 100, 100);
+  const remaining = limit - used;
+  const isLow = remaining <= 5;
+
+  return (
+    <div style={{
+      padding: "10px 16px",
+      background: isLow ? "#fef2f2" : T.surface2,
+      border: `1px solid ${isLow ? "#fecaca" : T.line}`,
+      borderRadius: "12px",
+      marginBottom: "12px",
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+        <span style={{ fontSize: "12px", color: isLow ? "#b91c1c" : T.muted, fontFamily: T.fontSans, fontWeight: 600 }}>
+          {remaining > 0
+            ? `${remaining} de ${limit} mensagens restantes hoje`
+            : "Limite diário atingido"}
+        </span>
+        {remaining <= 5 && remaining > 0 && (
+          <span style={{ fontSize: "11px", color: "#b91c1c", fontFamily: T.fontSans }}>
+            Poucas mensagens restantes
+          </span>
+        )}
+      </div>
+      <div style={{ height: 4, background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
+        <div style={{
+          height: "100%", borderRadius: "999px",
+          width: `${pct}%`,
+          background: isLow
+            ? "linear-gradient(90deg, #ef4444, #b91c1c)"
+            : `linear-gradient(90deg, ${T.primary}, ${T.primary2})`,
+          transition: "width .4s ease",
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function UpgradePrompt({ router }) {
+  return (
+    <div style={{
+      textAlign: "center", padding: "28px 20px",
+      background: "#fef2f2", borderRadius: "16px",
+      border: "1px solid #fecaca",
+    }}>
+      <div style={{ fontSize: "32px", marginBottom: "10px" }}>⏰</div>
+      <h4 style={{ margin: "0 0 8px", fontFamily: T.font, fontSize: "18px", color: T.primary }}>
+        Limite diário atingido
+      </h4>
+      <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, fontFamily: T.fontSans, lineHeight: 1.65 }}>
+        Você usou suas 20 mensagens de hoje no plano Simple.<br />
+        Volte amanhã ou faça upgrade para conversar sem limites.
+      </p>
+      <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+        <Btn
+          onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
+        >
+          Fazer Upgrade →
+        </Btn>
+        <Btn variant="secondary" onClick={() => router.push("/dashboard")}>
+          Voltar ao início
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
 export default function ChatPage() {
   const [profile, setProfile] = useState(null);
+  const [isSimple, setIsSimple] = useState(false);
+  const [messagesUsed, setMessagesUsed] = useState(0);
   const [messages, setMessages] = useState([
     { role: "assistant", content: WELCOME },
   ]);
@@ -62,7 +133,28 @@ export default function ChatPage() {
     const init = async () => {
       const session = await auth.getSession();
       if (!session) { router.push("/login"); return; }
-      setProfile({ full_name: session.user?.user_metadata?.full_name });
+
+      const user = session.user;
+      setProfile({ full_name: user?.user_metadata?.full_name });
+
+      // Load plan and daily usage
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("plan, chat_messages_today, chat_messages_reset_date")
+        .eq("id", user.id)
+        .single();
+
+      const plan = profileData?.plan || "simple";
+      const simple = plan === "simple";
+      setIsSimple(simple);
+
+      if (simple) {
+        const today = new Date().toISOString().split("T")[0];
+        const resetDate = profileData?.chat_messages_reset_date;
+        const count = resetDate === today ? (profileData?.chat_messages_today || 0) : 0;
+        setMessagesUsed(count);
+      }
+
       setAuthLoading(false);
     };
     init();
@@ -72,9 +164,11 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const limitReached = isSimple && messagesUsed >= DAILY_LIMIT;
+
   const send = async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || limitReached) return;
 
     const userMsg = { role: "user", content: text };
     const updatedMessages = [...messages, userMsg];
@@ -91,7 +185,6 @@ export default function ChatPage() {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          // Envia apenas as últimas 20 mensagens para economizar tokens
           messages: updatedMessages.slice(-20).map(({ role, content }) => ({ role, content })),
         }),
       });
@@ -101,9 +194,20 @@ export default function ChatPage() {
       try { data = JSON.parse(text2); } catch {
         throw new Error("Resposta inválida do servidor");
       }
+
+      if (res.status === 429 && data?.error === "limit_reached") {
+        setMessagesUsed(DAILY_LIMIT);
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
 
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+
+      if (isSimple && data.messagesLeft !== undefined) {
+        setMessagesUsed(DAILY_LIMIT - data.messagesLeft);
+      }
     } catch (err) {
       setMessages((prev) => [...prev, {
         role: "assistant",
@@ -148,6 +252,11 @@ export default function ChatPage() {
           </Btn>
         </div>
 
+        {/* Daily limit bar — Simple users only */}
+        {isSimple && (
+          <LimitBar used={messagesUsed} limit={DAILY_LIMIT} />
+        )}
+
         {/* Messages */}
         <div style={{
           flex: 1, overflowY: "auto", padding: "20px",
@@ -181,25 +290,29 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
-        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask about a sermon, passage, or series plan... (Enter to send)"
-            rows={3}
-            style={{
-              flex: 1, padding: "14px 16px", border: `1px solid ${T.line}`,
-              borderRadius: "16px", fontSize: "14px", fontFamily: T.fontSans,
-              resize: "none", outline: "none", background: "#fff",
-              lineHeight: 1.5, color: T.text,
-            }}
-          />
-          <Btn onClick={send} disabled={loading || !input.trim()} style={{ padding: "14px 20px", alignSelf: "stretch" }}>
-            Send
-          </Btn>
-        </div>
+        {/* Input or upgrade prompt */}
+        {limitReached ? (
+          <UpgradePrompt router={router} />
+        ) : (
+          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about a sermon, passage, or series plan... (Enter to send)"
+              rows={3}
+              style={{
+                flex: 1, padding: "14px 16px", border: `1px solid ${T.line}`,
+                borderRadius: "16px", fontSize: "14px", fontFamily: T.fontSans,
+                resize: "none", outline: "none", background: "#fff",
+                lineHeight: 1.5, color: T.text,
+              }}
+            />
+            <Btn onClick={send} disabled={loading || !input.trim()} style={{ padding: "14px 20px", alignSelf: "stretch" }}>
+              Send
+            </Btn>
+          </div>
+        )}
 
         <style>{`
           @keyframes bounce {
