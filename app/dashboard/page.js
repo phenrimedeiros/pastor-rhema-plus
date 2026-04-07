@@ -7,6 +7,7 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Loader } from "@/components/ui";
 import SeriesForm from "@/components/SeriesForm";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const SERMON_STEPS = [
   { key: "study",         label: "Study & Context",   page: "study",         emoji: "🧠" },
@@ -53,6 +54,7 @@ function nextSunday() {
 function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
   const done = completedCount(week);
@@ -67,7 +69,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
       {/* ── Hero ── */}
       <div style={{
         background: "linear-gradient(135deg, rgba(11,42,91,.98), rgba(18,54,108,.92))",
-        color: "white", borderRadius: "28px", padding: "28px 32px",
+        color: "white", borderRadius: "28px", padding: isMobile ? "22px 18px" : "28px 32px",
         boxShadow: T.shadowLg, marginBottom: "22px",
         position: "relative", overflow: "hidden",
       }}>
@@ -91,9 +93,9 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
               📅 This Week · {nextSunday()}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "24px", alignItems: "start" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto", gap: isMobile ? "18px" : "24px", alignItems: "start" }}>
               <div>
-                <h2 style={{ margin: "0 0 6px", fontSize: "30px", fontFamily: T.font, lineHeight: 1.1, letterSpacing: "-.02em" }}>
+                <h2 style={{ margin: "0 0 6px", fontSize: isMobile ? "25px" : "30px", fontFamily: T.font, lineHeight: 1.1, letterSpacing: "-.02em" }}>
                   {week?.title || activeSerie.series_name}
                 </h2>
                 <p style={{ margin: "0 0 4px", fontSize: "15px", color: "rgba(255,255,255,.75)", fontFamily: T.fontSans }}>
@@ -102,6 +104,35 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                 <p style={{ margin: "0 0 20px", fontSize: "13px", color: T.gold, fontWeight: 700, fontFamily: T.fontSans }}>
                   {activeSerie.series_name} · Week {activeSerie.current_week} of {activeSerie.weeks?.length}
                 </p>
+
+                {isMobile && (
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "10px",
+                    marginBottom: "18px",
+                  }}>
+                    {[
+                      { label: "Current step", value: next ? next.label : "Completed" },
+                      { label: "Progress", value: `${done}/${total} steps` },
+                    ].map((item) => (
+                      <div key={item.label} style={{
+                        padding: "12px 13px",
+                        borderRadius: "16px",
+                        background: "rgba(255,255,255,.08)",
+                        border: "1px solid rgba(255,255,255,.08)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
+                      }}>
+                        <p style={{ margin: "0 0 4px", fontSize: "11px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
+                          {item.label}
+                        </p>
+                        <p style={{ margin: 0, fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: T.fontSans }}>
+                          {item.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Progress bar */}
                 <div style={{ marginBottom: "20px" }}>
@@ -126,12 +157,12 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                 </div>
 
                 {/* CTA */}
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
                   {allDone ? (
                     <button
                       onClick={onWeekComplete}
                       style={{
-                        padding: "13px 24px", borderRadius: "14px", border: "none",
+                        width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 24px", borderRadius: "14px", border: "none",
                         background: "linear-gradient(135deg, #22c55e, #16a34a)",
                         color: "#fff", fontFamily: T.fontSans, fontSize: "15px",
                         fontWeight: 800, cursor: "pointer",
@@ -143,7 +174,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                     <button
                       onClick={() => router.push(`/${next.page}`)}
                       style={{
-                        padding: "13px 24px", borderRadius: "14px", border: "none",
+                        width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 24px", borderRadius: "14px", border: "none",
                         background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
                         color: "#0b2a5b", fontFamily: T.fontSans, fontSize: "15px",
                         fontWeight: 800, cursor: "pointer",
@@ -155,7 +186,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                   <button
                     onClick={() => router.push("/sermons")}
                     style={{
-                      padding: "13px 20px", borderRadius: "14px",
+                      width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 20px", borderRadius: "14px",
                       border: "1px solid rgba(255,255,255,.2)",
                       background: "transparent", color: "rgba(255,255,255,.8)",
                       fontFamily: T.fontSans, fontSize: "14px", fontWeight: 600, cursor: "pointer",
@@ -169,7 +200,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
               {/* Step checklist */}
               <div style={{
                 background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.1)",
-                borderRadius: "20px", padding: "16px", minWidth: 220,
+                borderRadius: "20px", padding: "16px", minWidth: isMobile ? 0 : 220,
               }}>
                 <p style={{ margin: "0 0 12px", fontSize: "11px", fontWeight: 800, color: "rgba(255,255,255,.5)", fontFamily: T.fontSans, textTransform: "uppercase", letterSpacing: ".06em" }}>
                   Preparation Steps
@@ -182,7 +213,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                       onClick={() => status !== "locked" && router.push(`/${step.page}`)}
                       style={{
                         display: "flex", alignItems: "center", gap: "10px",
-                        padding: "8px 10px", borderRadius: "10px", marginBottom: "4px",
+                        padding: "11px 10px", borderRadius: "10px", marginBottom: "4px",
                         background: status === "current" ? "rgba(202,161,74,.2)" : "transparent",
                         cursor: status === "locked" ? "default" : "pointer",
                         transition: ".12s ease",
@@ -225,7 +256,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
             <button
               onClick={() => setShowForm(true)}
               style={{
-                padding: "13px 28px", borderRadius: "14px", border: "none",
+                minHeight: 46, padding: "13px 28px", borderRadius: "14px", border: "none",
                 background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
                 color: "#0b2a5b", fontFamily: T.fontSans, fontSize: "15px",
                 fontWeight: 800, cursor: "pointer",
@@ -240,7 +271,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
       {/* ── New Series Form ── */}
       {showForm && (
         <Card style={{ marginBottom: "22px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "16px" }}>
             <h3 style={{ margin: 0, fontFamily: T.font, fontSize: "20px", color: T.primary }}>Plan a Sermon Series</h3>
             <Btn variant="secondary" onClick={() => setShowForm(false)} style={{ padding: "8px 12px", fontSize: "13px" }}>Cancel</Btn>
           </div>
@@ -249,7 +280,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
       )}
 
       {/* ── Bottom grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "16px" }}>
 
         {/* Stats */}
         {[

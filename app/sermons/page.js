@@ -6,6 +6,7 @@ import { auth, loadFullState } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
 import { Card, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const STEPS = ["study", "builder", "illustrations", "application"];
 
@@ -37,6 +38,7 @@ export default function SermonsPage() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -80,6 +82,9 @@ export default function SermonsPage() {
 
       {/* Header */}
       <div style={{ marginBottom: "24px" }}>
+        <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+          Biblioteca
+        </p>
         <h2 style={{ margin: "0 0 4px", fontSize: "26px", fontFamily: T.font, color: T.primary }}>
           My Sermons
         </h2>
@@ -89,7 +94,7 @@ export default function SermonsPage() {
       </div>
 
       {/* Stats strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "28px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "14px", marginBottom: "28px" }}>
         {[
           { val: series.length, label: "Active series", emoji: "📚" },
           { val: completedSermons, label: "Sermons preached", emoji: "✅" },
@@ -143,10 +148,12 @@ export default function SermonsPage() {
             <div
               onClick={() => setExpanded(e => ({ ...e, [serie.id]: !e[serie.id] }))}
               style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
+                display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between",
+                flexDirection: isMobile ? "column" : "row",
                 padding: "16px 20px", borderRadius: isExpanded ? "18px 18px 0 0" : "18px",
                 background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
                 cursor: "pointer", userSelect: "none",
+                gap: "14px",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
@@ -165,7 +172,7 @@ export default function SermonsPage() {
                   </p>
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: isMobile ? "space-between" : "flex-start", gap: "12px", width: isMobile ? "100%" : "auto" }}>
                 <div style={{ textAlign: "right" }}>
                   <p style={{ margin: "0 0 2px", fontSize: "20px", fontWeight: 800, color: T.gold, fontFamily: T.font }}>
                     {Math.round((preachedIds.size / (serie.weeks?.length || 1)) * 100)}%
@@ -195,15 +202,17 @@ export default function SermonsPage() {
                     <div
                       key={week.id}
                       style={{
-                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between",
+                        flexDirection: isMobile ? "column" : "row",
                         padding: "14px 20px",
                         borderBottom: wi < serie.weeks.length - 1 ? `1px solid ${T.line}` : "none",
                         background: isActive ? "#f0f7ff" : "#fff",
                         cursor: isActive ? "pointer" : "default",
+                        gap: "12px",
                       }}
                       onClick={() => isActive && router.push("/dashboard")}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "14px", width: "100%" }}>
                         {/* Week number */}
                         <div style={{
                           width: 36, height: 36, borderRadius: "10px",
@@ -224,7 +233,7 @@ export default function SermonsPage() {
                         </div>
                       </div>
 
-                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", width: isMobile ? "100%" : "auto" }}>
                         {!isPreached && <ProgressDots done={done} />}
                         <span style={{
                           padding: "4px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: 700,

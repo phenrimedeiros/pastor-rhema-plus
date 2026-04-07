@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { T, inputStyle } from "@/lib/tokens";
+import { inputStyle } from "@/lib/tokens";
 import { Btn, Field, Notice } from "@/components/ui";
 import { callApi } from "@/lib/api";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const TONS = ["Pastoral", "Teaching", "Evangelistic", "Expository", "Devotional"];
 const PUBLICOS = [
@@ -15,6 +16,7 @@ const PUBLICOS = [
 ];
 
 export default function SeriesForm({ onSuccess }) {
+  const isMobile = useIsMobile();
   const [form, setForm] = useState({
     theme: "",
     weeks: "6",
@@ -69,7 +71,7 @@ export default function SeriesForm({ onSuccess }) {
         />
       </Field>
 
-      <div style={{ display: "flex", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
         <Field label="Number of Weeks">
           <select name="weeks" value={form.weeks} onChange={handleChange} style={inputStyle}>
             {[4, 5, 6, 7, 8].map((n) => (
@@ -96,7 +98,7 @@ export default function SeriesForm({ onSuccess }) {
       </Field>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Btn type="submit" disabled={loading || !form.theme || !form.goal}>
+        <Btn type="submit" disabled={loading || !form.theme || !form.goal} style={isMobile ? { width: "100%" } : undefined}>
           {loading ? "Generating series..." : "Generate Series"}
         </Btn>
       </div>

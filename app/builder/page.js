@@ -7,6 +7,7 @@ import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function BuilderPage() {
   const [estado, setEstado] = useState(null);
@@ -15,6 +16,7 @@ export default function BuilderPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -61,11 +63,11 @@ export default function BuilderPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: "22px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left — Main */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
               <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Build My Sermon</h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>

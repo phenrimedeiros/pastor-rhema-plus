@@ -6,8 +6,10 @@ import { auth, loadFullState } from "@/lib/supabase_client";
 import { T, inputStyle } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 function SeriesForm({ onSuccess, hasSeries }) {
+  const isMobile = useIsMobile();
   const [form, setForm] = useState({
     theme: "", weeks: "6",
     audience: "General Sunday congregation",
@@ -42,7 +44,7 @@ function SeriesForm({ onSuccess, hasSeries }) {
 
   return (
     <Card>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
         <div>
           <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Plan a Sermon Series</h4>
           <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
@@ -56,7 +58,7 @@ function SeriesForm({ onSuccess, hasSeries }) {
       {error && <Notice color="red">{error}</Notice>}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
           <Field label="Theme or Book">
             <input name="theme" value={form.theme} onChange={handleChange} required
               placeholder="e.g. Philippians, Faith, Psalms..." style={inputStyle} />
@@ -91,7 +93,7 @@ function SeriesForm({ onSuccess, hasSeries }) {
           <span style={{ color: T.muted, fontSize: "12.5px", fontFamily: T.fontSans }}>
             Think transformation, not just information.
           </span>
-          <Btn type="submit" disabled={loading || !form.theme || !form.goal}>
+          <Btn type="submit" disabled={loading || !form.theme || !form.goal} style={isMobile ? { width: "100%" } : undefined}>
             {loading ? "Generating..." : "Generate Series"}
           </Btn>
         </div>
@@ -103,6 +105,7 @@ function SeriesForm({ onSuccess, hasSeries }) {
 }
 
 function SeriesPreview({ serie, currentWeek, onStudy }) {
+  const isMobile = useIsMobile();
   return (
     <Card>
       <h4 style={{ margin: "0 0 8px", fontSize: "20px", fontFamily: T.font }}>{serie.series_name}</h4>
@@ -121,7 +124,7 @@ function SeriesPreview({ serie, currentWeek, onStudy }) {
                 ? "linear-gradient(180deg, rgba(202,161,74,.10), #fff)"
                 : "linear-gradient(180deg, #fff, #fbfcfe)",
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row" }}>
                 <div>
                   <b style={{ display: "block", fontSize: "15px", marginBottom: "4px", fontFamily: T.fontSans }}>
                     Week {w.week_number} — {w.title}
@@ -139,7 +142,7 @@ function SeriesPreview({ serie, currentWeek, onStudy }) {
               </div>
               {isCurrent && (
                 <div style={{ marginTop: "12px" }}>
-                  <Btn onClick={onStudy} style={{ fontSize: "13px", padding: "10px 14px" }}>
+                  <Btn onClick={onStudy} style={{ fontSize: "13px", padding: "10px 14px", width: isMobile ? "100%" : "auto" }}>
                     Start This Week →
                   </Btn>
                 </div>
@@ -156,6 +159,7 @@ export default function SeriesPage() {
   const [estado, setEstado] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const carregar = async () => {
     const session = await auth.getSession();
@@ -166,7 +170,12 @@ export default function SeriesPage() {
     setLoading(false);
   };
 
-  useEffect(() => { carregar(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      void carregar();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
@@ -178,7 +187,7 @@ export default function SeriesPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: "22px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
         <SeriesForm hasSeries={!!activeSerie} onSuccess={carregar} />
         <SeriesPreview
           serie={activeSerie ?? { series_name: "Generated Series Preview", overview: "Fill in the form and generate to see your series plan here.", weeks: [] }}

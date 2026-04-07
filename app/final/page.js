@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Pill, Notice } from "@/components/ui";
+import { Btn, Card, Pill } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 function buildFullText({ serie, week, builder, illustrations, application }) {
   if (!builder) return "";
@@ -39,6 +40,7 @@ export default function FinalPage() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -95,12 +97,15 @@ export default function FinalPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: "22px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left — Full Sermon */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
+              <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+                Final Output
+              </p>
               <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
                 {builder.titleOptions?.[0] || week?.title}
               </h4>
@@ -113,10 +118,10 @@ export default function FinalPage() {
 
           {/* Big Idea */}
           <div style={{
-            padding: "16px", borderRadius: "16px",
+            padding: isMobile ? "18px" : "16px", borderRadius: "16px",
             background: "#eef4ff", border: `1px solid rgba(11,42,91,.10)`, marginBottom: "16px",
           }}>
-            <p style={{ margin: 0, color: T.primary, fontSize: "16px", fontWeight: 700, lineHeight: 1.6, fontFamily: T.font }}>
+            <p style={{ margin: 0, color: T.primary, fontSize: isMobile ? "18px" : "16px", fontWeight: 700, lineHeight: 1.7, fontFamily: T.font }}>
               {builder.bigIdea}
             </p>
           </div>
@@ -131,7 +136,7 @@ export default function FinalPage() {
 
           {/* Points */}
           {builder.points?.map((p, i) => (
-            <div key={i} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "18px", marginBottom: "12px" }}>
+            <div key={i} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: isMobile ? "16px" : "18px", marginBottom: "12px" }}>
               <h5 style={{ margin: "0 0 8px", fontSize: "16px", color: T.primary, fontFamily: T.font }}>
                 {p.label}: {p.statement}
               </h5>

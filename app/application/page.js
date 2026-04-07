@@ -7,6 +7,7 @@ import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function ApplicationPage() {
   const [estado, setEstado] = useState(null);
@@ -16,6 +17,7 @@ export default function ApplicationPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -66,12 +68,15 @@ export default function ApplicationPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: "22px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
+              <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+                Sermon Flow
+              </p>
               <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Make It Practical</h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
                 Help people know what faithfulness looks like this week.
@@ -101,14 +106,14 @@ export default function ApplicationPage() {
               <Pill style={{ marginBottom: "12px", background: T.violetSoft, color: "#5b21b6" }}>
                 {a.forPoint}
               </Pill>
-              <p style={{ margin: "0 0 8px", color: T.text, fontSize: "14px", fontWeight: 700, fontFamily: T.fontSans }}>
+              <p style={{ margin: "0 0 8px", color: T.text, fontSize: isMobile ? "15px" : "14px", fontWeight: 700, lineHeight: 1.55, fontFamily: T.fontSans }}>
                 {a.action}
               </p>
               <p style={{ margin: "0 0 6px", color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>
                 When: {a.context}
               </p>
               <p style={{ margin: 0, color: T.green, fontSize: "13px", fontWeight: 600, fontStyle: "italic", fontFamily: T.fontSans }}>
-                "{a.encouragement}"
+                &quot;{a.encouragement}&quot;
               </p>
             </div>
           ))}

@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { auth } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
 import { T } from "@/lib/tokens";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function LoginPage() {
+  const isMobile = useIsMobile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -49,18 +52,18 @@ export default function LoginPage() {
       justifyContent: "center",
       background: "linear-gradient(160deg, #0b2a5b 0%, #0d3268 100%)",
       fontFamily: T.fontSans,
-      padding: "20px",
+      padding: isMobile ? "16px" : "20px",
     }}>
       <div style={{ width: "100%", maxWidth: 380 }}>
 
         {/* Language switcher */}
-        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap" }}>
           {LANGUAGES.map((l) => (
             <button
               key={l.code}
               onClick={() => changeLang(l.code)}
               style={{
-                padding: "5px 12px", borderRadius: "8px", border: "none",
+                minHeight: 40, padding: "7px 12px", borderRadius: "8px", border: "none",
                 background: lang === l.code ? "rgba(255,255,255,.2)" : "transparent",
                 color: lang === l.code ? "#fff" : "rgba(255,255,255,.4)",
                 fontFamily: T.fontSans, fontSize: "12px", fontWeight: lang === l.code ? 700 : 500,
@@ -75,7 +78,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
           <div style={{
-            width: 120, height: 120, borderRadius: "50%",
+            width: isMobile ? 96 : 120, height: isMobile ? 96 : 120, borderRadius: "50%",
             background: "#fff",
             display: "grid", placeItems: "center",
             margin: "0 auto 16px",
@@ -83,7 +86,7 @@ export default function LoginPage() {
             padding: "14px",
             boxSizing: "border-box",
           }}>
-            <img src="/logo.png" alt="Pastor Rhema" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            <Image src="/logo.png" alt="Pastor Rhema" width={96} height={96} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
             {isSignUp ? t("login_signup_subtitle") : t("login_signin_subtitle")}
@@ -94,7 +97,7 @@ export default function LoginPage() {
         <div style={{
           background: "#fff",
           borderRadius: "20px",
-          padding: "28px",
+          padding: isMobile ? "22px 18px" : "28px",
           boxShadow: "0 24px 64px rgba(0,0,0,.25)",
         }}>
           <h2 style={{ margin: "0 0 20px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
@@ -103,35 +106,44 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {isSignUp && (
-              <input
-                type="text"
-                placeholder={t("login_name_ph")}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                disabled={loading}
-                style={inputStyle}
-              />
+              <label style={labelStyle}>
+                Nome completo
+                <input
+                  type="text"
+                  placeholder={t("login_name_ph")}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  disabled={loading}
+                  style={inputStyle}
+                />
+              </label>
             )}
 
-            <input
-              type="email"
-              placeholder={t("login_email")}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              required
-              style={inputStyle}
-            />
+            <label style={labelStyle}>
+              E-mail
+              <input
+                type="email"
+                placeholder={t("login_email")}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                required
+                style={inputStyle}
+              />
+            </label>
 
-            <input
-              type="password"
-              placeholder={t("login_password")}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              required
-              style={inputStyle}
-            />
+            <label style={labelStyle}>
+              Senha
+              <input
+                type="password"
+                placeholder={t("login_password")}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                required
+                style={inputStyle}
+              />
+            </label>
 
             {error && (
               <p style={{ margin: 0, fontSize: "13px", color: "#b91c1c", textAlign: "center" }}>{error}</p>
@@ -144,7 +156,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                marginTop: "4px", padding: "13px",
+                marginTop: "4px", minHeight: 46, padding: "13px",
                 background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
                 color: "#fff", border: "none", borderRadius: "12px",
                 fontSize: "14px", fontWeight: 700,
@@ -189,4 +201,14 @@ const inputStyle = {
   fontSize: "14px", fontFamily: "DM Sans, sans-serif",
   outline: "none", background: "#fff", color: "#1f2937",
   boxSizing: "border-box",
+  marginTop: "6px",
+};
+
+const labelStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "2px",
+  fontSize: "13px",
+  fontWeight: 700,
+  color: T.text,
 };

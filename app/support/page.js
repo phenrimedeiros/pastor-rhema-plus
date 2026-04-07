@@ -6,6 +6,7 @@ import { auth } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
 import { Btn, Card, Notice } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const STATUS_LABEL = { open: "Aberto", in_progress: "Em andamento", closed: "Resolvido" };
 const STATUS_COLOR = {
@@ -28,6 +29,7 @@ function StatusBadge({ status }) {
 }
 
 function NewTicketForm({ onSuccess, onCancel, token }) {
+  const isMobile = useIsMobile();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,17 +84,18 @@ function NewTicketForm({ onSuccess, onCancel, token }) {
         />
       </div>
       {error && <Notice color="red">{error}</Notice>}
-      <div style={{ display: "flex", gap: "10px" }}>
-        <Btn type="submit" disabled={loading || !subject.trim() || !message.trim()}>
+      <div style={{ display: "flex", gap: "10px", flexDirection: isMobile ? "column" : "row" }}>
+        <Btn type="submit" disabled={loading || !subject.trim() || !message.trim()} style={isMobile ? { width: "100%" } : undefined}>
           {loading ? "Enviando..." : "Abrir Ticket"}
         </Btn>
-        <Btn variant="secondary" type="button" onClick={onCancel}>Cancelar</Btn>
+        <Btn variant="secondary" type="button" onClick={onCancel} style={isMobile ? { width: "100%" } : undefined}>Cancelar</Btn>
       </div>
     </form>
   );
 }
 
-function TicketThread({ ticket, token, profile }) {
+function TicketThread({ ticket, token }) {
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState([]);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
@@ -136,7 +139,7 @@ function TicketThread({ ticket, token, profile }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ marginBottom: "16px", paddingBottom: "14px", borderBottom: `1px solid ${T.line}` }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", flexDirection: isMobile ? "column" : "row" }}>
           <h4 style={{ margin: "0 0 6px", fontFamily: T.font, fontSize: "17px", color: T.primary }}>{ticket.subject}</h4>
           <StatusBadge status={ticket.status} />
         </div>
@@ -153,7 +156,7 @@ function TicketThread({ ticket, token, profile }) {
           return (
             <div key={msg.id} style={{ display: "flex", justifyContent: isAdmin ? "flex-start" : "flex-end" }}>
               <div style={{
-                maxWidth: "80%", padding: "12px 16px",
+                maxWidth: isMobile ? "90%" : "80%", padding: isMobile ? "13px 14px" : "12px 16px",
                 borderRadius: isAdmin ? "18px 18px 18px 4px" : "18px 18px 4px 18px",
                 background: isAdmin ? "#fff" : `linear-gradient(135deg, ${T.primary}, #163d7a)`,
                 color: isAdmin ? T.text : "#fff",
@@ -175,16 +178,16 @@ function TicketThread({ ticket, token, profile }) {
       </div>
 
       {ticket.status !== "closed" && (
-        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: isMobile ? "column" : "row" }}>
           <textarea
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             placeholder="Escreva sua resposta..."
             rows={3}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendReply(); } }}
-            style={{ flex: 1, padding: "12px 14px", border: `1.5px solid ${T.line}`, borderRadius: "14px", fontSize: "14px", fontFamily: T.fontSans, resize: "none", outline: "none" }}
+            style={{ flex: 1, width: "100%", padding: "12px 14px", border: `1.5px solid ${T.line}`, borderRadius: "14px", fontSize: "14px", fontFamily: T.fontSans, resize: "none", outline: "none", boxSizing: "border-box" }}
           />
-          <Btn onClick={sendReply} disabled={sending || !reply.trim()} style={{ alignSelf: "stretch", padding: "12px 18px" }}>
+          <Btn onClick={sendReply} disabled={sending || !reply.trim()} style={isMobile ? { width: "100%" } : { alignSelf: "stretch", padding: "12px 18px" }}>
             {sending ? "..." : "Enviar"}
           </Btn>
         </div>
@@ -206,6 +209,7 @@ export default function SupportPage() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -232,21 +236,39 @@ export default function SupportPage() {
 
   return (
     <AppLayout profile={profile}>
-      <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: "22px", height: "calc(100vh - 80px)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "340px 1fr", gap: isMobile ? "16px" : "22px", minHeight: isMobile ? "auto" : "calc(100vh - 80px)" }}>
 
         {/* Left — ticket list */}
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px" }}>
             <div>
+              <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+                Atendimento
+              </p>
               <h2 style={{ margin: "0 0 2px", fontSize: "20px", fontFamily: T.font, color: T.primary }}>Suporte</h2>
               <p style={{ margin: 0, fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>Seus tickets de atendimento</p>
             </div>
-            <Btn onClick={() => { setShowNewForm(true); setSelectedTicket(null); }} style={{ fontSize: "13px", padding: "8px 14px" }}>
+            <Btn onClick={() => { setShowNewForm(true); setSelectedTicket(null); }} style={{ fontSize: "13px", padding: "8px 14px", width: isMobile ? "100%" : "auto" }}>
               + Novo
             </Btn>
           </div>
 
-          <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ flex: 1, overflowY: isMobile ? "visible" : "auto", display: "flex", flexDirection: "column", gap: "8px", maxHeight: isMobile ? "none" : "100%" }}>
+            {!loading && tickets.length > 0 && isMobile && (
+              <div style={{
+                padding: "12px 14px",
+                borderRadius: "16px",
+                background: "#fff",
+                border: `1px solid ${T.line}`,
+              }}>
+                <p style={{ margin: "0 0 3px", fontSize: "12px", color: T.muted, fontFamily: T.fontSans }}>
+                  Tickets ativos
+                </p>
+                <p style={{ margin: 0, fontSize: "16px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
+                  {tickets.filter((t) => t.status !== "closed").length} em aberto ou andamento
+                </p>
+              </div>
+            )}
             {loading ? (
               <p style={{ color: T.muted, fontFamily: T.fontSans, fontSize: "14px" }}>Carregando...</p>
             ) : tickets.length === 0 ? (
@@ -278,14 +300,14 @@ export default function SupportPage() {
         </div>
 
         {/* Right — thread or new form */}
-        <Card style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <Card style={{ display: "flex", flexDirection: "column", overflow: "hidden", minHeight: isMobile ? "60vh" : "auto" }}>
           {showNewForm ? (
             <div>
               <h4 style={{ margin: "0 0 20px", fontFamily: T.font, fontSize: "18px", color: T.primary }}>Abrir Novo Ticket</h4>
               <NewTicketForm token={token} onSuccess={handleNewTicket} onCancel={() => setShowNewForm(false)} />
             </div>
           ) : (
-            <TicketThread ticket={selectedTicket} token={token} profile={profile} />
+            <TicketThread ticket={selectedTicket} token={token} />
           )}
         </Card>
       </div>

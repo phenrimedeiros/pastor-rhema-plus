@@ -7,10 +7,12 @@ import { T } from "@/lib/tokens";
 import { Btn } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useLanguage } from "@/lib/i18n";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const DAILY_LIMIT = 20;
 
 function Message({ msg }) {
+  const isMobile = useIsMobile();
   const isUser = msg.role === "user";
   return (
     <div style={{
@@ -28,19 +30,20 @@ function Message({ msg }) {
         }}>R</div>
       )}
       <div style={{
-        maxWidth: "72%",
-        padding: "12px 16px",
+        maxWidth: isMobile ? "88%" : "72%",
+        padding: isMobile ? "13px 14px" : "12px 16px",
         borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
         background: isUser
           ? `linear-gradient(135deg, ${T.primary}, ${T.primary2})`
           : "#fff",
         color: isUser ? "#fff" : T.text,
         border: isUser ? "none" : `1px solid ${T.line}`,
-        fontSize: "14px",
-        lineHeight: 1.65,
+        fontSize: isMobile ? "14.5px" : "14px",
+        lineHeight: 1.72,
         fontFamily: T.fontSans,
         whiteSpace: "pre-wrap",
         boxShadow: T.shadow,
+        transition: "transform .18s ease, box-shadow .18s ease",
       }}>
         {msg.content}
       </div>
@@ -59,6 +62,7 @@ function LimitBar({ used, limit, t }) {
       background: isLow ? "#fef2f2" : T.surface2,
       border: `1px solid ${isLow ? "#fecaca" : T.line}`,
       borderRadius: "12px", marginBottom: "12px",
+      boxShadow: isLow ? "0 8px 24px rgba(185,28,28,.08)" : "none",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
         <span style={{ fontSize: "12px", color: isLow ? "#b91c1c" : T.muted, fontFamily: T.fontSans, fontWeight: 600 }}>
@@ -109,6 +113,7 @@ function UpgradePrompt({ router, t }) {
 
 export default function ChatPage() {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [profile, setProfile] = useState(null);
   const [isSimple, setIsSimple] = useState(false);
   const [messagesUsed, setMessagesUsed] = useState(0);
@@ -227,11 +232,14 @@ export default function ChatPage() {
 
   return (
     <AppLayout profile={profile}>
-      <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 80px)", maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: isMobile ? "auto" : "calc(100vh - 80px)", maxWidth: 800, margin: "0 auto" }}>
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "16px" }}>
           <div>
+            <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+              AI Assistant
+            </p>
             <h2 style={{ margin: 0, fontSize: "22px", fontFamily: T.font, color: T.primary }}>
               {t("chat_title")}
             </h2>
@@ -239,7 +247,7 @@ export default function ChatPage() {
               {t("chat_subtitle")}
             </p>
           </div>
-          <Btn variant="secondary" onClick={clearChat} style={{ fontSize: "13px", padding: "8px 14px" }}>
+          <Btn variant="secondary" onClick={clearChat} style={{ fontSize: "13px", padding: "8px 14px", width: isMobile ? "100%" : "auto" }}>
             {t("chat_new")}
           </Btn>
         </div>
@@ -251,10 +259,26 @@ export default function ChatPage() {
 
         {/* Messages */}
         <div style={{
-          flex: 1, overflowY: "auto", padding: "20px",
+          flex: 1, overflowY: "auto", padding: isMobile ? "16px" : "20px",
           background: T.surface2, borderRadius: "20px",
-          border: `1px solid ${T.line}`, marginBottom: "16px",
+          border: `1px solid ${T.line}`, marginBottom: "16px", minHeight: isMobile ? "48vh" : 0,
         }}>
+          {isMobile && messages.length <= 1 && !loading && (
+            <div style={{
+              marginBottom: "14px",
+              padding: "14px",
+              borderRadius: "16px",
+              background: "#fff",
+              border: `1px solid ${T.line}`,
+            }}>
+              <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
+                Sugestao para comecar
+              </p>
+              <p style={{ margin: 0, fontSize: "13px", color: T.muted, lineHeight: 1.6, fontFamily: T.fontSans }}>
+                Peça um esboço, uma aplicação prática ou uma ilustração baseada no texto bíblico da semana.
+              </p>
+            </div>
+          )}
           {messages.map((msg, i) => (
             <Message key={i} msg={{ ...msg, content: msg.content ?? t("chat_welcome") }} />
           ))}
@@ -286,7 +310,7 @@ export default function ChatPage() {
         {limitReached ? (
           <UpgradePrompt router={router} t={t} />
         ) : (
-          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: isMobile ? "column" : "row" }}>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -294,13 +318,13 @@ export default function ChatPage() {
               placeholder={t("chat_placeholder")}
               rows={3}
               style={{
-                flex: 1, padding: "14px 16px", border: `1px solid ${T.line}`,
+                flex: 1, width: "100%", padding: "14px 16px", border: `1px solid ${T.line}`,
                 borderRadius: "16px", fontSize: "14px", fontFamily: T.fontSans,
                 resize: "none", outline: "none", background: "#fff",
-                lineHeight: 1.5, color: T.text,
+                lineHeight: 1.5, color: T.text, boxSizing: "border-box",
               }}
             />
-            <Btn onClick={send} disabled={loading || !input.trim()} style={{ padding: "14px 20px", alignSelf: "stretch" }}>
+            <Btn onClick={send} disabled={loading || !input.trim()} style={isMobile ? { width: "100%" } : { padding: "14px 20px", alignSelf: "stretch" }}>
               {t("chat_send")}
             </Btn>
           </div>

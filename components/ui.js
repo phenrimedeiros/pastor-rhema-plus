@@ -1,21 +1,26 @@
 "use client";
 
 import { T } from "@/lib/tokens";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export function Btn({ children, variant = "primary", onClick, style, disabled, type = "button" }) {
+  const isMobile = useIsMobile();
   const base = {
     border: "none",
     borderRadius: T.radiusSm,
-    padding: "13px 18px",
+    padding: isMobile ? "14px 18px" : "13px 18px",
     fontWeight: 800,
     cursor: disabled ? "not-allowed" : "pointer",
     fontFamily: T.fontSans,
-    fontSize: "14px",
-    transition: ".15s ease",
+    fontSize: isMobile ? "15px" : "14px",
+    transition: "transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, opacity .16s ease",
     opacity: disabled ? 0.5 : 1,
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
+    minHeight: 44,
+    justifyContent: "center",
+    transform: "translateY(0)",
   };
   const variants = {
     primary: {
@@ -48,6 +53,21 @@ export function Btn({ children, variant = "primary", onClick, style, disabled, t
       style={{ ...base, ...variants[variant], ...style }}
       onClick={onClick}
       disabled={disabled}
+      onMouseEnter={(e) => {
+        if (disabled) return;
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+      onMouseDown={(e) => {
+        if (disabled) return;
+        e.currentTarget.style.transform = "translateY(1px)";
+      }}
+      onMouseUp={(e) => {
+        if (disabled) return;
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
     >
       {children}
     </button>
@@ -55,6 +75,7 @@ export function Btn({ children, variant = "primary", onClick, style, disabled, t
 }
 
 export function Card({ children, style }) {
+  const isMobile = useIsMobile();
   return (
     <div
       style={{
@@ -62,7 +83,8 @@ export function Card({ children, style }) {
         border: `1px solid ${T.line}`,
         borderRadius: "24px",
         boxShadow: T.shadow,
-        padding: "22px",
+        padding: isMobile ? "18px" : "22px",
+        transition: "box-shadow .2s ease, transform .2s ease, border-color .2s ease",
         ...style,
       }}
     >

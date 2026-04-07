@@ -6,6 +6,7 @@ import { auth } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
 import { Btn, Card } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const STATUS_LABEL = { open: "Aberto", in_progress: "Em andamento", closed: "Resolvido" };
 const STATUS_COLOR = {
@@ -37,6 +38,7 @@ export default function AdminPage() {
   const [sending, setSending] = useState(false);
   const [token, setToken] = useState(null);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const init = async () => {
@@ -120,12 +122,12 @@ export default function AdminPage() {
 
   return (
     <AppLayout profile={profile}>
-      <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px" }}>
         <div>
           <h2 style={{ margin: "0 0 2px", fontSize: "22px", fontFamily: T.font, color: T.primary }}>Painel Admin</h2>
           <p style={{ margin: 0, fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>Gerencie os tickets de suporte</p>
         </div>
-        <div style={{ display: "flex", gap: "6px" }}>
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", width: isMobile ? "100%" : "auto" }}>
           {[
             { key: "all", label: `Todos (${counts.all})` },
             { key: "open", label: `Abertos (${counts.open})` },
@@ -136,7 +138,7 @@ export default function AdminPage() {
               key={f.key}
               onClick={() => setFilter(f.key)}
               style={{
-                padding: "7px 14px", borderRadius: "10px", border: `1.5px solid ${filter === f.key ? T.primary : T.line}`,
+                minHeight: 40, padding: "7px 14px", borderRadius: "10px", border: `1.5px solid ${filter === f.key ? T.primary : T.line}`,
                 background: filter === f.key ? T.primary : "#fff",
                 color: filter === f.key ? "#fff" : T.muted,
                 fontFamily: T.fontSans, fontSize: "12px", fontWeight: 700, cursor: "pointer",
@@ -148,10 +150,10 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: "22px", height: "calc(100vh - 160px)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "360px 1fr", gap: isMobile ? "16px" : "22px", minHeight: isMobile ? "auto" : "calc(100vh - 160px)" }}>
 
         {/* Left — ticket list */}
-        <div style={{ overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ overflowY: isMobile ? "visible" : "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
           {loading ? (
             <p style={{ color: T.muted, fontFamily: T.fontSans, fontSize: "14px" }}>Carregando...</p>
           ) : filtered.length === 0 ? (
@@ -185,7 +187,7 @@ export default function AdminPage() {
         </div>
 
         {/* Right — thread */}
-        <Card style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <Card style={{ display: "flex", flexDirection: "column", overflow: "hidden", minHeight: isMobile ? "60vh" : "auto" }}>
           {!selected ? (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: T.muted, fontFamily: T.fontSans, fontSize: "14px" }}>
               Selecione um ticket para responder
@@ -250,16 +252,16 @@ export default function AdminPage() {
               </div>
 
               {/* Reply */}
-              <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
+              <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: isMobile ? "column" : "row" }}>
                 <textarea
                   value={reply}
                   onChange={(e) => setReply(e.target.value)}
                   placeholder="Escreva sua resposta como suporte..."
                   rows={3}
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendReply(); } }}
-                  style={{ flex: 1, padding: "12px 14px", border: `1.5px solid ${T.line}`, borderRadius: "14px", fontSize: "14px", fontFamily: T.fontSans, resize: "none", outline: "none" }}
+                  style={{ flex: 1, width: "100%", padding: "12px 14px", border: `1.5px solid ${T.line}`, borderRadius: "14px", fontSize: "14px", fontFamily: T.fontSans, resize: "none", outline: "none", boxSizing: "border-box" }}
                 />
-                <Btn onClick={sendReply} disabled={sending || !reply.trim()} style={{ alignSelf: "stretch", padding: "12px 18px" }}>
+                <Btn onClick={sendReply} disabled={sending || !reply.trim()} style={isMobile ? { width: "100%" } : { alignSelf: "stretch", padding: "12px 18px" }}>
                   {sending ? "..." : "Responder"}
                 </Btn>
               </div>
