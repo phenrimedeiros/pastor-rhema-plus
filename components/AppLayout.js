@@ -17,13 +17,12 @@ const NAV_ITEMS = [
   { page: "final",         key: "nav_final",          plan: "plus" },
   { page: "sermons",       key: "nav_sermons",        plan: "plus" },
   { page: "chat",          key: "nav_chat",           plan: "simple" },
-  { page: "support",       key: "nav_support",        plan: "simple" },
 ];
 
 const NAV_EMOJI = {
   dashboard: "🏠", series: "📚", study: "🧠", builder: "🛠",
   illustrations: "💡", application: "🎯", final: "✅", sermons: "📖",
-  chat: "💬", support: "🎧",
+  chat: "💬",
 };
 
 const PLUS_PAGES = new Set(["dashboard", "series", "study", "builder", "illustrations", "application", "final", "sermons"]);
@@ -174,26 +173,6 @@ export default function AppLayout({ children, profile }) {
             </button>
           );
         })}
-
-        {profile?.is_admin && (
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              router.push("/admin");
-            }}
-            style={{
-              ...navButtonStyle,
-              border: "1px solid rgba(202,161,74,.3)",
-              background: current === "admin" ? "rgba(202,161,74,.15)" : "transparent",
-              color: T.gold,
-              fontWeight: 700,
-              marginTop: "8px",
-            }}
-          >
-            <span style={{ fontSize: "16px" }}>⚙️</span>
-            <span>{t("nav_admin")}</span>
-          </button>
-        )}
 
         {!isPlus && (
           <div style={{
