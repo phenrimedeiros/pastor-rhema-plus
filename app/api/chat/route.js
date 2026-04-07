@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
+import { getMissingServerEnv } from "@/lib/serverEnv";
 
 const SYSTEM_PROMPT = `You are "Pastor Rhema" — an AI Pastoral Assistant for pastors, preachers, Bible teachers, leaders, and serious students of Scripture.
 
@@ -63,6 +64,15 @@ E) USER CONTROL
 const DAILY_LIMIT = 20;
 
 export async function POST(request) {
+  const missingEnv = getMissingServerEnv([
+    "OPENAI_API_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  ]);
+  if (missingEnv.length > 0) {
+    return Response.json({ error: `Variáveis ausentes no servidor: ${missingEnv.join(", ")}` }, { status: 500 });
+  }
+
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return Response.json({ error: "Não autorizado" }, { status: 401 });
 

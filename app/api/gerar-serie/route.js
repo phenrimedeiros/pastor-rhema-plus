@@ -2,8 +2,18 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
 import { parseAiJsonResponse } from "@/lib/aiJson";
+import { getMissingServerEnv } from "@/lib/serverEnv";
 
 export async function POST(request) {
+  const missingEnv = getMissingServerEnv([
+    "OPENAI_API_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  ]);
+  if (missingEnv.length > 0) {
+    return Response.json({ error: `Variáveis ausentes no servidor: ${missingEnv.join(", ")}` }, { status: 500 });
+  }
+
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return Response.json({ error: "Não autorizado" }, { status: 401 });
