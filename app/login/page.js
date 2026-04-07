@@ -53,18 +53,16 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: "16px",
-            background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
-            display: "grid", placeItems: "center",
-            margin: "0 auto 14px",
-            boxShadow: "0 8px 24px rgba(202,161,74,.3)",
-          }}>
-            <span style={{ fontFamily: T.font, fontSize: "28px", fontWeight: 900, color: "#0b2a5b" }}>R</span>
-          </div>
-          <h1 style={{ margin: "0 0 4px", fontFamily: T.font, fontSize: "22px", fontWeight: 800, color: "#fff" }}>
-            Pastor Rhema
-          </h1>
+          <img
+            src="/logo.png"
+            alt="Pastor Rhema"
+            style={{
+              width: 160,
+              display: "block",
+              margin: "0 auto 16px",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
           <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
             {isSignUp ? "Crie sua conta" : "Entre na sua conta"}
           </p>

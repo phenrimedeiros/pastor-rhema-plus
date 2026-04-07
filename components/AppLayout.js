@@ -89,33 +89,25 @@ export default function AppLayout({ children, profile }) {
         position: "sticky", top: 0, height: "100vh",
       }}>
         {/* Logo */}
-        <div style={{ padding: "0 20px 24px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: "10px",
-              background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
-              display: "grid", placeItems: "center",
-              color: "#1f2937", fontSize: "16px", fontWeight: 900,
-            }}>R</div>
-            <div>
-              <div style={{ color: "#fff", fontWeight: 800, fontSize: "14px", fontFamily: T.fontSans }}>
-                {isPlus ? "Rhema PLUS" : "Rhema"}
-              </div>
-              <div style={{ color: "rgba(255,255,255,.5)", fontSize: "11px", fontFamily: T.fontSans }}>
-                {profile?.full_name || "Pastor"}
-              </div>
+        <div style={{ padding: "0 20px 20px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+          <img
+            src="/logo.png"
+            alt="Pastor Rhema"
+            style={{ width: 130, display: "block", marginBottom: "10px", filter: "brightness(0) invert(1)" }}
+          />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ color: "rgba(255,255,255,.5)", fontSize: "11px", fontFamily: T.fontSans }}>
+              {profile?.full_name || "Pastor"}
             </div>
-          </div>
-          {/* Plan badge */}
-          <div style={{
-            marginTop: "10px",
-            display: "inline-flex", alignItems: "center", gap: "5px",
-            padding: "4px 10px", borderRadius: "999px",
-            background: isPlus ? "rgba(202,161,74,.2)" : "rgba(255,255,255,.08)",
-            color: isPlus ? T.gold : "rgba(255,255,255,.45)",
-            fontSize: "10px", fontWeight: 800, fontFamily: T.fontSans,
-          }}>
-            {isPlus ? "✦ PLUS" : "SIMPLE"}
+            <div style={{
+              display: "inline-flex", alignItems: "center",
+              padding: "3px 8px", borderRadius: "999px",
+              background: isPlus ? "rgba(202,161,74,.2)" : "rgba(255,255,255,.08)",
+              color: isPlus ? T.gold : "rgba(255,255,255,.45)",
+              fontSize: "10px", fontWeight: 800, fontFamily: T.fontSans,
+            }}>
+              {isPlus ? "✦ PLUS" : "SIMPLE"}
+            </div>
           </div>
         </div>
 
