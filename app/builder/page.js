@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
@@ -13,6 +13,25 @@ import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
+function prepareBuilderContent(raw) {
+  if (!raw) return null;
+  return {
+    ...raw,
+    selectedTitle: raw.selectedTitle || raw.titleOptions?.[0] || "",
+    approvedBigIdea: raw.approvedBigIdea || raw.bigIdea || "",
+    approvedPoints: raw.approvedPoints || raw.points || [],
+  };
+}
+
+function getBuilderChoiceSignature(builder) {
+  if (!builder) return "";
+  return JSON.stringify({
+    selectedTitle: builder.selectedTitle || "",
+    approvedBigIdea: builder.approvedBigIdea || "",
+    approvedPoints: builder.approvedPoints || [],
+  });
+}
+
 export default function BuilderPage() {
   const [estado, setEstado] = useState(null);
   const [builder, setBuilder] = useState(null);
@@ -23,9 +42,11 @@ export default function BuilderPage() {
   const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
+  const [saveState, setSaveState] = useState("idle");
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t } = useLanguage();
+  const lastSavedSignatureRef = useRef("");
 
   const loadVersions = async (weekId) => {
     if (!weekId) return;
@@ -40,11 +61,14 @@ export default function BuilderPage() {
       const novo = await loadFullState();
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
-      const activeSerie = novo.series?.[0];
+      const activeSerie = novo.series?.find((s) => !s.is_archived);
       const currentWeek = activeSerie?.current_week ?? 1;
       const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.builder?.content) {
-        setBuilder(week.builder.content);
+        const preparedContent = prepareBuilderContent(week.builder.content);
+        setBuilder(preparedContent);
+        lastSavedSignatureRef.current = getBuilderChoiceSignature(preparedContent);
+        setSaveState("saved");
         await loadVersions(week.id);
       }
       setLoading(false);
@@ -52,7 +76,7 @@ export default function BuilderPage() {
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activeSerie = estado?.series?.[0];
+  const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
   const week = activeSerie?.weeks?.[currentWeek - 1];
   const selectedTitle = builder?.selectedTitle || builder?.titleOptions?.[0] || "";
@@ -73,8 +97,11 @@ export default function BuilderPage() {
         seriesId: activeSerie.id,
         weekNumber: currentWeek,
       });
-      setBuilder(data.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", data.content));
+      const preparedContent = prepareBuilderContent(data.content);
+      setBuilder(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", preparedContent));
+      lastSavedSignatureRef.current = getBuilderChoiceSignature(preparedContent);
+      setSaveState("saved");
       setChoiceMessage("");
       await loadVersions(week.id);
     } catch (err) {
@@ -84,27 +111,29 @@ export default function BuilderPage() {
     }
   };
 
-  const saveBuilderChoices = async () => {
+  const saveBuilderChoices = async ({ silent = false } = {}) => {
     if (!week || !builder) return;
-    setError("");
-    setChoiceMessage("");
-    setSavingChoices(true);
+    if (!silent) {
+      setError("");
+      setChoiceMessage("");
+      setSavingChoices(true);
+    } else {
+      setSaveState("saving");
+    }
     try {
-      const content = {
-        ...builder,
-        selectedTitle,
-        approvedBigIdea,
-        approvedPoints,
-      };
+      const content = prepareBuilderContent(builder);
       await sermonContent.updateActiveContent(week.id, "builder", content);
       setBuilder(content);
       setEstado((prev) => upsertCurrentWeekStep(prev, "builder", content));
-      setChoiceMessage("Your preferred title, big idea, and sermon points are now saved for this week.");
+      lastSavedSignatureRef.current = getBuilderChoiceSignature(content);
+      setSaveState("saved");
+      if (!silent) setChoiceMessage(t("common_saved"));
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
+      setSaveState("error");
     } finally {
-      setSavingChoices(false);
+      if (!silent) setSavingChoices(false);
     }
   };
 
@@ -115,8 +144,11 @@ export default function BuilderPage() {
     setRestoringVersionId(version.id);
     try {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "builder");
-      setBuilder(restored.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", restored.content));
+      const preparedContent = prepareBuilderContent(restored.content);
+      setBuilder(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", preparedContent));
+      lastSavedSignatureRef.current = getBuilderChoiceSignature(preparedContent);
+      setSaveState("saved");
       setChoiceMessage(`Version ${version.version} is now your active sermon structure.`);
       await loadVersions(week.id);
     } catch (err) {
@@ -125,6 +157,19 @@ export default function BuilderPage() {
       setRestoringVersionId("");
     }
   };
+
+  useEffect(() => {
+    if (!builder || !week) return undefined;
+    const signature = getBuilderChoiceSignature(builder);
+    if (!signature || signature === lastSavedSignatureRef.current) return undefined;
+
+    setSaveState("pending");
+    const timeoutId = window.setTimeout(() => {
+      saveBuilderChoices({ silent: true });
+    }, 900);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [builder, week]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
@@ -286,9 +331,20 @@ export default function BuilderPage() {
                     </div>
                   )}
                   <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
-                    <Btn variant="secondary" onClick={saveBuilderChoices} disabled={savingChoices}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      <span style={{ fontSize: "12px", color: saveState === "error" ? "#b91c1c" : T.muted, fontFamily: T.fontSans }}>
+                        {saveState === "pending"
+                          ? t("common_unsaved")
+                          : saveState === "saving"
+                            ? t("builder_saving")
+                            : saveState === "saved"
+                              ? t("common_saved")
+                              : ""}
+                      </span>
+                    <Btn variant="secondary" onClick={() => saveBuilderChoices()} disabled={savingChoices}>
                       {savingChoices ? t("builder_saving") : t("builder_save_dir")}
                     </Btn>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
@@ -13,6 +13,21 @@ import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
+function prepareApplicationContent(raw) {
+  if (!raw) return null;
+  return {
+    ...raw,
+    approvedWeeklyChallenge: raw.approvedWeeklyChallenge || raw.weeklyChallenge || "",
+  };
+}
+
+function getApplicationChoiceSignature(application) {
+  if (!application) return "";
+  return JSON.stringify({
+    approvedWeeklyChallenge: application.approvedWeeklyChallenge || "",
+  });
+}
+
 export default function ApplicationPage() {
   const [estado, setEstado] = useState(null);
   const [application, setApplication] = useState(null);
@@ -24,9 +39,11 @@ export default function ApplicationPage() {
   const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
+  const [saveState, setSaveState] = useState("idle");
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t } = useLanguage();
+  const lastSavedSignatureRef = useRef("");
 
   const loadVersions = async (weekId) => {
     if (!weekId) return;
@@ -47,7 +64,10 @@ export default function ApplicationPage() {
       const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.builder) setBuilderData(week.builder.content);
       if (week?.application?.content) {
-        setApplication(week.application.content);
+        const preparedContent = prepareApplicationContent(week.application.content);
+        setApplication(preparedContent);
+        lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);
+        setSaveState("saved");
         await loadVersions(week.id);
       }
 
@@ -72,8 +92,11 @@ export default function ApplicationPage() {
         bigIdea: builderData.approvedBigIdea || builderData.bigIdea,
         points: builderData.approvedPoints || builderData.points,
       });
-      setApplication(data.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "application", data.content));
+      const preparedContent = prepareApplicationContent(data.content);
+      setApplication(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "application", preparedContent));
+      lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);
+      setSaveState("saved");
       setChoiceMessage("");
       await loadVersions(week.id);
     } catch (err) {
@@ -83,22 +106,29 @@ export default function ApplicationPage() {
     }
   };
 
-  const saveApplicationChoices = async () => {
+  const saveApplicationChoices = async ({ silent = false } = {}) => {
     if (!week || !application) return;
-    setError("");
-    setChoiceMessage("");
-    setSavingChoices(true);
+    if (!silent) {
+      setError("");
+      setChoiceMessage("");
+      setSavingChoices(true);
+    } else {
+      setSaveState("saving");
+    }
     try {
-      const content = { ...application, approvedWeeklyChallenge };
+      const content = prepareApplicationContent(application);
       await sermonContent.updateActiveContent(week.id, "application", content);
       setApplication(content);
       setEstado((prev) => upsertCurrentWeekStep(prev, "application", content));
-      setChoiceMessage(t("app_save"));
+      lastSavedSignatureRef.current = getApplicationChoiceSignature(content);
+      setSaveState("saved");
+      if (!silent) setChoiceMessage(t("common_saved"));
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
+      setSaveState("error");
     } finally {
-      setSavingChoices(false);
+      if (!silent) setSavingChoices(false);
     }
   };
 
@@ -109,8 +139,11 @@ export default function ApplicationPage() {
     setRestoringVersionId(version.id);
     try {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "application");
-      setApplication(restored.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "application", restored.content));
+      const preparedContent = prepareApplicationContent(restored.content);
+      setApplication(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "application", preparedContent));
+      lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);
+      setSaveState("saved");
       setChoiceMessage(`Version ${version.version} restored.`);
       await loadVersions(week.id);
     } catch (err) {
@@ -119,6 +152,19 @@ export default function ApplicationPage() {
       setRestoringVersionId("");
     }
   };
+
+  useEffect(() => {
+    if (!application || !week) return undefined;
+    const signature = getApplicationChoiceSignature(application);
+    if (!signature || signature === lastSavedSignatureRef.current) return undefined;
+
+    setSaveState("pending");
+    const timeoutId = window.setTimeout(() => {
+      saveApplicationChoices({ silent: true });
+    }, 900);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [application, week]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
@@ -203,9 +249,20 @@ export default function ApplicationPage() {
                 />
               </Field>
               <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
-                <Btn variant="secondary" onClick={saveApplicationChoices} disabled={savingChoices}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  <span style={{ fontSize: "12px", color: saveState === "error" ? "#b91c1c" : T.muted, fontFamily: T.fontSans }}>
+                    {saveState === "pending"
+                      ? t("common_unsaved")
+                      : saveState === "saving"
+                        ? t("app_saving")
+                        : saveState === "saved"
+                          ? t("common_saved")
+                          : ""}
+                  </span>
+                <Btn variant="secondary" onClick={() => saveApplicationChoices()} disabled={savingChoices}>
                   {savingChoices ? t("app_saving") : t("app_save")}
                 </Btn>
+                </div>
               </div>
             </div>
           )}

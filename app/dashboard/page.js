@@ -9,6 +9,7 @@ import SeriesForm from "@/components/SeriesForm";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
+import { getCompletedSermonFlowCount, getNextSermonFlowStep, getSermonFlowStatus } from "@/lib/sermonFlow";
 
 const SERMON_STEP_KEYS = [
   { key: "study",         labelKey: "dash_step_study",         page: "study",         emoji: "🧠" },
@@ -17,30 +18,6 @@ const SERMON_STEP_KEYS = [
   { key: "application",   labelKey: "dash_step_application",   page: "application",   emoji: "🎯" },
   { key: "final",         labelKey: "dash_step_final",         page: "final",         emoji: "✅" },
 ];
-
-function getStepStatus(week, index) {
-  if (!week) return "locked";
-  const key = SERMON_STEP_KEYS[index].key;
-  const done = key === "final"
-    ? !!week.application
-    : !!week[key];
-  if (done) return "done";
-  const prevDone = index === 0 || !!(index === 4 ? week.application : week[SERMON_STEP_KEYS[index - 1].key]);
-  return prevDone ? "current" : "locked";
-}
-
-function nextStep(week) {
-  for (let i = 0; i < SERMON_STEP_KEYS.length; i++) {
-    const status = getStepStatus(week, i);
-    if (status === "current") return SERMON_STEP_KEYS[i];
-  }
-  return null;
-}
-
-function completedCount(week) {
-  if (!week) return 0;
-  return SERMON_STEP_KEYS.filter((_, i) => getStepStatus(week, i) === "done").length;
-}
 
 function nextSunday() {
   const d = new Date();
@@ -57,13 +34,21 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
   const isMobile = useIsMobile();
   const { t } = useLanguage();
   const SERMON_STEPS = SERMON_STEP_KEYS.map((s) => ({ ...s, label: t(s.labelKey) }));
-
-  const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
-  const done = completedCount(week);
+  const currentWeek = activeSerie?.current_week ?? 1;
+  const week = activeSerie?.weeks?.[currentWeek - 1];
+  const done = getCompletedSermonFlowCount(week);
+  const next = getNextSermonFlowStep(week);
+  const mappedNext = next ? SERMON_STEPS.find((step) => step.key === next.key) : null;
   const total = SERMON_STEPS.length;
   const pct = Math.round((done / total) * 100);
-  const next = nextStep(week);
   const allDone = done === total;
+  const weekStatusLabel = !week
+    ? t("dash_status_not_started")
+    : allDone
+      ? t("dash_status_ready")
+      : done === 0
+        ? t("dash_status_not_started")
+        : t("dash_status_in_progress");
 
   return (
     <AppLayout profile={profile}>
@@ -114,10 +99,10 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                     gap: "10px",
                     marginBottom: "18px",
                   }}>
-                    {[
-                      { label: t("dash_current_step"), value: next ? next.label : t("dash_step_complete") },
-                      { label: t("dash_sermon_progress"), value: `${done}/${total}` },
-                    ].map((item) => (
+                  {[
+                    { label: t("dash_next_focus"), value: mappedNext ? `${mappedNext.emoji} ${mappedNext.label}` : t("dash_step_complete") },
+                    { label: t("dash_week_status"), value: weekStatusLabel },
+                  ].map((item) => (
                       <div key={item.label} style={{
                         padding: "12px 13px",
                         borderRadius: "16px",
@@ -172,9 +157,9 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                     >
                       {t("dash_mark_complete")}
                     </button>
-                  ) : next ? (
+                  ) : mappedNext ? (
                     <button
-                      onClick={() => router.push(`/${next.page}`)}
+                      onClick={() => router.push(`/${mappedNext.page}`)}
                       style={{
                         width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 24px", borderRadius: "14px", border: "none",
                         background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
@@ -182,7 +167,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                         fontWeight: 800, cursor: "pointer",
                       }}
                     >
-                      {done === 0 ? t("dash_start_week") : `${t("dash_continue")} ${next.emoji} ${next.label} →`}
+                      {done === 0 ? t("dash_start_week") : t("dash_resume_week")}
                     </button>
                   ) : null}
                   <button
@@ -199,16 +184,43 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                 </div>
               </div>
 
-              {/* Step checklist */}
-              <div style={{
-                background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.1)",
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: "10px",
+                  marginBottom: "18px",
+                }}>
+                  {[
+                    { label: t("dash_next_focus"), value: mappedNext ? `${mappedNext.emoji} ${mappedNext.label}` : t("dash_step_complete") },
+                    { label: t("dash_week_status"), value: weekStatusLabel },
+                  ].map((item) => (
+                    <div key={item.label} style={{
+                      padding: "12px 13px",
+                      borderRadius: "16px",
+                      background: "rgba(255,255,255,.08)",
+                      border: "1px solid rgba(255,255,255,.08)",
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
+                    }}>
+                      <p style={{ margin: "0 0 4px", fontSize: "11px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
+                        {item.label}
+                      </p>
+                      <p style={{ margin: 0, fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: T.fontSans }}>
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Step checklist */}
+                <div style={{
+                  background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.1)",
                 borderRadius: "20px", padding: "16px", minWidth: isMobile ? 0 : 220,
               }}>
                 <p style={{ margin: "0 0 12px", fontSize: "11px", fontWeight: 800, color: "rgba(255,255,255,.5)", fontFamily: T.fontSans, textTransform: "uppercase", letterSpacing: ".06em" }}>
                   {t("dash_prep_steps")}
                 </p>
                 {SERMON_STEPS.map((step, i) => {
-                  const status = getStepStatus(week, i);
+                  const status = getSermonFlowStatus(week, i);
                   return (
                     <div
                       key={step.key}
@@ -304,7 +316,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
 
         {/* Quick access */}
         {activeSerie && SERMON_STEPS.slice(0, 3).map((step, i) => {
-          const status = getStepStatus(week, i);
+          const status = getSermonFlowStatus(week, i);
           return (
             <div
               key={step.key}
@@ -324,7 +336,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
                 {step.label}
               </b>
               <span style={{ fontSize: "11px", fontWeight: 700, color: status === "done" ? "#166534" : status === "current" ? "#92400e" : T.muted, fontFamily: T.fontSans }}>
-                {status === "done" ? "Complete" : status === "current" ? "Ready to start" : "Locked"}
+                {status === "done" ? t("dash_step_complete") : status === "current" ? t("dash_step_ready") : t("dash_step_locked")}
               </span>
             </div>
           );
@@ -431,7 +443,7 @@ export default function DashboardPage() {
   return (
     <ThisWeek
       profile={estado.profile}
-      activeSerie={estado.series?.[0] ?? null}
+      activeSerie={estado.series?.find((s) => !s.is_archived) ?? null}
       onNewSerie={recarregar}
       onWeekComplete={handleWeekComplete}
     />
