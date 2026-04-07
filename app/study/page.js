@@ -13,6 +13,37 @@ import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
+function toPlainText(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) return value.map(toPlainText).filter(Boolean).join(" • ");
+  if (typeof value === "object") return Object.values(value).map(toPlainText).filter(Boolean).join(" • ");
+  return "";
+}
+
+function toTextList(value) {
+  if (Array.isArray(value)) return value.map(toPlainText).filter(Boolean);
+  const single = toPlainText(value);
+  return single ? [single] : [];
+}
+
+function normalizeStudyContent(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+
+  return {
+    ...raw,
+    contextSummary: toPlainText(raw.contextSummary),
+    theologicalInsight: toPlainText(raw.theologicalInsight),
+    pastoralAngle: toPlainText(raw.pastoralAngle),
+    centralTruth: toPlainText(raw.centralTruth),
+    pastoralNeed: toPlainText(raw.pastoralNeed),
+    preachingDirection: toPlainText(raw.preachingDirection),
+    keyTerms: toTextList(raw.keyTerms),
+    crossReferences: toTextList(raw.crossReferences),
+  };
+}
+
 export default function StudyPage() {
   const [estado, setEstado] = useState(null);
   const [study, setStudy] = useState(null);
@@ -42,7 +73,7 @@ export default function StudyPage() {
       const currentWeek = activeSerie?.current_week ?? 1;
       const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week?.study?.content) {
-        setStudy(week.study.content);
+        setStudy(normalizeStudyContent(week.study.content));
         await loadVersions(week.id);
       }
       setLoading(false);
@@ -53,8 +84,8 @@ export default function StudyPage() {
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
   const week = activeSerie?.weeks?.[currentWeek - 1];
-  const keyTerms = Array.isArray(study?.keyTerms) ? study.keyTerms : [];
-  const crossReferences = Array.isArray(study?.crossReferences) ? study.crossReferences : [];
+  const keyTerms = study?.keyTerms || [];
+  const crossReferences = study?.crossReferences || [];
 
   const generate = async () => {
     if (!week) return;
@@ -68,8 +99,9 @@ export default function StudyPage() {
         focus: week.focus,
         seriesContext: activeSerie.series_name,
       });
-      setStudy(data.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "study", data.content));
+      const normalizedContent = normalizeStudyContent(data.content);
+      setStudy(normalizedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "study", normalizedContent));
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
@@ -84,8 +116,9 @@ export default function StudyPage() {
     setRestoringVersionId(version.id);
     try {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "study");
-      setStudy(restored.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "study", restored.content));
+      const normalizedContent = normalizeStudyContent(restored.content);
+      setStudy(normalizedContent);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "study", normalizedContent));
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
