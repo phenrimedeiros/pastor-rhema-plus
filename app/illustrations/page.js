@@ -10,7 +10,7 @@ import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
-import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 export default function IllustrationsPage() {
@@ -22,6 +22,7 @@ export default function IllustrationsPage() {
   const [savingChoices, setSavingChoices] = useState(false);
   const [versions, setVersions] = useState([]);
   const [restoringVersionId, setRestoringVersionId] = useState("");
+  const [duplicatingVersionId, setDuplicatingVersionId] = useState("");
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
@@ -120,13 +121,31 @@ export default function IllustrationsPage() {
     try {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "illustrations");
       setIllustrations(restored.content);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", restored.content));
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "illustrations", restored));
       setChoiceMessage(`Version ${version.version} restored.`);
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setRestoringVersionId("");
+    }
+  };
+
+  const duplicateVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setDuplicatingVersionId(version.id);
+    try {
+      const duplicated = await sermonContent.duplicateVersion(version.id, week.id, "illustrations");
+      setIllustrations(duplicated.content);
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "illustrations", duplicated));
+      setChoiceMessage(`Version ${version.version} duplicated as your new active illustrations.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDuplicatingVersionId("");
     }
   };
 
@@ -286,6 +305,8 @@ export default function IllustrationsPage() {
             activeVersionId={week?.illustrations?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
+            onDuplicate={duplicateVersion}
+            duplicatingVersionId={duplicatingVersionId}
           />
           <Card style={{ alignSelf: "start" }}>
             <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("illus_your_points")}</h4>

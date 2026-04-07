@@ -10,7 +10,7 @@ import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
-import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 function prepareApplicationContent(raw) {
@@ -37,6 +37,7 @@ export default function ApplicationPage() {
   const [savingChoices, setSavingChoices] = useState(false);
   const [versions, setVersions] = useState([]);
   const [restoringVersionId, setRestoringVersionId] = useState("");
+  const [duplicatingVersionId, setDuplicatingVersionId] = useState("");
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
   const [saveState, setSaveState] = useState("idle");
@@ -141,7 +142,7 @@ export default function ApplicationPage() {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "application");
       const preparedContent = prepareApplicationContent(restored.content);
       setApplication(preparedContent);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "application", preparedContent));
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "application", { ...restored, content: preparedContent }));
       lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);
       setSaveState("saved");
       setChoiceMessage(`Version ${version.version} restored.`);
@@ -150,6 +151,27 @@ export default function ApplicationPage() {
       setError(err.message);
     } finally {
       setRestoringVersionId("");
+    }
+  };
+
+  const duplicateVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setDuplicatingVersionId(version.id);
+    try {
+      const duplicated = await sermonContent.duplicateVersion(version.id, week.id, "application");
+      const preparedContent = prepareApplicationContent(duplicated.content);
+      setApplication(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "application", { ...duplicated, content: preparedContent }));
+      lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);
+      setSaveState("saved");
+      setChoiceMessage(`Version ${version.version} duplicated as your new active application set.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDuplicatingVersionId("");
     }
   };
 
@@ -283,6 +305,8 @@ export default function ApplicationPage() {
             activeVersionId={week?.application?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
+            onDuplicate={duplicateVersion}
+            duplicatingVersionId={duplicatingVersionId}
           />
           <Card>
             <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("app_reflection")}</h4>

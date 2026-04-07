@@ -466,7 +466,7 @@ export default function FinalPage() {
             >
               {isEditing ? (
                 <div style={{ display: "grid", gap: "12px" }}>
-                  <Field label={`${point.label} ${t("builder_point_statement") || "Statement"}`}>
+                  <Field label={`${point.label} ${t("builder_point_stmt") || "Statement"}`}>
                     <textarea
                       value={point.statement || ""}
                       onChange={(e) => updateBuilderPoint(index, { statement: e.target.value })}
@@ -485,7 +485,7 @@ export default function FinalPage() {
                       }}
                     />
                   </Field>
-                  <Field label={t("builder_point_explanation") || "Explanation"}>
+                  <Field label={t("builder_point_exp") || "Explanation"}>
                     <textarea
                       value={point.explanation || ""}
                       onChange={(e) => updateBuilderPoint(index, { explanation: e.target.value })}

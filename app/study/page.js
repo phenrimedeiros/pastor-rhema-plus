@@ -10,7 +10,7 @@ import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
-import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 function toPlainText(value) {
@@ -51,7 +51,9 @@ export default function StudyPage() {
   const [generating, setGenerating] = useState(false);
   const [versions, setVersions] = useState([]);
   const [restoringVersionId, setRestoringVersionId] = useState("");
+  const [duplicatingVersionId, setDuplicatingVersionId] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t } = useLanguage();
@@ -90,6 +92,7 @@ export default function StudyPage() {
   const generate = async () => {
     if (!week) return;
     setError("");
+    setMessage("");
     setGenerating(true);
     try {
       const data = await callApi("/api/gerar-estudo", {
@@ -113,17 +116,38 @@ export default function StudyPage() {
   const restoreVersion = async (version) => {
     if (!week) return;
     setError("");
+    setMessage("");
     setRestoringVersionId(version.id);
     try {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "study");
       const normalizedContent = normalizeStudyContent(restored.content);
       setStudy(normalizedContent);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "study", normalizedContent));
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "study", { ...restored, content: normalizedContent }));
+      setMessage(`Version ${version.version} restored.`);
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setRestoringVersionId("");
+    }
+  };
+
+  const duplicateVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setMessage("");
+    setDuplicatingVersionId(version.id);
+    try {
+      const duplicated = await sermonContent.duplicateVersion(version.id, week.id, "study");
+      const normalizedContent = normalizeStudyContent(duplicated.content);
+      setStudy(normalizedContent);
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "study", { ...duplicated, content: normalizedContent }));
+      setMessage(`Version ${version.version} duplicated as your new active study.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDuplicatingVersionId("");
     }
   };
 
@@ -173,6 +197,7 @@ export default function StudyPage() {
           }
 
           {error && <Notice color="red">{error}</Notice>}
+          {message && <Notice color="green">{message}</Notice>}
 
           {!study && !generating && week && (
             <div style={{
@@ -243,6 +268,8 @@ export default function StudyPage() {
             activeVersionId={week?.study?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
+            onDuplicate={duplicateVersion}
+            duplicatingVersionId={duplicatingVersionId}
           />
           <Card>
             <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("study_snapshot")}</h4>

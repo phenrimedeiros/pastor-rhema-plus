@@ -10,7 +10,7 @@ import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
-import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 function prepareBuilderContent(raw) {
@@ -40,6 +40,7 @@ export default function BuilderPage() {
   const [savingChoices, setSavingChoices] = useState(false);
   const [versions, setVersions] = useState([]);
   const [restoringVersionId, setRestoringVersionId] = useState("");
+  const [duplicatingVersionId, setDuplicatingVersionId] = useState("");
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
   const [saveState, setSaveState] = useState("idle");
@@ -146,7 +147,7 @@ export default function BuilderPage() {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "builder");
       const preparedContent = prepareBuilderContent(restored.content);
       setBuilder(preparedContent);
-      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", preparedContent));
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "builder", { ...restored, content: preparedContent }));
       lastSavedSignatureRef.current = getBuilderChoiceSignature(preparedContent);
       setSaveState("saved");
       setChoiceMessage(`Version ${version.version} is now your active sermon structure.`);
@@ -155,6 +156,27 @@ export default function BuilderPage() {
       setError(err.message);
     } finally {
       setRestoringVersionId("");
+    }
+  };
+
+  const duplicateVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setDuplicatingVersionId(version.id);
+    try {
+      const duplicated = await sermonContent.duplicateVersion(version.id, week.id, "builder");
+      const preparedContent = prepareBuilderContent(duplicated.content);
+      setBuilder(preparedContent);
+      setEstado((prev) => upsertCurrentWeekStepRecord(prev, "builder", { ...duplicated, content: preparedContent }));
+      lastSavedSignatureRef.current = getBuilderChoiceSignature(preparedContent);
+      setSaveState("saved");
+      setChoiceMessage(`Version ${version.version} duplicated as a new active sermon structure.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDuplicatingVersionId("");
     }
   };
 
@@ -404,6 +426,8 @@ export default function BuilderPage() {
             activeVersionId={week?.builder?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
+            onDuplicate={duplicateVersion}
+            duplicatingVersionId={duplicatingVersionId}
           />
           <Card style={{ alignSelf: "start" }}>
             <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("builder_health")}</h4>
