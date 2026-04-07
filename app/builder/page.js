@@ -42,6 +42,8 @@ export default function BuilderPage() {
         title: week.title,
         focus: week.focus,
         bigIdea: week.big_idea,
+        seriesId: activeSerie.id,
+        weekNumber: activeSerie.current_week,
       });
       setBuilder(data.content);
     } catch (err) {

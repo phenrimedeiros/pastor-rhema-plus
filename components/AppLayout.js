@@ -12,16 +12,18 @@ const NAV_ITEMS = [
   { page: "illustrations", key: "nav_illustrations",  plan: "plus", step: 4 },
   { page: "application",   key: "nav_application",    plan: "plus", step: 5 },
   { page: "final",         key: "nav_final",          plan: "plus" },
+  { page: "sermons",       key: "nav_sermons",        plan: "plus" },
   { page: "chat",          key: "nav_chat",           plan: "simple" },
   { page: "support",       key: "nav_support",        plan: "simple" },
 ];
 
 const NAV_EMOJI = {
   dashboard: "🏠", series: "📚", study: "🧠", builder: "🛠",
-  illustrations: "💡", application: "🎯", final: "✅", chat: "💬", support: "🎧",
+  illustrations: "💡", application: "🎯", final: "✅", sermons: "📖",
+  chat: "💬", support: "🎧",
 };
 
-const PLUS_PAGES = new Set(["dashboard", "series", "study", "builder", "illustrations", "application", "final"]);
+const PLUS_PAGES = new Set(["dashboard", "series", "study", "builder", "illustrations", "application", "final", "sermons"]);
 
 function UpgradeWall({ router, t }) {
   return (

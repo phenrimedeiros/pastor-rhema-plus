@@ -21,15 +21,46 @@ export async function POST(request) {
     return Response.json({ error: "Body inválido" }, { status: 400 });
   }
 
-  const { weekId, passage, title, focus, bigIdea } = body;
+  const { weekId, passage, title, focus, bigIdea, seriesId, weekNumber } = body;
   if (!weekId || !passage) return Response.json({ error: "weekId e passage são obrigatórios" }, { status: 400 });
+
+  // ── AI Continuity: fetch previous week's sermon if available ──
+  let previousContext = null;
+  if (seriesId && weekNumber && weekNumber > 1) {
+    const { data: prevWeek } = await supabase
+      .from("series_weeks")
+      .select("title, passage, big_idea")
+      .eq("series_id", seriesId)
+      .eq("week_number", weekNumber - 1)
+      .single();
+
+    if (prevWeek) {
+      const { data: prevBuilder } = await supabase
+        .from("sermon_content")
+        .select("content")
+        .eq("week_id", prevWeek.id ?? "")
+        .eq("step", "builder")
+        .eq("is_active", true)
+        .single()
+        .catch(() => ({ data: null }));
+
+      if (prevWeek) {
+        previousContext = {
+          title: prevWeek.title,
+          passage: prevWeek.passage,
+          bigIdea: prevWeek.big_idea,
+          mainPoint: prevBuilder?.content?.bigIdea || null,
+        };
+      }
+    }
+  }
 
   let content;
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 4096,
-      messages: [{ role: "user", content: PROMPTS.builder({ passage, title, focus, centralTruth: bigIdea }) }],
+      messages: [{ role: "user", content: PROMPTS.builder({ passage, title, focus, centralTruth: bigIdea, previousContext }) }],
     });
     const jsonMatch = completion.choices[0].message.content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("JSON inválido na resposta");
