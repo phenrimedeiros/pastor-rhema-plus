@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
 import { saveVersionedSermonContent } from "@/lib/versionedContent";
+import { parseAiJsonResponse } from "@/lib/aiJson";
 
 export async function POST(request) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -63,9 +64,7 @@ export async function POST(request) {
       max_tokens: 4096,
       messages: [{ role: "user", content: PROMPTS.builder({ passage, title, focus, centralTruth: bigIdea, previousContext }) }],
     });
-    const jsonMatch = completion.choices[0].message.content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("JSON inválido na resposta");
-    content = JSON.parse(jsonMatch[0]);
+    content = parseAiJsonResponse(completion.choices[0].message.content || "");
   } catch (err) {
     return Response.json({ error: "Falha ao gerar sermão: " + err.message }, { status: 500 });
   }
