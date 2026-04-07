@@ -7,6 +7,7 @@ import { T } from "@/lib/tokens";
 import { Card, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useLanguage } from "@/lib/i18n";
 
 const STEPS = ["study", "builder", "illustrations", "application"];
 
@@ -39,6 +40,7 @@ export default function SermonsPage() {
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const init = async () => {
@@ -69,7 +71,7 @@ export default function SermonsPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <Loader text="Loading..." />
+      <Loader text={t("common_loading")} />
     </div>
   );
 
@@ -83,22 +85,22 @@ export default function SermonsPage() {
       {/* Header */}
       <div style={{ marginBottom: "24px" }}>
         <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
-          Biblioteca
+          {t("sermons_title")}
         </p>
         <h2 style={{ margin: "0 0 4px", fontSize: "26px", fontFamily: T.font, color: T.primary }}>
-          My Sermons
+          {t("sermons_title")}
         </h2>
         <p style={{ margin: 0, fontSize: "14px", color: T.muted, fontFamily: T.fontSans }}>
-          Your pastoral journey — {completedSermons} preached · {totalSermons} total planned
+          {completedSermons} {t("sermons_subtitle_a")} · {totalSermons} {t("sermons_subtitle_b")}
         </p>
       </div>
 
       {/* Stats strip */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "14px", marginBottom: "28px" }}>
         {[
-          { val: series.length, label: "Active series", emoji: "📚" },
-          { val: completedSermons, label: "Sermons preached", emoji: "✅" },
-          { val: totalSermons - completedSermons, label: "Sermons planned", emoji: "📋" },
+          { val: series.length, label: t("sermons_active"), emoji: "📚" },
+          { val: completedSermons, label: t("sermons_preached"), emoji: "✅" },
+          { val: totalSermons - completedSermons, label: t("sermons_planned"), emoji: "📋" },
         ].map((s, i) => (
           <div key={i} style={{
             border: `1px solid ${T.line}`, borderRadius: "16px", padding: "16px",
@@ -119,9 +121,9 @@ export default function SermonsPage() {
       {series.length === 0 && (
         <Card style={{ textAlign: "center", padding: "48px 24px" }}>
           <p style={{ fontSize: "40px", marginBottom: "12px" }}>📖</p>
-          <h4 style={{ margin: "0 0 8px", fontFamily: T.font, color: T.primary }}>No sermons yet</h4>
+          <h4 style={{ margin: "0 0 8px", fontFamily: T.font, color: T.primary }}>{t("sermons_empty")}</h4>
           <p style={{ margin: "0 0 20px", color: T.muted, fontFamily: T.fontSans, fontSize: "14px" }}>
-            Create your first sermon series to start your journey.
+            {t("sermons_empty_desc")}
           </p>
           <button
             onClick={() => router.push("/dashboard")}
@@ -132,7 +134,7 @@ export default function SermonsPage() {
               fontWeight: 700, cursor: "pointer",
             }}
           >
-            Plan a Series →
+            {t("sermons_plan")}
           </button>
         </Card>
       )}
@@ -167,8 +169,7 @@ export default function SermonsPage() {
                     {serie.series_name}
                   </p>
                   <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
-                    {serie.weeks?.length} weeks · Week {serie.current_week} active ·{" "}
-                    {preachedIds.size} preached
+                    {serie.weeks?.length} {t("sermons_week")} · {t("sermons_week")} {serie.current_week} {t("sermons_active_badge")} · {preachedIds.size} {t("sermons_preached_badge")}
                   </p>
                 </div>
               </div>
@@ -241,7 +242,7 @@ export default function SermonsPage() {
                           background: isPreached ? T.greenSoft : isActive ? T.amberSoft : T.surface2,
                           color: isPreached ? "#166534" : isActive ? "#92400e" : T.muted,
                         }}>
-                          {isPreached ? "Preached" : isActive ? "Active" : "Planned"}
+                          {isPreached ? t("sermons_preached_badge") : isActive ? t("sermons_active_badge") : t("sermons_planned_badge")}
                         </span>
                       </div>
                     </div>

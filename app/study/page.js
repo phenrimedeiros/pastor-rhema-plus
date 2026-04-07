@@ -8,6 +8,7 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
@@ -22,6 +23,7 @@ export default function StudyPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const loadVersions = async (weekId) => {
     if (!weekId) return;
@@ -36,7 +38,7 @@ export default function StudyPage() {
       const novo = await loadFullState();
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
-      const activeSerie = novo.series?.[0];
+      const activeSerie = novo.series?.find((s) => !s.is_archived);
       const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
       if (week?.study?.content) {
         setStudy(week.study.content);
@@ -47,8 +49,8 @@ export default function StudyPage() {
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activeSerie = estado?.series?.[0];
-  const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+  const activeSerie = estado?.series?.find((s) => !s.is_archived);
+  const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
   const keyTerms = Array.isArray(study?.keyTerms) ? study.keyTerms : [];
   const crossReferences = Array.isArray(study?.crossReferences) ? study.crossReferences : [];
 
@@ -92,9 +94,21 @@ export default function StudyPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <Loader text="Loading..." />
+      <Loader text={t("common_loading")} />
     </div>
   );
+
+  const studyBlocks = [
+    { title: t("study_context"),     content: study?.contextSummary },
+    { title: t("study_theological"), content: study?.theologicalInsight },
+    { title: t("study_pastoral"),    content: study?.pastoralAngle },
+  ];
+
+  const snapshotBlocks = [
+    { title: t("study_central_truth"), content: study?.centralTruth },
+    { title: t("study_pastoral_need"), content: study?.pastoralNeed },
+    { title: t("study_direction"),     content: study?.preachingDirection },
+  ];
 
   return (
     <AppLayout profile={estado.profile}>
@@ -102,7 +116,7 @@ export default function StudyPage() {
         currentStepKey="study"
         week={week}
         canContinue={!!study}
-        savedContentText={week?.study ? "Loaded your saved biblical study. You can keep building from here or regenerate it." : ""}
+        savedContentText={week?.study ? t("study_use") : ""}
       />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
@@ -110,37 +124,33 @@ export default function StudyPage() {
         <Card>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Understand the Passage</h4>
+              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("study_title")}</h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-                Deepen your understanding before structuring.
+                {t("study_subtitle")}
               </p>
             </div>
             <Pill>Step 2</Pill>
           </div>
 
           {week
-            ? <Notice color="blue">{week.passage} · Week {activeSerie.current_week} — {week.title}</Notice>
-            : <Notice color="gold">Generate a series first to begin studying.</Notice>
+            ? <Notice color="blue">{week.passage} · {t("dash_week_of")} {activeSerie.current_week} — {week.title}</Notice>
+            : <Notice color="gold">{t("study_no_series")}</Notice>
           }
 
           {error && <Notice color="red">{error}</Notice>}
 
           {!study && !generating && week && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <Btn onClick={generate}>Generate Biblical Study</Btn>
+              <Btn onClick={generate}>{t("study_generate")}</Btn>
             </div>
           )}
 
-          {generating && <Loader text="Studying the passage..." />}
+          {generating && <Loader text={t("study_generating")} />}
 
           {study && (
             <>
               <div style={{ display: "grid", gap: "12px" }}>
-                {[
-                  { title: "Context Summary", content: study.contextSummary },
-                  { title: "Theological Insight", content: study.theologicalInsight },
-                  { title: "Pastoral Angle", content: study.pastoralAngle },
-                ].map((block) => (
+                {studyBlocks.map((block) => (
                   <div key={block.title} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
                     <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{block.title}</h5>
                     <p style={{ margin: 0, color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{block.content}</p>
@@ -149,17 +159,17 @@ export default function StudyPage() {
 
                 {keyTerms.length > 0 && (
                   <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                    <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Key Terms</h5>
-                    {keyTerms.map((t, i) => (
-                      <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>• {t}</p>
+                    <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("study_key_terms")}</h5>
+                    {keyTerms.map((term, i) => (
+                      <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>• {term}</p>
                     ))}
                   </div>
                 )}
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
-                <Btn variant="secondary" onClick={generate}>Regenerate</Btn>
-                <Btn onClick={() => router.push("/builder")}>Use This In My Sermon →</Btn>
+                <Btn variant="secondary" onClick={generate}>{t("study_regenerate")}</Btn>
+                <Btn onClick={() => router.push("/builder")}>{t("study_use")}</Btn>
               </div>
             </>
           )}
@@ -168,21 +178,17 @@ export default function StudyPage() {
         {/* Right — Snapshot */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
           <VersionHistoryCard
-            title="Study Versions"
+            title={t("study_versions")}
             versions={versions}
             activeVersionId={week?.study?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
           />
           <Card>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Study Snapshot</h4>
+            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("study_snapshot")}</h4>
             {study ? (
               <div style={{ display: "grid", gap: "12px" }}>
-                {[
-                  { title: "Central Truth", content: study.centralTruth },
-                  { title: "Pastoral Need", content: study.pastoralNeed },
-                  { title: "Preaching Direction", content: study.preachingDirection },
-                ].map((r) => (
+                {snapshotBlocks.map((r) => (
                   <div key={r.title} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "14px", background: T.surface2 }}>
                     <b style={{ display: "block", fontSize: "13px", marginBottom: "4px", fontFamily: T.fontSans }}>{r.title}</b>
                     <span style={{ color: T.muted, fontSize: "12.5px", lineHeight: 1.5, fontFamily: T.fontSans }}>{r.content}</span>
@@ -190,13 +196,13 @@ export default function StudyPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>Generate a study to see the snapshot here.</p>
+              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>{t("study_no_snapshot")}</p>
             )}
           </Card>
 
           {crossReferences.length > 0 && (
             <Card>
-              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>Cross References</h4>
+              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("study_cross_refs")}</h4>
               {crossReferences.map((r, i) => (
                 <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>📖 {r}</p>
               ))}

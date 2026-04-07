@@ -7,6 +7,7 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Pill } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 
 function buildFullText({ serie, week, builder, illustrations, application }) {
@@ -22,12 +23,8 @@ function buildFullText({ serie, week, builder, illustrations, application }) {
 
   finalPoints.forEach((p, i) => {
     text += `${p.label}: ${p.statement}\n${p.explanation}\n`;
-    if (finalIllustrations[i]) {
-      text += `\nIllustration: ${finalIllustrations[i].story}\n`;
-    }
-    if (application?.applications?.[i]) {
-      text += `\nApplication: ${application.applications[i].action}\n`;
-    }
+    if (finalIllustrations[i]) text += `\nIllustration: ${finalIllustrations[i].story}\n`;
+    if (application?.applications?.[i]) text += `\nApplication: ${application.applications[i].action}\n`;
     text += `\n${p.transition}\n\n`;
   });
 
@@ -46,6 +43,7 @@ export default function FinalPage() {
   const [copied, setCopied] = useState(false);
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const init = async () => {
@@ -55,7 +53,7 @@ export default function FinalPage() {
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
 
-      const activeSerie = novo.series?.[0];
+      const activeSerie = novo.series?.find((s) => !s.is_archived);
       const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
       if (week) {
         setWeekContent({
@@ -69,7 +67,7 @@ export default function FinalPage() {
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activeSerie = estado?.series?.[0];
+  const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
   const { builder, illustrations, application } = weekContent;
   const finalPoints = builder?.approvedPoints || builder?.points || [];
@@ -84,19 +82,17 @@ export default function FinalPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <div style={{ color: "white", fontFamily: T.fontSans }}>Loading...</div>
+      <div style={{ color: "white", fontFamily: T.fontSans }}>{t("common_loading")}</div>
     </div>
   );
 
   if (!builder) return (
     <AppLayout profile={estado.profile}>
       <Card>
-        <h4 style={{ fontFamily: T.font, marginTop: 0 }}>No sermon built yet</h4>
-        <p style={{ color: T.muted, fontFamily: T.fontSans }}>
-          Complete at least the sermon structure (Step 3) to see the final output here.
-        </p>
+        <h4 style={{ fontFamily: T.font, marginTop: 0 }}>{t("final_no_sermon")}</h4>
+        <p style={{ color: T.muted, fontFamily: T.fontSans }}>{t("final_no_sermon_desc")}</p>
         <Btn onClick={() => router.push("/builder")} style={{ marginTop: "16px" }}>
-          Go to Sermon Builder
+          {t("final_go_builder")}
         </Btn>
       </Card>
     </AppLayout>
@@ -108,7 +104,7 @@ export default function FinalPage() {
         currentStepKey="final"
         week={week}
         canContinue={false}
-        savedContentText="Everything saved for this week is assembled here so you can review, export, and preach with confidence."
+        savedContentText={t("final_subtitle")}
       />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
@@ -117,7 +113,7 @@ export default function FinalPage() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
               <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
-                Final Output
+                {t("final_title")}
               </p>
               <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
                 {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
@@ -141,7 +137,7 @@ export default function FinalPage() {
 
           {/* Introduction */}
           <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
-            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>Introduction</h5>
+            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_intro")}</h5>
             <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
               {builder.introduction}
             </p>
@@ -158,7 +154,7 @@ export default function FinalPage() {
               </p>
               {finalIllustrations[i] && (
                 <div style={{ padding: "12px", borderRadius: "12px", background: T.amberSoft, marginBottom: "10px" }}>
-                  <b style={{ fontSize: "12px", color: "#92400e", fontFamily: T.fontSans }}>ILLUSTRATION</b>
+                  <b style={{ fontSize: "12px", color: "#92400e", fontFamily: T.fontSans }}>{t("final_illustration")}</b>
                   <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#78350f", lineHeight: 1.6, fontFamily: T.fontSans }}>
                     {finalIllustrations[i].story}
                   </p>
@@ -166,7 +162,7 @@ export default function FinalPage() {
               )}
               {application?.applications?.[i] && (
                 <div style={{ padding: "12px", borderRadius: "12px", background: T.greenSoft }}>
-                  <b style={{ fontSize: "12px", color: "#166534", fontFamily: T.fontSans }}>APPLICATION</b>
+                  <b style={{ fontSize: "12px", color: "#166534", fontFamily: T.fontSans }}>{t("final_application")}</b>
                   <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#14532d", lineHeight: 1.6, fontFamily: T.fontSans }}>
                     {application.applications[i].action}
                   </p>
@@ -182,26 +178,24 @@ export default function FinalPage() {
 
           {/* Conclusion */}
           <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
-            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>Conclusion</h5>
+            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_conclusion")}</h5>
             <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
               {builder.conclusion}
             </p>
           </div>
 
-          {/* Call to Action */}
           {builder.callToAction && (
             <div style={{ border: `1px solid rgba(22,163,74,.18)`, borderRadius: "16px", padding: "15px", background: T.greenSoft, marginBottom: "12px" }}>
-              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>Call to Action</h5>
+              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>{t("final_cta")}</h5>
               <p style={{ margin: 0, color: "#166534", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
                 {builder.callToAction}
               </p>
             </div>
           )}
 
-          {/* Weekly Challenge */}
           {(application?.approvedWeeklyChallenge || application?.weeklyChallenge) && (
             <div style={{ border: `1px solid rgba(99,102,241,.18)`, borderRadius: "16px", padding: "15px", background: T.violetSoft }}>
-              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#5b21b6", fontFamily: T.fontSans }}>Weekly Challenge</h5>
+              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#5b21b6", fontFamily: T.fontSans }}>{t("final_weekly_challenge")}</h5>
               <p style={{ margin: 0, color: "#4c1d95", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
                 {application.approvedWeeklyChallenge || application.weeklyChallenge}
               </p>
@@ -212,24 +206,24 @@ export default function FinalPage() {
         {/* Right — Actions */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
           <Card>
-            <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>Export Sermon</h4>
+            <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
             <div style={{ display: "grid", gap: "10px" }}>
               <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
-                {copied ? "✓ Copied!" : "Copy to Clipboard"}
+                {copied ? t("final_copied") : t("final_copy")}
               </Btn>
               <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
-                Back to Dashboard
+                {t("final_back")}
               </Btn>
             </div>
           </Card>
 
           <Card>
-            <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>Sermon Checklist</h4>
+            <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>{t("final_checklist")}</h4>
             {[
-              { label: "Big Idea defined", done: !!builder?.bigIdea },
-              { label: "3 Points structured", done: builder?.points?.length === 3 },
-              { label: "Illustrations added", done: !!illustrations },
-              { label: "Applications ready", done: !!application },
+              { label: t("final_check_idea"),   done: !!builder?.bigIdea },
+              { label: t("final_check_points"), done: builder?.points?.length === 3 },
+              { label: t("final_check_illus"),  done: !!illustrations },
+              { label: t("final_check_app"),    done: !!application },
             ].map((item, i) => (
               <div key={i} style={{
                 display: "flex", alignItems: "center", gap: "10px",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { auth } from "@/lib/supabase_client";
+import { auth, supabase } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
 import { T } from "@/lib/tokens";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
@@ -14,20 +14,28 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgot, setIsForgot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
   const { lang, changeLang, t } = useLanguage();
 
+  const resetState = () => { setError(""); setSuccess(""); };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
+    resetState();
 
     try {
-      if (isSignUp) {
+      if (isForgot) {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://app.pastorrhema.com";
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${siteUrl}/reset-password`,
+        });
+        setSuccess(t("login_forgot_sent"));
+      } else if (isSignUp) {
         if (!fullName.trim()) { setError(t("login_err_name")); setLoading(false); return; }
         await auth.signUp(email, password, fullName);
         setSuccess(t("login_check_email"));
@@ -100,14 +108,20 @@ export default function LoginPage() {
           padding: isMobile ? "22px 18px" : "28px",
           boxShadow: "0 24px 64px rgba(0,0,0,.25)",
         }}>
-          <h2 style={{ margin: "0 0 20px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
-            {isSignUp ? t("login_signup_title") : t("login_signin_title")}
+          <h2 style={{ margin: "0 0 6px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
+            {isForgot ? t("login_forgot_title") : isSignUp ? t("login_signup_title") : t("login_signin_title")}
           </h2>
+          {isForgot && (
+            <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, lineHeight: 1.6 }}>
+              {t("login_forgot_subtitle")}
+            </p>
+          )}
+          {!isForgot && <div style={{ marginBottom: "20px" }} />}
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {isSignUp && (
+            {isSignUp && !isForgot && (
               <label style={labelStyle}>
-                Nome completo
+                {t("login_name")}
                 <input
                   type="text"
                   placeholder={t("login_name_ph")}
@@ -120,7 +134,7 @@ export default function LoginPage() {
             )}
 
             <label style={labelStyle}>
-              E-mail
+              {t("login_email")}
               <input
                 type="email"
                 placeholder={t("login_email")}
@@ -132,18 +146,32 @@ export default function LoginPage() {
               />
             </label>
 
-            <label style={labelStyle}>
-              Senha
-              <input
-                type="password"
-                placeholder={t("login_password")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-                style={inputStyle}
-              />
-            </label>
+            {!isForgot && (
+              <label style={labelStyle}>
+                {t("login_password")}
+                <input
+                  type="password"
+                  placeholder={t("login_password")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  style={inputStyle}
+                />
+              </label>
+            )}
+
+            {!isSignUp && !isForgot && (
+              <div style={{ textAlign: "right", marginTop: "-6px" }}>
+                <button
+                  type="button"
+                  onClick={() => { setIsForgot(true); resetState(); }}
+                  style={{ background: "none", border: "none", padding: 0, color: T.primary, fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: T.fontSans }}
+                >
+                  {t("login_forgot")}
+                </button>
+              </div>
+            )}
 
             {error && (
               <p style={{ margin: 0, fontSize: "13px", color: "#b91c1c", textAlign: "center" }}>{error}</p>
@@ -164,26 +192,34 @@ export default function LoginPage() {
                 fontFamily: T.fontSans, opacity: loading ? 0.7 : 1,
               }}
             >
-              {loading ? t("login_loading") : isSignUp ? t("login_signup_btn") : t("login_signin_btn")}
+              {loading ? t("login_loading") : isForgot ? t("login_forgot_btn") : isSignUp ? t("login_signup_btn") : t("login_signin_btn")}
             </button>
           </form>
 
           <div style={{ marginTop: "18px", paddingTop: "20px", borderTop: `1px solid ${T.line}`, textAlign: "center" }}>
-            <span style={{ fontSize: "13px", color: T.muted }}>
-              {isSignUp ? t("login_have_account") : t("login_no_account")}
-            </span>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => { setIsSignUp(!isSignUp); setError(""); setSuccess(""); }}
-              style={{
-                background: "none", border: "none", padding: 0,
-                color: T.primary, fontWeight: 700, fontSize: "13px",
-                cursor: "pointer", fontFamily: T.fontSans,
-              }}
-            >
-              {isSignUp ? t("login_goto_signin") : t("login_goto_signup")}
-            </button>
+            {isForgot ? (
+              <button
+                type="button"
+                onClick={() => { setIsForgot(false); resetState(); }}
+                style={{ background: "none", border: "none", padding: 0, color: T.primary, fontWeight: 700, fontSize: "13px", cursor: "pointer", fontFamily: T.fontSans }}
+              >
+                ← {t("login_back")}
+              </button>
+            ) : (
+              <>
+                <span style={{ fontSize: "13px", color: T.muted }}>
+                  {isSignUp ? t("login_have_account") : t("login_no_account")}
+                </span>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => { setIsSignUp(!isSignUp); resetState(); }}
+                  style={{ background: "none", border: "none", padding: 0, color: T.primary, fontWeight: 700, fontSize: "13px", cursor: "pointer", fontFamily: T.fontSans }}
+                >
+                  {isSignUp ? t("login_goto_signin") : t("login_goto_signup")}
+                </button>
+              </>
+            )}
           </div>
 
           <p style={{ marginTop: "16px", textAlign: "center", fontSize: "12px", color: T.muted, lineHeight: 1.6 }}>

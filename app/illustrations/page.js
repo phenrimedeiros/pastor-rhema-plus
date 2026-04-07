@@ -8,6 +8,7 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
@@ -25,6 +26,7 @@ export default function IllustrationsPage() {
   const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const loadVersions = async (weekId) => {
     if (!weekId) return;
@@ -40,8 +42,7 @@ export default function IllustrationsPage() {
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
 
-      // Carrega conteúdo do builder salvo no Supabase
-      const activeSerie = novo.series?.[0];
+      const activeSerie = novo.series?.find((s) => !s.is_archived);
       const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
       if (week?.builder) setBuilderPoints(week.builder.content?.approvedPoints || week.builder.content?.points);
       if (week?.illustrations?.content) {
@@ -54,7 +55,7 @@ export default function IllustrationsPage() {
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const activeSerie = estado?.series?.[0];
+  const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
 
   const generate = async () => {
@@ -96,14 +97,11 @@ export default function IllustrationsPage() {
     setChoiceMessage("");
     setSavingChoices(true);
     try {
-      const content = {
-        ...illustrations,
-        approvedIllustrations,
-      };
+      const content = { ...illustrations, approvedIllustrations };
       await sermonContent.updateActiveContent(week.id, "illustrations", content);
       setIllustrations(content);
       setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", content));
-      setChoiceMessage("Your approved illustrations are saved for the final sermon.");
+      setChoiceMessage(t("illus_save"));
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
@@ -121,7 +119,7 @@ export default function IllustrationsPage() {
       const restored = await sermonContent.setActiveVersion(version.id, week.id, "illustrations");
       setIllustrations(restored.content);
       setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", restored.content));
-      setChoiceMessage(`Version ${version.version} is now your active illustration set.`);
+      setChoiceMessage(`Version ${version.version} restored.`);
       await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
@@ -132,7 +130,7 @@ export default function IllustrationsPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <Loader text="Loading..." />
+      <Loader text={t("common_loading")} />
     </div>
   );
 
@@ -144,7 +142,7 @@ export default function IllustrationsPage() {
         currentStepKey="illustrations"
         week={week}
         canContinue={!!illustrations}
-        savedContentText={week?.illustrations ? "Your saved illustrations are loaded. Keep polishing them or continue to applications." : ""}
+        savedContentText={week?.illustrations ? t("illus_save") : ""}
       />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
@@ -152,32 +150,25 @@ export default function IllustrationsPage() {
         <Card>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
-              <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
-                Sermon Flow
-              </p>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Make It Clear</h4>
+              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("illus_title")}</h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-                Add vivid illustrations that clarify, not compete.
+                {t("illus_subtitle")}
               </p>
             </div>
             <Pill>Step 4</Pill>
           </div>
 
-          {needsBuilder && (
-            <Notice color="gold">
-              Build your sermon structure first (Step 3) — illustrations are generated per sermon point.
-            </Notice>
-          )}
+          {needsBuilder && <Notice color="gold">{t("illus_no_builder")}</Notice>}
           {error && <Notice color="red">{error}</Notice>}
           {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!illustrations && !generating && !needsBuilder && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <Btn onClick={generate}>Generate Illustrations</Btn>
+              <Btn onClick={generate}>{t("illus_generate")}</Btn>
             </div>
           )}
 
-          {generating && <Loader text="Finding powerful illustrations..." />}
+          {generating && <Loader text={t("illus_generating")} />}
 
           {approvedIllustrations.map((il, i) => (
             <div key={i} style={{
@@ -193,16 +184,16 @@ export default function IllustrationsPage() {
                   onClick={() => setIllustrations((prev) => ({
                     ...prev,
                     approvedIllustrations: approvedIllustrations.map((item, itemIndex) => (
-                      itemIndex === i ? { ...item, includeInFinal: item.includeInFinal === false ? true : false } : item
+                      itemIndex === i ? { ...item, includeInFinal: item.includeInFinal === false } : item
                     )),
                   }))}
                   style={{ minWidth: isMobile ? "100%" : 0 }}
                 >
-                  {il.includeInFinal === false ? "Include In Final" : "Use In Final Sermon"}
+                  {il.includeInFinal === false ? t("illus_include") : t("illus_include")}
                 </Btn>
               </div>
               <div style={{ display: "grid", gap: "10px" }}>
-                <Field label="Approved Illustration Story">
+                <Field label={t("illus_story")}>
                   <textarea
                     value={il.story || ""}
                     onChange={(e) => setIllustrations((prev) => ({
@@ -213,20 +204,13 @@ export default function IllustrationsPage() {
                     }))}
                     rows={4}
                     style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "14px",
-                      border: `1px solid ${T.line}`,
-                      background: "#fff",
-                      color: T.text,
-                      resize: "vertical",
-                      fontSize: "14px",
-                      lineHeight: 1.7,
-                      fontFamily: T.fontSans,
+                      width: "100%", padding: "12px 14px", borderRadius: "14px",
+                      border: `1px solid ${T.line}`, background: "#fff", color: T.text,
+                      resize: "vertical", fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans,
                     }}
                   />
                 </Field>
-                <Field label="Connection">
+                <Field label={t("illus_connection")}>
                   <textarea
                     value={il.connection || ""}
                     onChange={(e) => setIllustrations((prev) => ({
@@ -237,16 +221,9 @@ export default function IllustrationsPage() {
                     }))}
                     rows={2}
                     style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "14px",
-                      border: `1px solid ${T.line}`,
-                      background: "#fff",
-                      color: T.text,
-                      resize: "vertical",
-                      fontSize: "14px",
-                      lineHeight: 1.6,
-                      fontFamily: T.fontSans,
+                      width: "100%", padding: "12px 14px", borderRadius: "14px",
+                      border: `1px solid ${T.line}`, background: "#fff", color: T.text,
+                      resize: "vertical", fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans,
                     }}
                   />
                 </Field>
@@ -256,11 +233,11 @@ export default function IllustrationsPage() {
 
           {illustrations && (
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
-              <Btn variant="secondary" onClick={generate}>Regenerate All</Btn>
+              <Btn variant="secondary" onClick={generate}>{t("illus_regenerate")}</Btn>
               <Btn variant="secondary" onClick={saveIllustrationChoices} disabled={savingChoices}>
-                {savingChoices ? "Saving..." : "Save Illustration Choices"}
+                {savingChoices ? t("illus_saving") : t("illus_save")}
               </Btn>
-              <Btn onClick={() => router.push("/application")}>Add Applications →</Btn>
+              <Btn onClick={() => router.push("/application")}>{t("illus_next")}</Btn>
             </div>
           )}
         </Card>
@@ -268,14 +245,14 @@ export default function IllustrationsPage() {
         {/* Right — Sermon Points */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
           <VersionHistoryCard
-            title="Illustration Versions"
+            title={t("illus_versions")}
             versions={versions}
             activeVersionId={week?.illustrations?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
           />
           <Card style={{ alignSelf: "start" }}>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Your Sermon Points</h4>
+            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("illus_your_points")}</h4>
             {builderPoints ? (
               builderPoints.map((p, i) => (
                 <div key={i} style={{
@@ -287,9 +264,7 @@ export default function IllustrationsPage() {
                 </div>
               ))
             ) : (
-              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-                Build your sermon structure first.
-              </p>
+              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>{t("illus_no_points")}</p>
             )}
           </Card>
         </div>

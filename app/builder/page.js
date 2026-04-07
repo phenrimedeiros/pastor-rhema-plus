@@ -8,6 +8,7 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
 import VersionHistoryCard from "@/components/VersionHistoryCard";
@@ -24,6 +25,7 @@ export default function BuilderPage() {
   const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
 
   const loadVersions = async (weekId) => {
     if (!weekId) return;
@@ -124,7 +126,7 @@ export default function BuilderPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <Loader text="Loading..." />
+      <Loader text={t("common_loading")} />
     </div>
   );
 
@@ -142,32 +144,32 @@ export default function BuilderPage() {
         <Card>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
             <div>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>Build My Sermon</h4>
+              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("builder_title")}</h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-                Turn passage clarity into a preachable structure.
+                {t("builder_subtitle")}
               </p>
             </div>
             <Pill>Step 3</Pill>
           </div>
 
-          {!week && <Notice color="gold">Generate a series first to build a sermon.</Notice>}
+          {!week && <Notice color="gold">{t("builder_no_series")}</Notice>}
           {error && <Notice color="red">{error}</Notice>}
           {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!builder && !generating && week && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <Btn onClick={generate}>Generate Sermon Structure</Btn>
+              <Btn onClick={generate}>{t("builder_generate")}</Btn>
             </div>
           )}
 
-          {generating && <Loader text="Building your sermon structure..." />}
+          {generating && <Loader text={t("builder_generating")} />}
 
           {builder && (
             <>
               <div style={{ display: "grid", gap: "14px", marginBottom: "16px" }}>
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", background: T.surface2 }}>
-                  <h5 style={{ margin: "0 0 10px", fontSize: "14px", fontFamily: T.fontSans }}>Approve This Direction</h5>
-                  <Field label="Preferred Title">
+                  <h5 style={{ margin: "0 0 10px", fontSize: "14px", fontFamily: T.fontSans }}>{t("builder_approve_dir")}</h5>
+                  <Field label={t("builder_pref_title")}>
                     <div style={{ display: "grid", gap: "8px" }}>
                       {builder.titleOptions?.map((title) => {
                         const active = selectedTitle === title;
@@ -196,7 +198,7 @@ export default function BuilderPage() {
                     </div>
                   </Field>
                   <div style={{ marginTop: "12px" }}>
-                    <Field label="Approved Big Idea">
+                    <Field label={t("builder_approved_idea")}>
                       <textarea
                         value={approvedBigIdea}
                         onChange={(e) => setBuilder((prev) => ({ ...prev, approvedBigIdea: e.target.value }))}
@@ -218,7 +220,7 @@ export default function BuilderPage() {
                   </div>
                   {!!approvedPoints.length && (
                     <div style={{ marginTop: "12px", display: "grid", gap: "12px" }}>
-                      <Field label="Approved Sermon Points">
+                      <Field label={t("builder_approved_pts")}>
                         <div style={{ display: "grid", gap: "12px" }}>
                           {approvedPoints.map((point, index) => (
                             <div key={`${point.label}-${index}`} style={{ padding: "12px", borderRadius: "14px", border: `1px solid ${T.line}`, background: "#fff" }}>
@@ -226,7 +228,7 @@ export default function BuilderPage() {
                                 {point.label}
                               </p>
                               <div style={{ display: "grid", gap: "10px" }}>
-                                <Field label="Point Statement">
+                                <Field label={t("builder_point_stmt")}>
                                   <textarea
                                     value={point.statement || ""}
                                     onChange={(e) => setBuilder((prev) => ({
@@ -250,7 +252,7 @@ export default function BuilderPage() {
                                     }}
                                   />
                                 </Field>
-                                <Field label="Point Explanation">
+                                <Field label={t("builder_point_exp")}>
                                   <textarea
                                     value={point.explanation || ""}
                                     onChange={(e) => setBuilder((prev) => ({
@@ -283,7 +285,7 @@ export default function BuilderPage() {
                   )}
                   <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
                     <Btn variant="secondary" onClick={saveBuilderChoices} disabled={savingChoices}>
-                      {savingChoices ? "Saving..." : "Save Sermon Direction"}
+                      {savingChoices ? t("builder_saving") : t("builder_save_dir")}
                     </Btn>
                   </div>
                 </div>
@@ -291,19 +293,19 @@ export default function BuilderPage() {
 
               <div style={{ display: "grid", gap: "12px" }}>
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Title Options</h5>
+                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("builder_title_opts")}</h5>
                   {builder.titleOptions?.map((t, i) => (
                     <p key={i} style={{ margin: "4px 0", color: T.text, fontSize: "14px", fontWeight: i === 0 ? 700 : 400, fontFamily: T.fontSans }}>• {t}</p>
                   ))}
                 </div>
 
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Big Idea</h5>
+                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("builder_big_idea")}</h5>
                   <p style={{ margin: 0, color: T.primary, fontSize: "15px", fontWeight: 700, lineHeight: 1.6, fontFamily: T.font }}>{approvedBigIdea}</p>
                 </div>
 
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Introduction</h5>
+                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("builder_intro")}</h5>
                   <p style={{ margin: 0, color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{builder.introduction}</p>
                 </div>
 
@@ -316,21 +318,21 @@ export default function BuilderPage() {
                 ))}
 
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Conclusion</h5>
+                  <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("builder_conclusion")}</h5>
                   <p style={{ margin: 0, color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{builder.conclusion}</p>
                 </div>
 
                 {builder.callToAction && (
                   <div style={{ border: `1px solid rgba(22,163,74,.18)`, borderRadius: "16px", padding: "15px", background: T.greenSoft }}>
-                    <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>Call to Action</h5>
+                    <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>{t("builder_cta")}</h5>
                     <p style={{ margin: 0, color: "#166534", fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{builder.callToAction}</p>
                   </div>
                 )}
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
-                <Btn variant="secondary" onClick={generate}>Regenerate</Btn>
-                <Btn onClick={() => router.push("/illustrations")}>Add Illustrations →</Btn>
+                <Btn variant="secondary" onClick={generate}>{t("builder_regenerate")}</Btn>
+                <Btn onClick={() => router.push("/illustrations")}>{t("builder_next")}</Btn>
               </div>
             </>
           )}
@@ -339,20 +341,20 @@ export default function BuilderPage() {
         {/* Right — Health */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
           <VersionHistoryCard
-            title="Structure Versions"
+            title={t("builder_versions")}
             versions={versions}
             activeVersionId={week?.builder?.id}
             onRestore={restoreVersion}
             restoringVersionId={restoringVersionId}
           />
           <Card style={{ alignSelf: "start" }}>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Outline Health</h4>
+            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("builder_health")}</h4>
             {builder ? (
               <div style={{ display: "grid", gap: "10px" }}>
                 {[
-                  "Clarity — The message is easy to follow",
-                  "Biblical Flow — Points grow from the text",
-                  "Pastoral Relevance — Meets real needs",
+                  t("builder_health_clarity"),
+                  t("builder_health_biblical"),
+                  t("builder_health_pastoral"),
                 ].map((c, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", borderRadius: "14px", background: T.surface2, border: `1px solid ${T.line}` }}>
                     <span style={{ color: T.green, fontSize: "16px" }}>✓</span>
@@ -362,7 +364,7 @@ export default function BuilderPage() {
               </div>
             ) : (
               <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-                Generate a structure to see the health check.
+                {t("builder_no_health")}
               </p>
             )}
           </Card>
