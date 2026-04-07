@@ -135,7 +135,6 @@ export default function ChatPage() {
       if (!session) { router.push("/login"); return; }
 
       const user = session.user;
-      setProfile({ full_name: user?.user_metadata?.full_name });
 
       // Load plan and daily usage
       const { data: profileData } = await supabase
@@ -146,6 +145,7 @@ export default function ChatPage() {
 
       const plan = profileData?.plan || "simple";
       const simple = plan === "simple";
+      setProfile({ full_name: user?.user_metadata?.full_name, plan });
       setIsSimple(simple);
 
       if (simple) {
