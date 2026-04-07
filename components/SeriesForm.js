@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "@/lib/supabase_client";
 import { T, inputStyle } from "@/lib/tokens";
 import { Btn, Field, Notice } from "@/components/ui";
+import { callApi } from "@/lib/api";
 
 const TONS = ["Pastoral", "Teaching", "Evangelistic", "Expository", "Devotional"];
 const PUBLICOS = [
@@ -33,21 +33,7 @@ export default function SeriesForm({ onSuccess }) {
     setError("");
     setLoading(true);
     try {
-      const session = await auth.getSession();
-      if (!session) throw new Error("You need to be logged in.");
-
-      const res = await fetch("/api/gerar-serie", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ ...form, weeks: Number(form.weeks) }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Unknown error");
-
+      const data = await callApi("/api/gerar-serie", { ...form, weeks: Number(form.weeks) });
       onSuccess(data.id);
     } catch (err) {
       setError(err.message);

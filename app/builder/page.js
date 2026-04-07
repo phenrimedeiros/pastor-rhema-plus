@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState } from "@/lib/supabase_client";
+import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
@@ -35,20 +36,13 @@ export default function BuilderPage() {
     setError("");
     setGenerating(true);
     try {
-      const session = await auth.getSession();
-      const res = await fetch("/api/gerar-sermao", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({
-          weekId: week.id,
-          passage: week.passage,
-          title: week.title,
-          focus: week.focus,
-          bigIdea: week.big_idea,
-        }),
+      const data = await callApi("/api/gerar-sermao", {
+        weekId: week.id,
+        passage: week.passage,
+        title: week.title,
+        focus: week.focus,
+        bigIdea: week.big_idea,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro desconhecido");
       setBuilder(data.content);
     } catch (err) {
       setError(err.message);
