@@ -49,6 +49,8 @@ export default function StudyPage() {
 
   const activeSerie = estado?.series?.[0];
   const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+  const keyTerms = Array.isArray(study?.keyTerms) ? study.keyTerms : [];
+  const crossReferences = Array.isArray(study?.crossReferences) ? study.crossReferences : [];
 
   const generate = async () => {
     if (!week) return;
@@ -145,10 +147,10 @@ export default function StudyPage() {
                   </div>
                 ))}
 
-                {study.keyTerms && (
+                {keyTerms.length > 0 && (
                   <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
                     <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Key Terms</h5>
-                    {study.keyTerms.map((t, i) => (
+                    {keyTerms.map((t, i) => (
                       <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>• {t}</p>
                     ))}
                   </div>
@@ -192,10 +194,10 @@ export default function StudyPage() {
             )}
           </Card>
 
-          {study?.crossReferences && (
+          {crossReferences.length > 0 && (
             <Card>
               <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>Cross References</h4>
-              {study.crossReferences.map((r, i) => (
+              {crossReferences.map((r, i) => (
                 <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>📖 {r}</p>
               ))}
             </Card>
