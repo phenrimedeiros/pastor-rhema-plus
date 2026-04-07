@@ -139,13 +139,13 @@ export default function ChatPage() {
       // Load plan and daily usage
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("plan, chat_messages_today, chat_messages_reset_date")
+        .select("plan, is_admin, chat_messages_today, chat_messages_reset_date")
         .eq("id", user.id)
         .single();
 
       const plan = profileData?.plan || "simple";
       const simple = plan === "simple";
-      setProfile({ full_name: user?.user_metadata?.full_name, plan });
+      setProfile({ full_name: user?.user_metadata?.full_name, plan, is_admin: profileData?.is_admin });
       setIsSimple(simple);
 
       if (simple) {

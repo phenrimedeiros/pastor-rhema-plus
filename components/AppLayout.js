@@ -12,6 +12,7 @@ const NAV = [
   { page: "application",   emoji: "🎯", label: "Applications",       plan: "plus", step: 5 },
   { page: "final",         emoji: "✅", label: "Final Sermon",       plan: "plus" },
   { page: "chat",          emoji: "💬", label: "Pastor Rhema",       plan: "simple" },
+  { page: "support",       emoji: "🎧", label: "Suporte",            plan: "simple" },
 ];
 
 // Pages that require the Plus plan
@@ -146,6 +147,24 @@ export default function AppLayout({ children, profile }) {
               </button>
             );
           })}
+
+          {/* Admin link */}
+          {profile?.is_admin && (
+            <button
+              onClick={() => router.push("/admin")}
+              style={{
+                display: "flex", alignItems: "center", gap: "10px",
+                padding: "10px 12px", borderRadius: "12px", border: "1px solid rgba(202,161,74,.3)",
+                background: current === "admin" ? "rgba(202,161,74,.15)" : "transparent",
+                color: T.gold, cursor: "pointer", width: "100%", textAlign: "left",
+                fontFamily: T.fontSans, fontSize: "13px", fontWeight: 700,
+                marginTop: "8px",
+              }}
+            >
+              <span style={{ fontSize: "15px" }}>⚙️</span>
+              <span>Admin</span>
+            </button>
+          )}
 
           {/* Upgrade CTA for Simple users */}
           {!isPlus && (
