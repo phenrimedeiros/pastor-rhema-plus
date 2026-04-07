@@ -2,18 +2,69 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Pill } from "@/components/ui";
+import { Btn, Card, Field, Notice, Pill } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 
+function asText(value) {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (Array.isArray(value)) return value.map(asText).filter(Boolean).join("\n");
+  if (value && typeof value === "object") {
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function prepareFinalBuilderContent(builder, week) {
+  if (!builder) return null;
+
+  const sourcePoints = builder.approvedPoints || builder.points || [];
+
+  return {
+    ...builder,
+    selectedTitle: asText(builder.selectedTitle || builder.titleOptions?.[0] || week?.title),
+    approvedBigIdea: asText(builder.approvedBigIdea || builder.bigIdea || week?.big_idea),
+    introduction: asText(builder.introduction),
+    conclusion: asText(builder.conclusion),
+    callToAction: asText(builder.callToAction),
+    approvedPoints: sourcePoints.map((point, index) => ({
+      ...point,
+      label: asText(point?.label || `Point ${index + 1}`),
+      statement: asText(point?.statement),
+      explanation: asText(point?.explanation),
+      transition: asText(point?.transition),
+    })),
+  };
+}
+
+function prepareFinalApplicationContent(application) {
+  if (!application) return null;
+
+  return {
+    ...application,
+    approvedWeeklyChallenge: asText(application.approvedWeeklyChallenge || application.weeklyChallenge),
+    applications: (application.applications || []).map((item) => ({
+      ...item,
+      action: asText(item?.action),
+    })),
+  };
+}
+
 function buildFullText({ serie, week, builder, illustrations, application }) {
   if (!builder) return "";
   const finalPoints = builder.approvedPoints || builder.points || [];
-  const finalIllustrations = illustrations?.approvedIllustrations?.filter((item) => item.includeInFinal !== false) || illustrations?.illustrations || [];
+  const finalIllustrations = illustrations?.approvedIllustrations
+    ? illustrations.approvedIllustrations.filter((item) => item.includeInFinal !== false)
+    : illustrations?.illustrations || [];
   let text = "";
   text += `SERMON: ${builder.selectedTitle || builder.titleOptions?.[0] || week?.title}\n`;
   text += `Passage: ${week?.passage}\n`;
@@ -41,6 +92,11 @@ export default function FinalPage() {
   const [weekContent, setWeekContent] = useState({});
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [readingMode, setReadingMode] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
   const { t } = useLanguage();
@@ -48,9 +104,15 @@ export default function FinalPage() {
   useEffect(() => {
     const init = async () => {
       const session = await auth.getSession();
-      if (!session) { router.push("/login"); return; }
+      if (!session) {
+        router.push("/login");
+        return;
+      }
       const novo = await loadFullState();
-      if (!novo.authenticated) { router.push("/login"); return; }
+      if (!novo.authenticated) {
+        router.push("/login");
+        return;
+      }
       setEstado(novo);
 
       const activeSerie = novo.series?.find((s) => !s.is_archived);
@@ -58,9 +120,9 @@ export default function FinalPage() {
       const week = activeSerie?.weeks?.[currentWeek - 1];
       if (week) {
         setWeekContent({
-          builder: week.builder?.content,
+          builder: prepareFinalBuilderContent(week.builder?.content, week),
           illustrations: week.illustrations?.content,
-          application: week.application?.content,
+          application: prepareFinalApplicationContent(week.application?.content),
         });
       }
       setLoading(false);
@@ -68,12 +130,62 @@ export default function FinalPage() {
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!saveMessage) return undefined;
+    const timeoutId = window.setTimeout(() => setSaveMessage(""), 2800);
+    return () => window.clearTimeout(timeoutId);
+  }, [saveMessage]);
+
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
   const week = activeSerie?.weeks?.[currentWeek - 1];
   const { builder, illustrations, application } = weekContent;
   const finalPoints = builder?.approvedPoints || builder?.points || [];
-  const finalIllustrations = illustrations?.approvedIllustrations?.filter((item) => item.includeInFinal !== false) || illustrations?.illustrations || [];
+  const finalIllustrations = illustrations?.approvedIllustrations
+    ? illustrations.approvedIllustrations.filter((item) => item.includeInFinal !== false)
+    : illustrations?.illustrations || [];
+
+  const updateBuilder = (updates) => {
+    setWeekContent((prev) => ({
+      ...prev,
+      builder: {
+        ...prev.builder,
+        ...updates,
+      },
+    }));
+    setError("");
+  };
+
+  const updateBuilderPoint = (index, updates) => {
+    setWeekContent((prev) => {
+      const nextPoints = [...(prev.builder?.approvedPoints || [])];
+      nextPoints[index] = {
+        ...nextPoints[index],
+        ...updates,
+      };
+      return {
+        ...prev,
+        builder: {
+          ...prev.builder,
+          approvedPoints: nextPoints,
+        },
+      };
+    });
+    setError("");
+  };
+
+  const updateApplication = (updates) => {
+    setWeekContent((prev) => ({
+      ...prev,
+      application: prev.application
+        ? {
+            ...prev.application,
+            ...updates,
+          }
+        : prev.application,
+    }));
+    setError("");
+  };
 
   const copySermon = () => {
     const text = buildFullText({ serie: activeSerie, week, builder, illustrations, application });
@@ -82,23 +194,57 @@ export default function FinalPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (loading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <div style={{ color: "white", fontFamily: T.fontSans }}>{t("common_loading")}</div>
-    </div>
-  );
+  const saveFinalEdits = async () => {
+    if (!week?.id || !builder) return;
 
-  if (!builder) return (
-    <AppLayout profile={estado.profile}>
-      <Card>
-        <h4 style={{ fontFamily: T.font, marginTop: 0 }}>{t("final_no_sermon")}</h4>
-        <p style={{ color: T.muted, fontFamily: T.fontSans }}>{t("final_no_sermon_desc")}</p>
-        <Btn onClick={() => router.push("/builder")} style={{ marginTop: "16px" }}>
-          {t("final_go_builder")}
-        </Btn>
-      </Card>
-    </AppLayout>
-  );
+    try {
+      setSaving(true);
+      setError("");
+
+      await sermonContent.updateActiveContent(week.id, "builder", builder);
+
+      if (application) {
+        await sermonContent.updateActiveContent(week.id, "application", application);
+      }
+
+      setSaveMessage(t("final_saved"));
+      setIsEditing(false);
+    } catch (err) {
+      setError(err.message || "Could not save final edits.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #0b2a5b, #163d7a)",
+        }}
+      >
+        <div style={{ color: "white", fontFamily: T.fontSans }}>{t("common_loading")}</div>
+      </div>
+    );
+  }
+
+  if (!builder) {
+    return (
+      <AppLayout profile={estado.profile}>
+        <Card>
+          <h4 style={{ fontFamily: T.font, marginTop: 0 }}>{t("final_no_sermon")}</h4>
+          <p style={{ color: T.muted, fontFamily: T.fontSans }}>{t("final_no_sermon_desc")}</p>
+          <Btn onClick={() => router.push("/builder")} style={{ marginTop: "16px" }}>
+            {t("final_go_builder")}
+          </Btn>
+        </Card>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout profile={estado.profile}>
@@ -108,168 +254,491 @@ export default function FinalPage() {
         canContinue={false}
         savedContentText={t("final_subtitle")}
       />
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
-        {/* Left — Full Sermon */}
-        <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
-            <div>
-              <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+      <Card style={{ marginBottom: "18px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "14px",
+            alignItems: isMobile ? "stretch" : "center",
+            flexDirection: isMobile ? "column" : "row",
+          }}
+        >
+          <div>
+            <p
+              style={{
+                margin: "0 0 4px",
+                fontSize: "11px",
+                color: T.gold,
+                fontWeight: 800,
+                letterSpacing: ".08em",
+                textTransform: "uppercase",
+                fontFamily: T.fontSans,
+              }}
+            >
+              {t("final_title")}
+            </p>
+            <h4 style={{ margin: "0 0 6px", fontSize: isMobile ? "22px" : "24px", fontFamily: T.font }}>
+              {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
+            </h4>
+            <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+              {t("final_edit_hint")}
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              justifyContent: isMobile ? "stretch" : "flex-end",
+            }}
+          >
+            <Btn variant={readingMode ? "secondary" : "primary"} onClick={() => setReadingMode(false)}>
+              {t("final_mode_review")}
+            </Btn>
+            <Btn variant={readingMode ? "primary" : "secondary"} onClick={() => setReadingMode(true)}>
+              {t("final_mode_read")}
+            </Btn>
+            <Btn variant="secondary" onClick={() => setIsEditing((prev) => !prev)}>
+              {isEditing ? t("final_done_editing") : t("final_edit")}
+            </Btn>
+            <Btn variant="secondary" onClick={copySermon}>
+              {copied ? t("final_copied") : t("final_copy")}
+            </Btn>
+            {isEditing && (
+              <Btn onClick={saveFinalEdits} disabled={saving}>
+                {saving ? t("final_saving") : t("final_save")}
+              </Btn>
+            )}
+          </div>
+        </div>
+
+        {saveMessage && <Notice color="green">{saveMessage}</Notice>}
+        {error && <Notice color="red">{error}</Notice>}
+      </Card>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: readingMode || isMobile ? "1fr" : "1.2fr .8fr",
+          gap: isMobile ? "16px" : "22px",
+        }}
+      >
+        <Card style={{ padding: readingMode && !isMobile ? "28px" : undefined }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: "12px",
+              flexDirection: isMobile ? "column" : "row",
+              marginBottom: "16px",
+            }}
+          >
+            <div style={{ width: "100%" }}>
+              <p
+                style={{
+                  margin: "0 0 4px",
+                  fontSize: "11px",
+                  color: T.gold,
+                  fontWeight: 800,
+                  letterSpacing: ".08em",
+                  textTransform: "uppercase",
+                  fontFamily: T.fontSans,
+                }}
+              >
                 {t("final_title")}
               </p>
-              <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
-                {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
-              </h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+
+              {isEditing ? (
+                <Field label={t("final_title_label")}>
+                  <input
+                    value={builder.selectedTitle || ""}
+                    onChange={(e) => updateBuilder({ selectedTitle: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "14px 16px",
+                      borderRadius: "14px",
+                      border: `1px solid ${T.line}`,
+                      background: "#fff",
+                      fontSize: "18px",
+                      fontFamily: T.font,
+                      color: T.text,
+                    }}
+                  />
+                </Field>
+              ) : (
+                <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
+                  {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
+                </h4>
+              )}
+
+              <p style={{ margin: "8px 0 0", color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
                 {week?.passage} · {activeSerie?.series_name}
               </p>
             </div>
             <Pill style={{ background: T.greenSoft, color: "#166534" }}>Complete</Pill>
           </div>
 
-          {/* Big Idea */}
-          <div style={{
-            padding: isMobile ? "18px" : "16px", borderRadius: "16px",
-            background: "#eef4ff", border: `1px solid rgba(11,42,91,.10)`, marginBottom: "16px",
-          }}>
-            <p style={{ margin: 0, color: T.primary, fontSize: isMobile ? "18px" : "16px", fontWeight: 700, lineHeight: 1.7, fontFamily: T.font }}>
-              {builder.approvedBigIdea || builder.bigIdea}
-            </p>
+          <div
+            style={{
+              padding: isMobile ? "18px" : "16px",
+              borderRadius: "16px",
+              background: "#eef4ff",
+              border: `1px solid rgba(11,42,91,.10)`,
+              marginBottom: "16px",
+            }}
+          >
+            {isEditing ? (
+              <Field label={t("final_big_idea_label")}>
+                <textarea
+                  value={builder.approvedBigIdea || ""}
+                  onChange={(e) => updateBuilder({ approvedBigIdea: e.target.value })}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    border: `1px solid ${T.line}`,
+                    background: "#fff",
+                    fontSize: "15px",
+                    lineHeight: 1.7,
+                    fontFamily: T.fontSans,
+                    color: T.text,
+                    resize: "vertical",
+                  }}
+                />
+              </Field>
+            ) : (
+              <p
+                style={{
+                  margin: 0,
+                  color: T.primary,
+                  fontSize: isMobile ? "18px" : "16px",
+                  fontWeight: 700,
+                  lineHeight: 1.7,
+                  fontFamily: T.font,
+                }}
+              >
+                {builder.approvedBigIdea || builder.bigIdea}
+              </p>
+            )}
           </div>
 
-          {/* Introduction */}
           <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
             <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_intro")}</h5>
-            <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
-              {builder.introduction}
-            </p>
+            {isEditing ? (
+              <textarea
+                value={builder.introduction || ""}
+                onChange={(e) => updateBuilder({ introduction: e.target.value })}
+                rows={5}
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  borderRadius: "14px",
+                  border: `1px solid ${T.line}`,
+                  background: "#fff",
+                  fontSize: "14px",
+                  lineHeight: 1.7,
+                  fontFamily: T.fontSans,
+                  color: T.text,
+                  resize: "vertical",
+                }}
+              />
+            ) : (
+              <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                {builder.introduction}
+              </p>
+            )}
           </div>
 
-          {/* Points */}
-          {finalPoints.map((p, i) => (
-            <div key={i} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: isMobile ? "16px" : "18px", marginBottom: "12px" }}>
-              <h5 style={{ margin: "0 0 8px", fontSize: "16px", color: T.primary, fontFamily: T.font }}>
-                {p.label}: {p.statement}
-              </h5>
-              <p style={{ margin: "0 0 12px", color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
-                {p.explanation}
-              </p>
-              {finalIllustrations[i] && (
-                <div style={{ padding: "12px", borderRadius: "12px", background: T.amberSoft, marginBottom: "10px" }}>
+          {finalPoints.map((point, index) => (
+            <div
+              key={index}
+              style={{
+                border: `1px solid ${T.line}`,
+                borderRadius: "16px",
+                padding: isMobile ? "16px" : "18px",
+                marginBottom: "12px",
+              }}
+            >
+              {isEditing ? (
+                <div style={{ display: "grid", gap: "12px" }}>
+                  <Field label={`${point.label} ${t("builder_point_statement") || "Statement"}`}>
+                    <textarea
+                      value={point.statement || ""}
+                      onChange={(e) => updateBuilderPoint(index, { statement: e.target.value })}
+                      rows={2}
+                      style={{
+                        width: "100%",
+                        padding: "14px 16px",
+                        borderRadius: "14px",
+                        border: `1px solid ${T.line}`,
+                        background: "#fff",
+                        fontSize: "15px",
+                        lineHeight: 1.6,
+                        fontFamily: T.font,
+                        color: T.text,
+                        resize: "vertical",
+                      }}
+                    />
+                  </Field>
+                  <Field label={t("builder_point_explanation") || "Explanation"}>
+                    <textarea
+                      value={point.explanation || ""}
+                      onChange={(e) => updateBuilderPoint(index, { explanation: e.target.value })}
+                      rows={4}
+                      style={{
+                        width: "100%",
+                        padding: "14px 16px",
+                        borderRadius: "14px",
+                        border: `1px solid ${T.line}`,
+                        background: "#fff",
+                        fontSize: "14px",
+                        lineHeight: 1.7,
+                        fontFamily: T.fontSans,
+                        color: T.text,
+                        resize: "vertical",
+                      }}
+                    />
+                  </Field>
+                </div>
+              ) : (
+                <>
+                  <h5 style={{ margin: "0 0 8px", fontSize: "16px", color: T.primary, fontFamily: T.font }}>
+                    {point.label}: {point.statement}
+                  </h5>
+                  <p style={{ margin: "0 0 12px", color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                    {point.explanation}
+                  </p>
+                </>
+              )}
+
+              {finalIllustrations[index] && (
+                <div style={{ padding: "12px", borderRadius: "12px", background: T.amberSoft, marginTop: isEditing ? "12px" : 0, marginBottom: "10px" }}>
                   <b style={{ fontSize: "12px", color: "#92400e", fontFamily: T.fontSans }}>{t("final_illustration")}</b>
                   <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#78350f", lineHeight: 1.6, fontFamily: T.fontSans }}>
-                    {finalIllustrations[i].story}
+                    {asText(finalIllustrations[index].story)}
                   </p>
                 </div>
               )}
-              {application?.applications?.[i] && (
+
+              {application?.applications?.[index] && (
                 <div style={{ padding: "12px", borderRadius: "12px", background: T.greenSoft }}>
                   <b style={{ fontSize: "12px", color: "#166534", fontFamily: T.fontSans }}>{t("final_application")}</b>
                   <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#14532d", lineHeight: 1.6, fontFamily: T.fontSans }}>
-                    {application.applications[i].action}
+                    {application.applications[index].action}
                   </p>
                 </div>
               )}
-              {p.transition && (
-                <p style={{ margin: "10px 0 0", color: T.gold, fontSize: "12px", fontWeight: 600, fontStyle: "italic", fontFamily: T.fontSans }}>
-                  → {p.transition}
-                </p>
+
+              {isEditing ? (
+                <div style={{ marginTop: "12px" }}>
+                  <Field label={t("final_transition")}>
+                    <textarea
+                      value={point.transition || ""}
+                      onChange={(e) => updateBuilderPoint(index, { transition: e.target.value })}
+                      rows={2}
+                      style={{
+                        width: "100%",
+                        padding: "14px 16px",
+                        borderRadius: "14px",
+                        border: `1px solid ${T.line}`,
+                        background: "#fff",
+                        fontSize: "14px",
+                        lineHeight: 1.6,
+                        fontFamily: T.fontSans,
+                        color: T.text,
+                        resize: "vertical",
+                      }}
+                    />
+                  </Field>
+                </div>
+              ) : (
+                point.transition && (
+                  <p style={{ margin: "10px 0 0", color: T.gold, fontSize: "12px", fontWeight: 600, fontStyle: "italic", fontFamily: T.fontSans }}>
+                    → {point.transition}
+                  </p>
+                )
               )}
             </div>
           ))}
 
-          {/* Conclusion */}
           <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
             <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_conclusion")}</h5>
-            <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
-              {builder.conclusion}
-            </p>
+            {isEditing ? (
+              <textarea
+                value={builder.conclusion || ""}
+                onChange={(e) => updateBuilder({ conclusion: e.target.value })}
+                rows={4}
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  borderRadius: "14px",
+                  border: `1px solid ${T.line}`,
+                  background: "#fff",
+                  fontSize: "14px",
+                  lineHeight: 1.7,
+                  fontFamily: T.fontSans,
+                  color: T.text,
+                  resize: "vertical",
+                }}
+              />
+            ) : (
+              <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                {builder.conclusion}
+              </p>
+            )}
           </div>
 
-          {builder.callToAction && (
-            <div style={{ border: `1px solid rgba(22,163,74,.18)`, borderRadius: "16px", padding: "15px", background: T.greenSoft, marginBottom: "12px" }}>
+          {(builder.callToAction || isEditing) && (
+            <div
+              style={{
+                border: `1px solid rgba(22,163,74,.18)`,
+                borderRadius: "16px",
+                padding: "15px",
+                background: T.greenSoft,
+                marginBottom: "12px",
+              }}
+            >
               <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>{t("final_cta")}</h5>
-              <p style={{ margin: 0, color: "#166534", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
-                {builder.callToAction}
-              </p>
+              {isEditing ? (
+                <textarea
+                  value={builder.callToAction || ""}
+                  onChange={(e) => updateBuilder({ callToAction: e.target.value })}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    border: `1px solid rgba(22,163,74,.18)`,
+                    background: "#fff",
+                    fontSize: "14px",
+                    lineHeight: 1.7,
+                    fontFamily: T.fontSans,
+                    color: T.text,
+                    resize: "vertical",
+                  }}
+                />
+              ) : (
+                <p style={{ margin: 0, color: "#166534", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  {builder.callToAction}
+                </p>
+              )}
             </div>
           )}
 
-          {(application?.approvedWeeklyChallenge || application?.weeklyChallenge) && (
-            <div style={{ border: `1px solid rgba(99,102,241,.18)`, borderRadius: "16px", padding: "15px", background: T.violetSoft }}>
+          {application && (application.approvedWeeklyChallenge || application.weeklyChallenge || isEditing) && (
+            <div
+              style={{
+                border: `1px solid rgba(99,102,241,.18)`,
+                borderRadius: "16px",
+                padding: "15px",
+                background: T.violetSoft,
+              }}
+            >
               <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#5b21b6", fontFamily: T.fontSans }}>{t("final_weekly_challenge")}</h5>
-              <p style={{ margin: 0, color: "#4c1d95", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
-                {application.approvedWeeklyChallenge || application.weeklyChallenge}
-              </p>
+              {isEditing ? (
+                <textarea
+                  value={application?.approvedWeeklyChallenge || ""}
+                  onChange={(e) => updateApplication({ approvedWeeklyChallenge: e.target.value })}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    border: `1px solid rgba(99,102,241,.18)`,
+                    background: "#fff",
+                    fontSize: "14px",
+                    lineHeight: 1.7,
+                    fontFamily: T.fontSans,
+                    color: T.text,
+                    resize: "vertical",
+                  }}
+                />
+              ) : (
+                <p style={{ margin: 0, color: "#4c1d95", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  {application?.approvedWeeklyChallenge || application?.weeklyChallenge}
+                </p>
+              )}
             </div>
           )}
         </Card>
 
-        {/* Right — Actions */}
-        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
-          {!illustrations && (
+        {!readingMode && (
+          <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+            {!illustrations && (
+              <Card>
+                <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_illustrations")}</h4>
+                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  {t("final_missing_illus")}
+                </p>
+                <div style={{ marginTop: "14px" }}>
+                  <Btn variant="secondary" onClick={() => router.push("/illustrations")} style={{ width: "100%", justifyContent: "center" }}>
+                    {t("builder_next")}
+                  </Btn>
+                </div>
+              </Card>
+            )}
+
+            {!application && (
+              <Card>
+                <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_application")}</h4>
+                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  {t("final_missing_app")}
+                </p>
+                <div style={{ marginTop: "14px" }}>
+                  <Btn variant="secondary" onClick={() => router.push("/application")} style={{ width: "100%", justifyContent: "center" }}>
+                    {t("illus_next")}
+                  </Btn>
+                </div>
+              </Card>
+            )}
+
             <Card>
-              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_illustrations")}</h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
-                {t("final_missing_illus")}
-              </p>
-              <div style={{ marginTop: "14px" }}>
-                <Btn variant="secondary" onClick={() => router.push("/illustrations")} style={{ width: "100%", justifyContent: "center" }}>
-                  {t("builder_next")}
+              <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
+              <div style={{ display: "grid", gap: "10px" }}>
+                <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
+                  {copied ? t("final_copied") : t("final_copy")}
+                </Btn>
+                <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
+                  {t("final_back")}
                 </Btn>
               </div>
             </Card>
-          )}
 
-          {!application && (
             <Card>
-              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_application")}</h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
-                {t("final_missing_app")}
-              </p>
-              <div style={{ marginTop: "14px" }}>
-                <Btn variant="secondary" onClick={() => router.push("/application")} style={{ width: "100%", justifyContent: "center" }}>
-                  {t("illus_next")}
-                </Btn>
-              </div>
+              <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>{t("final_checklist")}</h4>
+              {[
+                { label: t("final_check_idea"), done: !!builder?.approvedBigIdea },
+                { label: t("final_check_points"), done: finalPoints.length === 3 },
+                { label: t("final_check_illus"), done: !!illustrations },
+                { label: t("final_check_app"), done: !!application },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "10px",
+                    borderRadius: "12px",
+                    marginBottom: "8px",
+                    background: item.done ? T.greenSoft : T.surface2,
+                    border: `1px solid ${item.done ? "rgba(22,163,74,.2)" : T.line}`,
+                  }}
+                >
+                  <span style={{ fontSize: "16px" }}>{item.done ? "✅" : "⬜"}</span>
+                  <span style={{ fontSize: "13px", color: item.done ? "#166534" : T.muted, fontFamily: T.fontSans }}>
+                    {item.label}
+                  </span>
+                </div>
+              ))}
             </Card>
-          )}
-
-          <Card>
-            <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
-            <div style={{ display: "grid", gap: "10px" }}>
-              <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
-                {copied ? t("final_copied") : t("final_copy")}
-              </Btn>
-              <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
-                {t("final_back")}
-              </Btn>
-            </div>
-          </Card>
-
-          <Card>
-            <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>{t("final_checklist")}</h4>
-            {[
-              { label: t("final_check_idea"),   done: !!builder?.bigIdea },
-              { label: t("final_check_points"), done: builder?.points?.length === 3 },
-              { label: t("final_check_illus"),  done: !!illustrations },
-              { label: t("final_check_app"),    done: !!application },
-            ].map((item, i) => (
-              <div key={i} style={{
-                display: "flex", alignItems: "center", gap: "10px",
-                padding: "10px", borderRadius: "12px", marginBottom: "8px",
-                background: item.done ? T.greenSoft : T.surface2,
-                border: `1px solid ${item.done ? "rgba(22,163,74,.2)" : T.line}`,
-              }}>
-                <span style={{ fontSize: "16px" }}>{item.done ? "✅" : "⬜"}</span>
-                <span style={{ fontSize: "13px", color: item.done ? "#166534" : T.muted, fontFamily: T.fontSans }}>
-                  {item.label}
-                </span>
-              </div>
-            ))}
-          </Card>
-        </div>
-
+          </div>
+        )}
       </div>
     </AppLayout>
   );
