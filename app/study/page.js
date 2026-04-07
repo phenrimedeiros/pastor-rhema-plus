@@ -175,8 +175,33 @@ export default function StudyPage() {
           {error && <Notice color="red">{error}</Notice>}
 
           {!study && !generating && week && (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <Btn onClick={generate}>{t("study_generate")}</Btn>
+            <div style={{
+              textAlign: "center",
+              padding: isMobile ? "28px 0" : "36px 8px",
+              display: "grid",
+              gap: "14px",
+              justifyItems: "center",
+            }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                borderRadius: "20px",
+                background: T.blueSoft,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "28px",
+              }}>
+                🧠
+              </div>
+              <div style={{ maxWidth: 520 }}>
+                <h5 style={{ margin: "0 0 8px", fontSize: "18px", color: T.primary, fontFamily: T.font }}>
+                  {t("study_empty_title")}
+                </h5>
+                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                  {t("study_empty_desc")}
+                </p>
+              </div>
+              <Btn onClick={generate}>{t("study_empty_cta")}</Btn>
             </div>
           )}
 

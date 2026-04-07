@@ -164,8 +164,42 @@ export default function IllustrationsPage() {
           {error && <Notice color="red">{error}</Notice>}
           {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
+          {needsBuilder && (
+            <div style={{
+              textAlign: "center",
+              padding: isMobile ? "26px 0" : "34px 8px",
+              display: "grid",
+              gap: "14px",
+              justifyItems: "center",
+            }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                borderRadius: "20px",
+                background: T.amberSoft,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "28px",
+              }}>
+                💡
+              </div>
+              <div style={{ maxWidth: 520 }}>
+                <h5 style={{ margin: "0 0 8px", fontSize: "18px", color: T.primary, fontFamily: T.font }}>
+                  {t("illus_empty_title")}
+                </h5>
+                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                  {t("illus_empty_desc")}
+                </p>
+              </div>
+              <Btn onClick={() => router.push("/builder")}>{t("illus_go_builder")}</Btn>
+            </div>
+          )}
+
           {!illustrations && !generating && !needsBuilder && (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
+            <div style={{ textAlign: "center", padding: "32px 0", display: "grid", gap: "12px", justifyItems: "center" }}>
+              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans, maxWidth: 520 }}>
+                {t("illus_empty_desc")}
+              </p>
               <Btn onClick={generate}>{t("illus_generate")}</Btn>
             </div>
           )}

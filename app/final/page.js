@@ -207,6 +207,34 @@ export default function FinalPage() {
 
         {/* Right — Actions */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          {!illustrations && (
+            <Card>
+              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_illustrations")}</h4>
+              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                {t("final_missing_illus")}
+              </p>
+              <div style={{ marginTop: "14px" }}>
+                <Btn variant="secondary" onClick={() => router.push("/illustrations")} style={{ width: "100%", justifyContent: "center" }}>
+                  {t("builder_next")}
+                </Btn>
+              </div>
+            </Card>
+          )}
+
+          {!application && (
+            <Card>
+              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_application")}</h4>
+              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                {t("final_missing_app")}
+              </p>
+              <div style={{ marginTop: "14px" }}>
+                <Btn variant="secondary" onClick={() => router.push("/application")} style={{ width: "100%", justifyContent: "center" }}>
+                  {t("illus_next")}
+                </Btn>
+              </div>
+            </Card>
+          )}
+
           <Card>
             <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
             <div style={{ display: "grid", gap: "10px" }}>
