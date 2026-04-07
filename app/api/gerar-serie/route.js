@@ -1,14 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(request) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
-  if (!token) {
-    return Response.json({ error: "Não autorizado" }, { status: 401 });
-  }
+  if (!token) return Response.json({ error: "Não autorizado" }, { status: 401 });
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -17,39 +15,31 @@ export async function POST(request) {
   );
 
   const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return Response.json({ error: "Sessão inválida" }, { status: 401 });
-  }
+  if (authError || !user) return Response.json({ error: "Sessão inválida" }, { status: 401 });
 
   let form;
-  try {
-    form = await request.json();
-  } catch {
+  try { form = await request.json(); } catch {
     return Response.json({ error: "Body inválido" }, { status: 400 });
   }
 
   const { theme, weeks, audience, tone, goal } = form;
   if (!theme || !weeks || !audience || !tone || !goal) {
-    return Response.json(
-      { error: "Campos obrigatórios: theme, weeks, audience, tone, goal" },
-      { status: 400 }
-    );
+    return Response.json({ error: "Campos obrigatórios: theme, weeks, audience, tone, goal" }, { status: 400 });
   }
 
   let serieGerada;
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-opus-4-6",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: 4096,
       messages: [{ role: "user", content: PROMPTS.series({ theme, weeks, audience, tone, goal }) }],
     });
-
-    const texto = message.content[0].text;
+    const texto = completion.choices[0].message.content;
     const jsonMatch = texto.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Resposta do Claude não contém JSON válido");
+    if (!jsonMatch) throw new Error("JSON inválido na resposta");
     serieGerada = JSON.parse(jsonMatch[0]);
   } catch (err) {
-    console.error("Erro ao chamar Claude:", err);
+    console.error("Erro ao chamar OpenAI:", err);
     return Response.json({ error: "Falha ao gerar série com IA: " + err.message }, { status: 500 });
   }
 

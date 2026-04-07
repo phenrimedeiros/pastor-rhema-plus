@@ -1,8 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(request) {
   const token = request.headers.get("Authorization")?.replace("Bearer ", "");
@@ -27,23 +27,19 @@ export async function POST(request) {
 
   let content;
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-opus-4-6",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: 4096,
       messages: [{ role: "user", content: PROMPTS.builder({ passage, title, focus, centralTruth: bigIdea }) }],
     });
-    const jsonMatch = message.content[0].text.match(/\{[\s\S]*\}/);
+    const jsonMatch = completion.choices[0].message.content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("JSON inválido na resposta");
     content = JSON.parse(jsonMatch[0]);
   } catch (err) {
     return Response.json({ error: "Falha ao gerar sermão: " + err.message }, { status: 500 });
   }
 
-  try {
-    await supabase.from("sermon_content").insert([{ week_id: weekId, step: "builder", content, version: 1, is_active: true }]);
-  } catch (err) {
-    console.error("Erro ao salvar sermão:", err);
-  }
+  await supabase.from("sermon_content").insert([{ week_id: weekId, step: "builder", content, version: 1, is_active: true }]);
 
   return Response.json({ content }, { status: 201 });
 }
