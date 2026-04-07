@@ -2,21 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
+import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import SermonFlowNav from "@/components/SermonFlowNav";
+import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 export default function BuilderPage() {
   const [estado, setEstado] = useState(null);
   const [builder, setBuilder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [savingChoices, setSavingChoices] = useState(false);
+  const [versions, setVersions] = useState([]);
+  const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
+  const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+
+  const loadVersions = async (weekId) => {
+    if (!weekId) return;
+    const data = await sermonContent.getContentVersions(weekId, "builder");
+    setVersions(data || []);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -25,6 +38,12 @@ export default function BuilderPage() {
       const novo = await loadFullState();
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
+      const activeSerie = novo.series?.[0];
+      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      if (week?.builder?.content) {
+        setBuilder(week.builder.content);
+        await loadVersions(week.id);
+      }
       setLoading(false);
     };
     init();
@@ -32,6 +51,9 @@ export default function BuilderPage() {
 
   const activeSerie = estado?.series?.[0];
   const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+  const selectedTitle = builder?.selectedTitle || builder?.titleOptions?.[0] || "";
+  const approvedBigIdea = builder?.approvedBigIdea || builder?.bigIdea || "";
+  const approvedPoints = builder?.approvedPoints || builder?.points || [];
 
   const generate = async () => {
     if (!week) return;
@@ -48,10 +70,55 @@ export default function BuilderPage() {
         weekNumber: activeSerie.current_week,
       });
       setBuilder(data.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", data.content));
+      setChoiceMessage("");
+      await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const saveBuilderChoices = async () => {
+    if (!week || !builder) return;
+    setError("");
+    setChoiceMessage("");
+    setSavingChoices(true);
+    try {
+      const content = {
+        ...builder,
+        selectedTitle,
+        approvedBigIdea,
+        approvedPoints,
+      };
+      await sermonContent.updateActiveContent(week.id, "builder", content);
+      setBuilder(content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", content));
+      setChoiceMessage("Your preferred title, big idea, and sermon points are now saved for this week.");
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingChoices(false);
+    }
+  };
+
+  const restoreVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setRestoringVersionId(version.id);
+    try {
+      const restored = await sermonContent.setActiveVersion(version.id, week.id, "builder");
+      setBuilder(restored.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "builder", restored.content));
+      setChoiceMessage(`Version ${version.version} is now your active sermon structure.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRestoringVersionId("");
     }
   };
 
@@ -63,6 +130,12 @@ export default function BuilderPage() {
 
   return (
     <AppLayout profile={estado.profile}>
+      <SermonFlowNav
+        currentStepKey="builder"
+        week={week}
+        canContinue={!!builder}
+        savedContentText={week?.builder ? "Your saved sermon structure is ready. Review it, refine it, or move on to illustrations." : ""}
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left — Main */}
@@ -79,6 +152,7 @@ export default function BuilderPage() {
 
           {!week && <Notice color="gold">Generate a series first to build a sermon.</Notice>}
           {error && <Notice color="red">{error}</Notice>}
+          {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!builder && !generating && week && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
@@ -90,6 +164,131 @@ export default function BuilderPage() {
 
           {builder && (
             <>
+              <div style={{ display: "grid", gap: "14px", marginBottom: "16px" }}>
+                <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", background: T.surface2 }}>
+                  <h5 style={{ margin: "0 0 10px", fontSize: "14px", fontFamily: T.fontSans }}>Approve This Direction</h5>
+                  <Field label="Preferred Title">
+                    <div style={{ display: "grid", gap: "8px" }}>
+                      {builder.titleOptions?.map((title) => {
+                        const active = selectedTitle === title;
+                        return (
+                          <button
+                            key={title}
+                            type="button"
+                            onClick={() => setBuilder((prev) => ({ ...prev, selectedTitle: title }))}
+                            style={{
+                              textAlign: "left",
+                              padding: "12px 14px",
+                              borderRadius: "14px",
+                              border: `1px solid ${active ? "rgba(11,42,91,.22)" : T.line}`,
+                              background: active ? "#eef4ff" : "#fff",
+                              color: active ? T.primary : T.text,
+                              fontWeight: active ? 800 : 600,
+                              fontSize: "14px",
+                              fontFamily: T.fontSans,
+                              cursor: "pointer",
+                            }}
+                          >
+                            {title}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </Field>
+                  <div style={{ marginTop: "12px" }}>
+                    <Field label="Approved Big Idea">
+                      <textarea
+                        value={approvedBigIdea}
+                        onChange={(e) => setBuilder((prev) => ({ ...prev, approvedBigIdea: e.target.value }))}
+                        rows={4}
+                        style={{
+                          width: "100%",
+                          padding: "12px 14px",
+                          borderRadius: "14px",
+                          border: `1px solid ${T.line}`,
+                          background: "#fff",
+                          color: T.text,
+                          resize: "vertical",
+                          fontSize: "14px",
+                          lineHeight: 1.6,
+                          fontFamily: T.fontSans,
+                        }}
+                      />
+                    </Field>
+                  </div>
+                  {!!approvedPoints.length && (
+                    <div style={{ marginTop: "12px", display: "grid", gap: "12px" }}>
+                      <Field label="Approved Sermon Points">
+                        <div style={{ display: "grid", gap: "12px" }}>
+                          {approvedPoints.map((point, index) => (
+                            <div key={`${point.label}-${index}`} style={{ padding: "12px", borderRadius: "14px", border: `1px solid ${T.line}`, background: "#fff" }}>
+                              <p style={{ margin: "0 0 10px", fontSize: "12px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
+                                {point.label}
+                              </p>
+                              <div style={{ display: "grid", gap: "10px" }}>
+                                <Field label="Point Statement">
+                                  <textarea
+                                    value={point.statement || ""}
+                                    onChange={(e) => setBuilder((prev) => ({
+                                      ...prev,
+                                      approvedPoints: approvedPoints.map((item, pointIndex) => (
+                                        pointIndex === index ? { ...item, statement: e.target.value } : item
+                                      )),
+                                    }))}
+                                    rows={2}
+                                    style={{
+                                      width: "100%",
+                                      padding: "12px 14px",
+                                      borderRadius: "14px",
+                                      border: `1px solid ${T.line}`,
+                                      background: "#fff",
+                                      color: T.text,
+                                      resize: "vertical",
+                                      fontSize: "14px",
+                                      lineHeight: 1.6,
+                                      fontFamily: T.fontSans,
+                                    }}
+                                  />
+                                </Field>
+                                <Field label="Point Explanation">
+                                  <textarea
+                                    value={point.explanation || ""}
+                                    onChange={(e) => setBuilder((prev) => ({
+                                      ...prev,
+                                      approvedPoints: approvedPoints.map((item, pointIndex) => (
+                                        pointIndex === index ? { ...item, explanation: e.target.value } : item
+                                      )),
+                                    }))}
+                                    rows={3}
+                                    style={{
+                                      width: "100%",
+                                      padding: "12px 14px",
+                                      borderRadius: "14px",
+                                      border: `1px solid ${T.line}`,
+                                      background: "#fff",
+                                      color: T.text,
+                                      resize: "vertical",
+                                      fontSize: "14px",
+                                      lineHeight: 1.6,
+                                      fontFamily: T.fontSans,
+                                    }}
+                                  />
+                                </Field>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Field>
+                    </div>
+                  )}
+                  <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                    <Btn variant="secondary" onClick={saveBuilderChoices} disabled={savingChoices}>
+                      {savingChoices ? "Saving..." : "Save Sermon Direction"}
+                    </Btn>
+                  </div>
+                </div>
+              </div>
+
               <div style={{ display: "grid", gap: "12px" }}>
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
                   <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Title Options</h5>
@@ -100,7 +299,7 @@ export default function BuilderPage() {
 
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
                   <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>Big Idea</h5>
-                  <p style={{ margin: 0, color: T.primary, fontSize: "15px", fontWeight: 700, lineHeight: 1.6, fontFamily: T.font }}>{builder.bigIdea}</p>
+                  <p style={{ margin: 0, color: T.primary, fontSize: "15px", fontWeight: 700, lineHeight: 1.6, fontFamily: T.font }}>{approvedBigIdea}</p>
                 </div>
 
                 <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
@@ -108,7 +307,7 @@ export default function BuilderPage() {
                   <p style={{ margin: 0, color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{builder.introduction}</p>
                 </div>
 
-                {builder.points?.map((p, i) => (
+                {approvedPoints.map((p, i) => (
                   <div key={i} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
                     <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: T.primary, fontFamily: T.fontSans }}>{p.label}: {p.statement}</h5>
                     <p style={{ margin: "0 0 6px", color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{p.explanation}</p>
@@ -138,27 +337,36 @@ export default function BuilderPage() {
         </Card>
 
         {/* Right — Health */}
-        <Card style={{ alignSelf: "start" }}>
-          <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Outline Health</h4>
-          {builder ? (
-            <div style={{ display: "grid", gap: "10px" }}>
-              {[
-                "Clarity — The message is easy to follow",
-                "Biblical Flow — Points grow from the text",
-                "Pastoral Relevance — Meets real needs",
-              ].map((c, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", borderRadius: "14px", background: T.surface2, border: `1px solid ${T.line}` }}>
-                  <span style={{ color: T.green, fontSize: "16px" }}>✓</span>
-                  <span style={{ fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>{c}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-              Generate a structure to see the health check.
-            </p>
-          )}
-        </Card>
+        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          <VersionHistoryCard
+            title="Structure Versions"
+            versions={versions}
+            activeVersionId={week?.builder?.id}
+            onRestore={restoreVersion}
+            restoringVersionId={restoringVersionId}
+          />
+          <Card style={{ alignSelf: "start" }}>
+            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Outline Health</h4>
+            {builder ? (
+              <div style={{ display: "grid", gap: "10px" }}>
+                {[
+                  "Clarity — The message is easy to follow",
+                  "Biblical Flow — Points grow from the text",
+                  "Pastoral Relevance — Meets real needs",
+                ].map((c, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", borderRadius: "14px", background: T.surface2, border: `1px solid ${T.line}` }}>
+                    <span style={{ color: T.green, fontSize: "16px" }}>✓</span>
+                    <span style={{ fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>{c}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                Generate a structure to see the health check.
+              </p>
+            )}
+          </Card>
+        </div>
 
       </div>
     </AppLayout>

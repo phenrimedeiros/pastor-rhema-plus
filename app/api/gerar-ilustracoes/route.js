@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { PROMPTS } from "@/lib/prompts";
+import { saveVersionedSermonContent } from "@/lib/versionedContent";
 
 export async function POST(request) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -40,7 +41,7 @@ export async function POST(request) {
     return Response.json({ error: "Falha ao gerar ilustrações: " + err.message }, { status: 500 });
   }
 
-  await supabase.from("sermon_content").insert([{ week_id: weekId, step: "illustrations", content, version: 1, is_active: true }]);
+  const record = await saveVersionedSermonContent(supabase, weekId, "illustrations", content);
 
-  return Response.json({ content }, { status: 201 });
+  return Response.json({ content, version: record.version }, { status: 201 });
 }

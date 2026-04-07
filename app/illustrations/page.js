@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
+import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import SermonFlowNav from "@/components/SermonFlowNav";
+import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 export default function IllustrationsPage() {
   const [estado, setEstado] = useState(null);
@@ -15,9 +18,19 @@ export default function IllustrationsPage() {
   const [builderPoints, setBuilderPoints] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [savingChoices, setSavingChoices] = useState(false);
+  const [versions, setVersions] = useState([]);
+  const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
+  const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+
+  const loadVersions = async (weekId) => {
+    if (!weekId) return;
+    const data = await sermonContent.getContentVersions(weekId, "illustrations");
+    setVersions(data || []);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -30,7 +43,11 @@ export default function IllustrationsPage() {
       // Carrega conteúdo do builder salvo no Supabase
       const activeSerie = novo.series?.[0];
       const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
-      if (week?.builder) setBuilderPoints(week.builder.content?.points);
+      if (week?.builder) setBuilderPoints(week.builder.content?.approvedPoints || week.builder.content?.points);
+      if (week?.illustrations?.content) {
+        setIllustrations(week.illustrations.content);
+        await loadVersions(week.id);
+      }
 
       setLoading(false);
     };
@@ -50,11 +67,66 @@ export default function IllustrationsPage() {
         passage: week.passage,
         points: builderPoints,
       });
-      setIllustrations(data.content);
+      const content = {
+        ...data.content,
+        approvedIllustrations: (data.content.illustrations || []).map((item) => ({
+          ...item,
+          includeInFinal: true,
+        })),
+      };
+      setIllustrations(content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", content));
+      setChoiceMessage("");
+      await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const approvedIllustrations = illustrations?.approvedIllustrations || illustrations?.illustrations?.map((item) => ({
+    ...item,
+    includeInFinal: true,
+  })) || [];
+
+  const saveIllustrationChoices = async () => {
+    if (!week || !illustrations) return;
+    setError("");
+    setChoiceMessage("");
+    setSavingChoices(true);
+    try {
+      const content = {
+        ...illustrations,
+        approvedIllustrations,
+      };
+      await sermonContent.updateActiveContent(week.id, "illustrations", content);
+      setIllustrations(content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", content));
+      setChoiceMessage("Your approved illustrations are saved for the final sermon.");
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingChoices(false);
+    }
+  };
+
+  const restoreVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setRestoringVersionId(version.id);
+    try {
+      const restored = await sermonContent.setActiveVersion(version.id, week.id, "illustrations");
+      setIllustrations(restored.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "illustrations", restored.content));
+      setChoiceMessage(`Version ${version.version} is now your active illustration set.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRestoringVersionId("");
     }
   };
 
@@ -68,6 +140,12 @@ export default function IllustrationsPage() {
 
   return (
     <AppLayout profile={estado.profile}>
+      <SermonFlowNav
+        currentStepKey="illustrations"
+        week={week}
+        canContinue={!!illustrations}
+        savedContentText={week?.illustrations ? "Your saved illustrations are loaded. Keep polishing them or continue to applications." : ""}
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left */}
@@ -91,6 +169,7 @@ export default function IllustrationsPage() {
             </Notice>
           )}
           {error && <Notice color="red">{error}</Notice>}
+          {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!illustrations && !generating && !needsBuilder && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
@@ -100,53 +179,120 @@ export default function IllustrationsPage() {
 
           {generating && <Loader text="Finding powerful illustrations..." />}
 
-          {illustrations?.illustrations?.map((il, i) => (
+          {approvedIllustrations.map((il, i) => (
             <div key={i} style={{
               border: `1px solid ${T.line}`, borderRadius: "18px", padding: "18px",
               marginBottom: "14px", background: "linear-gradient(180deg, #fff, #fbfcfe)",
             }}>
-              <Pill style={{ marginBottom: "12px", background: T.amberSoft, color: "#92400e" }}>
-                {il.forPoint}
-              </Pill>
-              <p style={{ margin: "0 0 12px", color: T.text, fontSize: isMobile ? "15px" : "14px", lineHeight: 1.75, fontFamily: T.fontSans }}>
-                {il.story}
-              </p>
-              <p style={{ margin: "0 0 6px", color: T.primary, fontSize: "13px", fontWeight: 700, fontFamily: T.fontSans }}>
-                Connection: {il.connection}
-              </p>
-              <p style={{ margin: 0, color: T.green, fontSize: "13px", fontWeight: 600, fontFamily: T.fontSans }}>
-                → {il.application}
-              </p>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "center", marginBottom: "12px", flexWrap: "wrap" }}>
+                <Pill style={{ background: T.amberSoft, color: "#92400e" }}>
+                  {il.forPoint}
+                </Pill>
+                <Btn
+                  variant={il.includeInFinal === false ? "secondary" : "hero"}
+                  onClick={() => setIllustrations((prev) => ({
+                    ...prev,
+                    approvedIllustrations: approvedIllustrations.map((item, itemIndex) => (
+                      itemIndex === i ? { ...item, includeInFinal: item.includeInFinal === false ? true : false } : item
+                    )),
+                  }))}
+                  style={{ minWidth: isMobile ? "100%" : 0 }}
+                >
+                  {il.includeInFinal === false ? "Include In Final" : "Use In Final Sermon"}
+                </Btn>
+              </div>
+              <div style={{ display: "grid", gap: "10px" }}>
+                <Field label="Approved Illustration Story">
+                  <textarea
+                    value={il.story || ""}
+                    onChange={(e) => setIllustrations((prev) => ({
+                      ...prev,
+                      approvedIllustrations: approvedIllustrations.map((item, itemIndex) => (
+                        itemIndex === i ? { ...item, story: e.target.value } : item
+                      )),
+                    }))}
+                    rows={4}
+                    style={{
+                      width: "100%",
+                      padding: "12px 14px",
+                      borderRadius: "14px",
+                      border: `1px solid ${T.line}`,
+                      background: "#fff",
+                      color: T.text,
+                      resize: "vertical",
+                      fontSize: "14px",
+                      lineHeight: 1.7,
+                      fontFamily: T.fontSans,
+                    }}
+                  />
+                </Field>
+                <Field label="Connection">
+                  <textarea
+                    value={il.connection || ""}
+                    onChange={(e) => setIllustrations((prev) => ({
+                      ...prev,
+                      approvedIllustrations: approvedIllustrations.map((item, itemIndex) => (
+                        itemIndex === i ? { ...item, connection: e.target.value } : item
+                      )),
+                    }))}
+                    rows={2}
+                    style={{
+                      width: "100%",
+                      padding: "12px 14px",
+                      borderRadius: "14px",
+                      border: `1px solid ${T.line}`,
+                      background: "#fff",
+                      color: T.text,
+                      resize: "vertical",
+                      fontSize: "14px",
+                      lineHeight: 1.6,
+                      fontFamily: T.fontSans,
+                    }}
+                  />
+                </Field>
+              </div>
             </div>
           ))}
 
           {illustrations && (
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
               <Btn variant="secondary" onClick={generate}>Regenerate All</Btn>
+              <Btn variant="secondary" onClick={saveIllustrationChoices} disabled={savingChoices}>
+                {savingChoices ? "Saving..." : "Save Illustration Choices"}
+              </Btn>
               <Btn onClick={() => router.push("/application")}>Add Applications →</Btn>
             </div>
           )}
         </Card>
 
         {/* Right — Sermon Points */}
-        <Card style={{ alignSelf: "start" }}>
-          <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Your Sermon Points</h4>
-          {builderPoints ? (
-            builderPoints.map((p, i) => (
-              <div key={i} style={{
-                padding: "12px", borderRadius: "14px", background: T.surface2,
-                border: `1px solid ${T.line}`, marginBottom: "10px",
-              }}>
-                <b style={{ fontSize: "13px", color: T.primary, fontFamily: T.fontSans }}>{p.label}</b>
-                <p style={{ margin: "4px 0 0", color: T.muted, fontSize: "12.5px", fontFamily: T.fontSans }}>{p.statement}</p>
-              </div>
-            ))
-          ) : (
-            <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
-              Build your sermon structure first.
-            </p>
-          )}
-        </Card>
+        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          <VersionHistoryCard
+            title="Illustration Versions"
+            versions={versions}
+            activeVersionId={week?.illustrations?.id}
+            onRestore={restoreVersion}
+            restoringVersionId={restoringVersionId}
+          />
+          <Card style={{ alignSelf: "start" }}>
+            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Your Sermon Points</h4>
+            {builderPoints ? (
+              builderPoints.map((p, i) => (
+                <div key={i} style={{
+                  padding: "12px", borderRadius: "14px", background: T.surface2,
+                  border: `1px solid ${T.line}`, marginBottom: "10px",
+                }}>
+                  <b style={{ fontSize: "13px", color: T.primary, fontFamily: T.fontSans }}>{p.label}</b>
+                  <p style={{ margin: "4px 0 0", color: T.muted, fontSize: "12.5px", fontFamily: T.fontSans }}>{p.statement}</p>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                Build your sermon structure first.
+              </p>
+            )}
+          </Card>
+        </div>
 
       </div>
     </AppLayout>

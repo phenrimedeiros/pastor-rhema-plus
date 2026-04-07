@@ -2,21 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import SermonFlowNav from "@/components/SermonFlowNav";
+import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 export default function StudyPage() {
   const [estado, setEstado] = useState(null);
   const [study, setStudy] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [versions, setVersions] = useState([]);
+  const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+
+  const loadVersions = async (weekId) => {
+    if (!weekId) return;
+    const data = await sermonContent.getContentVersions(weekId, "study");
+    setVersions(data || []);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -25,6 +36,12 @@ export default function StudyPage() {
       const novo = await loadFullState();
       if (!novo.authenticated) { router.push("/login"); return; }
       setEstado(novo);
+      const activeSerie = novo.series?.[0];
+      const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
+      if (week?.study?.content) {
+        setStudy(week.study.content);
+        await loadVersions(week.id);
+      }
       setLoading(false);
     };
     init();
@@ -46,10 +63,28 @@ export default function StudyPage() {
         seriesContext: activeSerie.series_name,
       });
       setStudy(data.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "study", data.content));
+      await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const restoreVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setRestoringVersionId(version.id);
+    try {
+      const restored = await sermonContent.setActiveVersion(version.id, week.id, "study");
+      setStudy(restored.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "study", restored.content));
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRestoringVersionId("");
     }
   };
 
@@ -61,6 +96,12 @@ export default function StudyPage() {
 
   return (
     <AppLayout profile={estado.profile}>
+      <SermonFlowNav
+        currentStepKey="study"
+        week={week}
+        canContinue={!!study}
+        savedContentText={week?.study ? "Loaded your saved biblical study. You can keep building from here or regenerate it." : ""}
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left — Main */}
@@ -124,6 +165,13 @@ export default function StudyPage() {
 
         {/* Right — Snapshot */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          <VersionHistoryCard
+            title="Study Versions"
+            versions={versions}
+            activeVersionId={week?.study?.id}
+            onRestore={restoreVersion}
+            restoringVersionId={restoringVersionId}
+          />
           <Card>
             <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Study Snapshot</h4>
             {study ? (

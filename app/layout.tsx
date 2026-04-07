@@ -3,9 +3,12 @@ import type { Viewport } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://app.pastorrhema.com";
+
 export const metadata: Metadata = {
   title: "Pastor Rhema PLUS",
   description: "Your AI-powered sermon preparation platform",
+  metadataBase: new URL(siteUrl),
 };
 
 export const viewport: Viewport = {

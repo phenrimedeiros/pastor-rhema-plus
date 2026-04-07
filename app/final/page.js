@@ -7,20 +7,23 @@ import { T } from "@/lib/tokens";
 import { Btn, Card, Pill } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import SermonFlowNav from "@/components/SermonFlowNav";
 
 function buildFullText({ serie, week, builder, illustrations, application }) {
   if (!builder) return "";
+  const finalPoints = builder.approvedPoints || builder.points || [];
+  const finalIllustrations = illustrations?.approvedIllustrations?.filter((item) => item.includeInFinal !== false) || illustrations?.illustrations || [];
   let text = "";
-  text += `SERMON: ${builder.titleOptions?.[0] || week?.title}\n`;
+  text += `SERMON: ${builder.selectedTitle || builder.titleOptions?.[0] || week?.title}\n`;
   text += `Passage: ${week?.passage}\n`;
   text += `Series: ${serie?.series_name}\n\n`;
-  text += `BIG IDEA\n${builder.bigIdea}\n\n`;
+  text += `BIG IDEA\n${builder.approvedBigIdea || builder.bigIdea}\n\n`;
   text += `INTRODUCTION\n${builder.introduction}\n\n`;
 
-  builder.points?.forEach((p, i) => {
+  finalPoints.forEach((p, i) => {
     text += `${p.label}: ${p.statement}\n${p.explanation}\n`;
-    if (illustrations?.illustrations?.[i]) {
-      text += `\nIllustration: ${illustrations.illustrations[i].story}\n`;
+    if (finalIllustrations[i]) {
+      text += `\nIllustration: ${finalIllustrations[i].story}\n`;
     }
     if (application?.applications?.[i]) {
       text += `\nApplication: ${application.applications[i].action}\n`;
@@ -30,7 +33,9 @@ function buildFullText({ serie, week, builder, illustrations, application }) {
 
   text += `CONCLUSION\n${builder.conclusion}\n\n`;
   if (builder.callToAction) text += `CALL TO ACTION\n${builder.callToAction}\n\n`;
-  if (application?.weeklyChallenge) text += `WEEKLY CHALLENGE\n${application.weeklyChallenge}\n`;
+  if (application?.approvedWeeklyChallenge || application?.weeklyChallenge) {
+    text += `WEEKLY CHALLENGE\n${application.approvedWeeklyChallenge || application.weeklyChallenge}\n`;
+  }
   return text;
 }
 
@@ -67,6 +72,8 @@ export default function FinalPage() {
   const activeSerie = estado?.series?.[0];
   const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
   const { builder, illustrations, application } = weekContent;
+  const finalPoints = builder?.approvedPoints || builder?.points || [];
+  const finalIllustrations = illustrations?.approvedIllustrations?.filter((item) => item.includeInFinal !== false) || illustrations?.illustrations || [];
 
   const copySermon = () => {
     const text = buildFullText({ serie: activeSerie, week, builder, illustrations, application });
@@ -97,6 +104,12 @@ export default function FinalPage() {
 
   return (
     <AppLayout profile={estado.profile}>
+      <SermonFlowNav
+        currentStepKey="final"
+        week={week}
+        canContinue={false}
+        savedContentText="Everything saved for this week is assembled here so you can review, export, and preach with confidence."
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left — Full Sermon */}
@@ -107,7 +120,7 @@ export default function FinalPage() {
                 Final Output
               </p>
               <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
-                {builder.titleOptions?.[0] || week?.title}
+                {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
               </h4>
               <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
                 {week?.passage} · {activeSerie?.series_name}
@@ -122,7 +135,7 @@ export default function FinalPage() {
             background: "#eef4ff", border: `1px solid rgba(11,42,91,.10)`, marginBottom: "16px",
           }}>
             <p style={{ margin: 0, color: T.primary, fontSize: isMobile ? "18px" : "16px", fontWeight: 700, lineHeight: 1.7, fontFamily: T.font }}>
-              {builder.bigIdea}
+              {builder.approvedBigIdea || builder.bigIdea}
             </p>
           </div>
 
@@ -135,7 +148,7 @@ export default function FinalPage() {
           </div>
 
           {/* Points */}
-          {builder.points?.map((p, i) => (
+          {finalPoints.map((p, i) => (
             <div key={i} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: isMobile ? "16px" : "18px", marginBottom: "12px" }}>
               <h5 style={{ margin: "0 0 8px", fontSize: "16px", color: T.primary, fontFamily: T.font }}>
                 {p.label}: {p.statement}
@@ -143,11 +156,11 @@ export default function FinalPage() {
               <p style={{ margin: "0 0 12px", color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
                 {p.explanation}
               </p>
-              {illustrations?.illustrations?.[i] && (
+              {finalIllustrations[i] && (
                 <div style={{ padding: "12px", borderRadius: "12px", background: T.amberSoft, marginBottom: "10px" }}>
                   <b style={{ fontSize: "12px", color: "#92400e", fontFamily: T.fontSans }}>ILLUSTRATION</b>
                   <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#78350f", lineHeight: 1.6, fontFamily: T.fontSans }}>
-                    {illustrations.illustrations[i].story}
+                    {finalIllustrations[i].story}
                   </p>
                 </div>
               )}
@@ -186,11 +199,11 @@ export default function FinalPage() {
           )}
 
           {/* Weekly Challenge */}
-          {application?.weeklyChallenge && (
+          {(application?.approvedWeeklyChallenge || application?.weeklyChallenge) && (
             <div style={{ border: `1px solid rgba(99,102,241,.18)`, borderRadius: "16px", padding: "15px", background: T.violetSoft }}>
               <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#5b21b6", fontFamily: T.fontSans }}>Weekly Challenge</h5>
               <p style={{ margin: 0, color: "#4c1d95", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
-                {application.weeklyChallenge}
+                {application.approvedWeeklyChallenge || application.weeklyChallenge}
               </p>
             </div>
           )}

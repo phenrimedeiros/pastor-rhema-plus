@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
+import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
+import SermonFlowNav from "@/components/SermonFlowNav";
+import { upsertCurrentWeekStep } from "@/lib/sermonFlow";
+import VersionHistoryCard from "@/components/VersionHistoryCard";
 
 export default function ApplicationPage() {
   const [estado, setEstado] = useState(null);
@@ -15,9 +18,19 @@ export default function ApplicationPage() {
   const [builderData, setBuilderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [savingChoices, setSavingChoices] = useState(false);
+  const [versions, setVersions] = useState([]);
+  const [restoringVersionId, setRestoringVersionId] = useState("");
   const [error, setError] = useState("");
+  const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
   const isMobile = useIsMobile();
+
+  const loadVersions = async (weekId) => {
+    if (!weekId) return;
+    const data = await sermonContent.getContentVersions(weekId, "application");
+    setVersions(data || []);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -30,6 +43,10 @@ export default function ApplicationPage() {
       const activeSerie = novo.series?.[0];
       const week = activeSerie?.weeks?.[activeSerie.current_week - 1];
       if (week?.builder) setBuilderData(week.builder.content);
+      if (week?.application?.content) {
+        setApplication(week.application.content);
+        await loadVersions(week.id);
+      }
 
       setLoading(false);
     };
@@ -38,6 +55,7 @@ export default function ApplicationPage() {
 
   const activeSerie = estado?.series?.[0];
   const week = activeSerie?.weeks?.[activeSerie?.current_week - 1];
+  const approvedWeeklyChallenge = application?.approvedWeeklyChallenge || application?.weeklyChallenge || "";
 
   const generate = async () => {
     if (!week || !builderData) return;
@@ -47,14 +65,57 @@ export default function ApplicationPage() {
       const data = await callApi("/api/gerar-aplicacao", {
         weekId: week.id,
         passage: week.passage,
-        bigIdea: builderData.bigIdea,
-        points: builderData.points,
+        bigIdea: builderData.approvedBigIdea || builderData.bigIdea,
+        points: builderData.approvedPoints || builderData.points,
       });
       setApplication(data.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "application", data.content));
+      setChoiceMessage("");
+      await loadVersions(week.id);
     } catch (err) {
       setError(err.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const saveApplicationChoices = async () => {
+    if (!week || !application) return;
+    setError("");
+    setChoiceMessage("");
+    setSavingChoices(true);
+    try {
+      const content = {
+        ...application,
+        approvedWeeklyChallenge,
+      };
+      await sermonContent.updateActiveContent(week.id, "application", content);
+      setApplication(content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "application", content));
+      setChoiceMessage("Your weekly challenge is saved and will be used in the final sermon.");
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingChoices(false);
+    }
+  };
+
+  const restoreVersion = async (version) => {
+    if (!week) return;
+    setError("");
+    setChoiceMessage("");
+    setRestoringVersionId(version.id);
+    try {
+      const restored = await sermonContent.setActiveVersion(version.id, week.id, "application");
+      setApplication(restored.content);
+      setEstado((prev) => upsertCurrentWeekStep(prev, "application", restored.content));
+      setChoiceMessage(`Version ${version.version} is now your active application set.`);
+      await loadVersions(week.id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRestoringVersionId("");
     }
   };
 
@@ -68,6 +129,12 @@ export default function ApplicationPage() {
 
   return (
     <AppLayout profile={estado.profile}>
+      <SermonFlowNav
+        currentStepKey="application"
+        week={week}
+        canContinue={!!application}
+        savedContentText={week?.application ? "Your saved applications are here. Review them or continue straight to the final sermon." : ""}
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
 
         {/* Left */}
@@ -89,6 +156,7 @@ export default function ApplicationPage() {
             <Notice color="gold">Build your sermon structure first (Step 3).</Notice>
           )}
           {error && <Notice color="red">{error}</Notice>}
+          {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!application && !generating && !needsBuilder && (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
@@ -123,12 +191,33 @@ export default function ApplicationPage() {
               border: `1px solid rgba(22,163,74,.18)`, borderRadius: "18px", padding: "18px",
               background: T.greenSoft, marginBottom: "14px",
             }}>
-              <h5 style={{ margin: "0 0 8px", fontSize: "15px", color: "#166534", fontFamily: T.fontSans }}>
-                Weekly Challenge
+              <h5 style={{ margin: "0 0 12px", fontSize: "15px", color: "#166534", fontFamily: T.fontSans }}>
+                Approve the Weekly Challenge
               </h5>
-              <p style={{ margin: 0, color: "#166534", fontSize: "14px", lineHeight: 1.65, fontWeight: 600, fontFamily: T.fontSans }}>
-                {application.weeklyChallenge}
-              </p>
+              <Field label="Final Weekly Challenge">
+                <textarea
+                  value={approvedWeeklyChallenge}
+                  onChange={(e) => setApplication((prev) => ({ ...prev, approvedWeeklyChallenge: e.target.value }))}
+                  rows={4}
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "14px",
+                    border: "1px solid rgba(22,163,74,.18)",
+                    background: "#fff",
+                    color: T.text,
+                    resize: "vertical",
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                    fontFamily: T.fontSans,
+                  }}
+                />
+              </Field>
+              <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                <Btn variant="secondary" onClick={saveApplicationChoices} disabled={savingChoices}>
+                  {savingChoices ? "Saving..." : "Save Weekly Challenge"}
+                </Btn>
+              </div>
             </div>
           )}
 
@@ -142,6 +231,13 @@ export default function ApplicationPage() {
 
         {/* Right — Reflection Questions */}
         <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          <VersionHistoryCard
+            title="Application Versions"
+            versions={versions}
+            activeVersionId={week?.application?.id}
+            onRestore={restoreVersion}
+            restoringVersionId={restoringVersionId}
+          />
           {application?.reflectionQuestions ? (
             <Card>
               <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>Reflection Questions</h4>
