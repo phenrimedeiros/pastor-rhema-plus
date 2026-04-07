@@ -42,24 +42,23 @@ export async function POST(request) {
   // ── AI Continuity: fetch previous week's sermon if available ──
   let previousContext = null;
   if (seriesId && weekNumber && weekNumber > 1) {
-    const { data: prevWeek } = await supabase
-      .from("series_weeks")
-      .select("title, passage, big_idea")
-      .eq("series_id", seriesId)
-      .eq("week_number", weekNumber - 1)
-      .single();
+    try {
+      const { data: prevWeek } = await supabase
+        .from("series_weeks")
+        .select("id, title, passage, big_idea")
+        .eq("series_id", seriesId)
+        .eq("week_number", weekNumber - 1)
+        .single();
 
-    if (prevWeek) {
-      const { data: prevBuilder } = await supabase
-        .from("sermon_content")
-        .select("content")
-        .eq("week_id", prevWeek.id ?? "")
-        .eq("step", "builder")
-        .eq("is_active", true)
-        .single()
-        .catch(() => ({ data: null }));
+      if (prevWeek?.id) {
+        const { data: prevBuilder } = await supabase
+          .from("sermon_content")
+          .select("content")
+          .eq("week_id", prevWeek.id)
+          .eq("step", "builder")
+          .eq("is_active", true)
+          .maybeSingle();
 
-      if (prevWeek) {
         previousContext = {
           title: prevWeek.title,
           passage: prevWeek.passage,
@@ -67,6 +66,8 @@ export async function POST(request) {
           mainPoint: prevBuilder?.content?.bigIdea || null,
         };
       }
+    } catch (err) {
+      console.error("Falha ao carregar contexto anterior do builder:", err);
     }
   }
 
