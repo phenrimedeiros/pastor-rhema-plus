@@ -6,8 +6,8 @@ import { auth, supabase } from "@/lib/supabase_client";
 import { T } from "@/lib/tokens";
 import { Btn } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
+import { useLanguage } from "@/lib/i18n";
 
-const WELCOME = "Hi, I'm Pastor Rhema. What are you preparing today — a sermon, a Bible study, or help with a specific passage?";
 const DAILY_LIMIT = 20;
 
 function Message({ msg }) {
@@ -48,7 +48,7 @@ function Message({ msg }) {
   );
 }
 
-function LimitBar({ used, limit }) {
+function LimitBar({ used, limit, t }) {
   const pct = Math.min((used / limit) * 100, 100);
   const remaining = limit - used;
   const isLow = remaining <= 5;
@@ -58,25 +58,23 @@ function LimitBar({ used, limit }) {
       padding: "10px 16px",
       background: isLow ? "#fef2f2" : T.surface2,
       border: `1px solid ${isLow ? "#fecaca" : T.line}`,
-      borderRadius: "12px",
-      marginBottom: "12px",
+      borderRadius: "12px", marginBottom: "12px",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
         <span style={{ fontSize: "12px", color: isLow ? "#b91c1c" : T.muted, fontFamily: T.fontSans, fontWeight: 600 }}>
           {remaining > 0
-            ? `${remaining} de ${limit} mensagens restantes hoje`
-            : "Limite diário atingido"}
+            ? `${remaining} de ${limit} ${t("chat_limit_bar")}`
+            : t("chat_limit_zero")}
         </span>
         {remaining <= 5 && remaining > 0 && (
           <span style={{ fontSize: "11px", color: "#b91c1c", fontFamily: T.fontSans }}>
-            Poucas mensagens restantes
+            {t("chat_limit_low")}
           </span>
         )}
       </div>
       <div style={{ height: 4, background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
         <div style={{
-          height: "100%", borderRadius: "999px",
-          width: `${pct}%`,
+          height: "100%", borderRadius: "999px", width: `${pct}%`,
           background: isLow
             ? "linear-gradient(90deg, #ef4444, #b91c1c)"
             : `linear-gradient(90deg, ${T.primary}, ${T.primary2})`,
@@ -87,29 +85,22 @@ function LimitBar({ used, limit }) {
   );
 }
 
-function UpgradePrompt({ router }) {
+function UpgradePrompt({ router, t }) {
   return (
-    <div style={{
-      textAlign: "center", padding: "28px 20px",
-      background: "#fef2f2", borderRadius: "16px",
-      border: "1px solid #fecaca",
-    }}>
+    <div style={{ textAlign: "center", padding: "28px 20px", background: "#fef2f2", borderRadius: "16px", border: "1px solid #fecaca" }}>
       <div style={{ fontSize: "32px", marginBottom: "10px" }}>⏰</div>
       <h4 style={{ margin: "0 0 8px", fontFamily: T.font, fontSize: "18px", color: T.primary }}>
-        Limite diário atingido
+        {t("chat_limit_title")}
       </h4>
       <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, fontFamily: T.fontSans, lineHeight: 1.65 }}>
-        Você usou suas 20 mensagens de hoje no plano Simple.<br />
-        Volte amanhã ou faça upgrade para conversar sem limites.
+        {t("chat_limit_desc")}
       </p>
       <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-        <Btn
-          onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
-        >
-          Fazer Upgrade →
+        <Btn onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}>
+          {t("chat_upgrade_btn")}
         </Btn>
         <Btn variant="secondary" onClick={() => router.push("/dashboard")}>
-          Voltar ao início
+          {t("chat_home_btn")}
         </Btn>
       </div>
     </div>
@@ -117,11 +108,12 @@ function UpgradePrompt({ router }) {
 }
 
 export default function ChatPage() {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [isSimple, setIsSimple] = useState(false);
   const [messagesUsed, setMessagesUsed] = useState(0);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: WELCOME },
+    { role: "assistant", content: null },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -225,7 +217,7 @@ export default function ChatPage() {
     }
   };
 
-  const clearChat = () => setMessages([{ role: "assistant", content: WELCOME }]);
+  const clearChat = () => setMessages([{ role: "assistant", content: null }]);
 
   if (authLoading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
@@ -241,20 +233,20 @@ export default function ChatPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "22px", fontFamily: T.font, color: T.primary }}>
-              Pastor Rhema
+              {t("chat_title")}
             </h2>
             <p style={{ margin: 0, fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>
-              Your AI pastoral assistant — sermons, Bible study, series planning
+              {t("chat_subtitle")}
             </p>
           </div>
           <Btn variant="secondary" onClick={clearChat} style={{ fontSize: "13px", padding: "8px 14px" }}>
-            New Chat
+            {t("chat_new")}
           </Btn>
         </div>
 
         {/* Daily limit bar — Simple users only */}
         {isSimple && (
-          <LimitBar used={messagesUsed} limit={DAILY_LIMIT} />
+          <LimitBar used={messagesUsed} limit={DAILY_LIMIT} t={t} />
         )}
 
         {/* Messages */}
@@ -264,7 +256,7 @@ export default function ChatPage() {
           border: `1px solid ${T.line}`, marginBottom: "16px",
         }}>
           {messages.map((msg, i) => (
-            <Message key={i} msg={msg} />
+            <Message key={i} msg={{ ...msg, content: msg.content ?? t("chat_welcome") }} />
           ))}
 
           {loading && (
@@ -292,14 +284,14 @@ export default function ChatPage() {
 
         {/* Input or upgrade prompt */}
         {limitReached ? (
-          <UpgradePrompt router={router} />
+          <UpgradePrompt router={router} t={t} />
         ) : (
           <div style={{ display: "flex", gap: "10px", alignItems: "flex-end" }}>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about a sermon, passage, or series plan... (Enter to send)"
+              placeholder={t("chat_placeholder")}
               rows={3}
               style={{
                 flex: 1, padding: "14px 16px", border: `1px solid ${T.line}`,
@@ -309,7 +301,7 @@ export default function ChatPage() {
               }}
             />
             <Btn onClick={send} disabled={loading || !input.trim()} style={{ padding: "14px 20px", alignSelf: "stretch" }}>
-              Send
+              {t("chat_send")}
             </Btn>
           </div>
         )}

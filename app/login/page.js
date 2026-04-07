@@ -4,6 +4,7 @@ import { useState } from "react";
 import { auth } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
 import { T } from "@/lib/tokens";
+import { useLanguage, LANGUAGES } from "@/lib/i18n";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
+  const { lang, changeLang, t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,17 +25,17 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        if (!fullName.trim()) { setError("Insira seu nome."); setLoading(false); return; }
+        if (!fullName.trim()) { setError(t("login_err_name")); setLoading(false); return; }
         await auth.signUp(email, password, fullName);
-        setSuccess("Verifique seu email para confirmar o cadastro.");
+        setSuccess(t("login_check_email"));
       } else {
         await auth.signIn(email, password);
-        setSuccess("Redirecionando...");
+        setSuccess(t("login_redirecting"));
         setTimeout(() => router.push("/dashboard"), 1200);
       }
     } catch (err) {
-      if (err.message.includes("Invalid login credentials")) setError("Email ou senha incorretos.");
-      else if (err.message.includes("User already registered")) setError("Email já cadastrado.");
+      if (err.message.includes("Invalid login credentials")) setError(t("login_err_credentials"));
+      else if (err.message.includes("User already registered")) setError(t("login_err_registered"));
       else setError(err.message || "Erro ao processar.");
     }
     setLoading(false);
@@ -51,6 +53,25 @@ export default function LoginPage() {
     }}>
       <div style={{ width: "100%", maxWidth: 380 }}>
 
+        {/* Language switcher */}
+        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "20px" }}>
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => changeLang(l.code)}
+              style={{
+                padding: "5px 12px", borderRadius: "8px", border: "none",
+                background: lang === l.code ? "rgba(255,255,255,.2)" : "transparent",
+                color: lang === l.code ? "#fff" : "rgba(255,255,255,.4)",
+                fontFamily: T.fontSans, fontSize: "12px", fontWeight: lang === l.code ? 700 : 500,
+                cursor: "pointer",
+              }}
+            >
+              {l.flag} {l.code.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
           <div style={{
@@ -65,7 +86,7 @@ export default function LoginPage() {
             <img src="/logo.png" alt="Pastor Rhema" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
-            {isSignUp ? "Crie sua conta" : "Entre na sua conta"}
+            {isSignUp ? t("login_signup_subtitle") : t("login_signin_subtitle")}
           </p>
         </div>
 
@@ -76,12 +97,15 @@ export default function LoginPage() {
           padding: "28px",
           boxShadow: "0 24px 64px rgba(0,0,0,.25)",
         }}>
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <h2 style={{ margin: "0 0 20px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
+            {isSignUp ? t("login_signup_title") : t("login_signin_title")}
+          </h2>
 
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {isSignUp && (
               <input
                 type="text"
-                placeholder="Seu nome"
+                placeholder={t("login_name_ph")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 disabled={loading}
@@ -91,7 +115,7 @@ export default function LoginPage() {
 
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t("login_email")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
@@ -101,7 +125,7 @@ export default function LoginPage() {
 
             <input
               type="password"
-              placeholder="Senha"
+              placeholder={t("login_password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
@@ -120,24 +144,21 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                marginTop: "4px",
-                padding: "13px",
+                marginTop: "4px", padding: "13px",
                 background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
                 color: "#fff", border: "none", borderRadius: "12px",
                 fontSize: "14px", fontWeight: 700,
                 cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: T.fontSans,
-                opacity: loading ? 0.7 : 1,
-                transition: "opacity .15s",
+                fontFamily: T.fontSans, opacity: loading ? 0.7 : 1,
               }}
             >
-              {loading ? "Aguardando..." : isSignUp ? "Criar Conta" : "Entrar"}
+              {loading ? t("login_loading") : isSignUp ? t("login_signup_btn") : t("login_signin_btn")}
             </button>
           </form>
 
-          <div style={{ marginTop: "18px", textAlign: "center" }}>
+          <div style={{ marginTop: "18px", paddingTop: "20px", borderTop: `1px solid ${T.line}`, textAlign: "center" }}>
             <span style={{ fontSize: "13px", color: T.muted }}>
-              {isSignUp ? "Já tem conta? " : "Não tem conta? "}
+              {isSignUp ? t("login_have_account") : t("login_no_account")}
             </span>
             <button
               type="button"
@@ -149,9 +170,13 @@ export default function LoginPage() {
                 cursor: "pointer", fontFamily: T.fontSans,
               }}
             >
-              {isSignUp ? "Entrar" : "Criar conta"}
+              {isSignUp ? t("login_goto_signin") : t("login_goto_signup")}
             </button>
           </div>
+
+          <p style={{ marginTop: "16px", textAlign: "center", fontSize: "12px", color: T.muted, lineHeight: 1.6 }}>
+            {t("login_security")}
+          </p>
         </div>
       </div>
     </div>
