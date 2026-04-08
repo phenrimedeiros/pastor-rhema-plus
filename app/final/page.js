@@ -413,28 +413,48 @@ export default function FinalPage() {
   };
 
   const printSermon = () => {
-    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=960,height=900");
-    if (!printWindow) {
+    try {
+      const documentHtml = buildExportDocument({
+        serie: activeSerie,
+        week,
+        builder,
+        illustrations,
+        application,
+        labels: exportLabels,
+      });
+
+      const blob = new Blob([documentHtml], {
+        type: "text/html;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const printWindow = window.open(url, "_blank", "width=960,height=900");
+
+      if (!printWindow) {
+        URL.revokeObjectURL(url);
+        setError(t("final_print_error"));
+        return;
+      }
+
+      const cleanup = () => {
+        window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+      };
+
+      printWindow.onload = () => {
+        printWindow.focus();
+        window.setTimeout(() => {
+          try {
+            printWindow.print();
+          } finally {
+            cleanup();
+          }
+        }, 350);
+      };
+
+      printWindow.onafterprint = cleanup;
+      printWindow.onbeforeunload = cleanup;
+    } catch {
       setError(t("final_print_error"));
-      return;
     }
-
-    const documentHtml = buildExportDocument({
-      serie: activeSerie,
-      week,
-      builder,
-      illustrations,
-      application,
-      labels: exportLabels,
-    });
-
-    printWindow.document.open();
-    printWindow.document.write(documentHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    window.setTimeout(() => {
-      printWindow.print();
-    }, 250);
   };
 
   const downloadWordDocument = () => {
