@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { auth, loadFullState, supabase } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
 import { T } from "@/lib/tokens";
-import { Btn, Card, Loader } from "@/components/ui";
+import { Btn, Card, Loader, Notice } from "@/components/ui";
 import SeriesForm from "@/components/SeriesForm";
 import AppLayout from "@/components/AppLayout";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -27,8 +27,42 @@ function nextSunday() {
   return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 }
 
+function formatPreachedAt(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function getWeekReviewSummary(week) {
+  const builder = week?.builder?.content;
+  const application = week?.application?.content;
+
+  return {
+    approvedTitle: builder?.selectedTitle || builder?.titleOptions?.[0] || week?.title || "",
+    approvedBigIdea: builder?.approvedBigIdea || builder?.bigIdea || week?.big_idea || "",
+    approvedChallenge: application?.approvedWeeklyChallenge || application?.weeklyChallenge || "",
+    approvedPoints: builder?.approvedPoints || builder?.points || [],
+  };
+}
+
+function getLastPreachedSummary(entry) {
+  const builder = entry?.full_content?.builder || {};
+  const application = entry?.full_content?.application || {};
+
+  return {
+    title: builder.selectedTitle || builder.titleOptions?.[0] || entry?.full_content?.title || "",
+    bigIdea: builder.approvedBigIdea || builder.bigIdea || "",
+    challenge: application.approvedWeeklyChallenge || application.weeklyChallenge || "",
+    passage: entry?.full_content?.passage || "",
+  };
+}
+
 // ── This Week View ──────────────────────────────────────────────────
-function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
+function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComplete }) {
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
   const isMobile = useIsMobile();
@@ -42,6 +76,8 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
   const total = SERMON_STEPS.length;
   const pct = Math.round((done / total) * 100);
   const allDone = done === total;
+  const review = getWeekReviewSummary(week);
+  const lastPreached = getLastPreachedSummary(latestPreached);
   const weekStatusLabel = !week
     ? t("dash_status_not_started")
     : allDone
@@ -343,6 +379,151 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
         })}
       </div>
 
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.15fr .85fr", gap: "16px", marginTop: "16px" }}>
+        <Card>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row", marginBottom: "14px" }}>
+            <div>
+              <h3 style={{ margin: "0 0 6px", fontSize: "20px", color: T.primary, fontFamily: T.font }}>
+                {t("dash_review_title")}
+              </h3>
+              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                {t("dash_review_desc")}
+              </p>
+            </div>
+            {week && (
+              <span style={{
+                padding: "7px 10px",
+                borderRadius: "999px",
+                background: done > 0 ? T.blueSoft : T.surface2,
+                color: done > 0 ? T.primary : T.muted,
+                fontSize: "12px",
+                fontWeight: 800,
+                fontFamily: T.fontSans,
+              }}>
+                {mappedNext ? `${t("dash_resume_exact")} ${mappedNext.label}` : t("dash_step_complete")}
+              </span>
+            )}
+          </div>
+
+          {!week ? (
+            <Notice color="gold">{t("dash_review_empty")}</Notice>
+          ) : (
+            <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ padding: "14px 16px", borderRadius: "16px", background: "#eef4ff", border: `1px solid rgba(11,42,91,.08)` }}>
+                <p style={{ margin: "0 0 5px", fontSize: "12px", color: T.gold, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", fontFamily: T.fontSans }}>
+                  {t("dash_review_title_label")}
+                </p>
+                <p style={{ margin: 0, color: T.primary, fontSize: "18px", lineHeight: 1.45, fontFamily: T.font }}>
+                  {review.approvedTitle || week.title}
+                </p>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "12px" }}>
+                <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                    {t("dash_review_bigidea")}
+                  </p>
+                  <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                    {review.approvedBigIdea || t("dash_review_missing")}
+                  </p>
+                </div>
+                <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                    {t("dash_review_challenge")}
+                  </p>
+                  <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                    {review.approvedChallenge || t("dash_review_missing")}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
+                <p style={{ margin: "0 0 8px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                  {t("dash_review_points")}
+                </p>
+                {review.approvedPoints.length ? (
+                  <div style={{ display: "grid", gap: "8px" }}>
+                    {review.approvedPoints.slice(0, 3).map((point, index) => (
+                      <div key={`${point.label}-${index}`} style={{ padding: "10px 12px", borderRadius: "12px", background: T.surface2 }}>
+                        <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "13px", fontWeight: 800, fontFamily: T.fontSans }}>
+                          {point.label}
+                        </p>
+                        <p style={{ margin: 0, color: T.text, fontSize: "13px", lineHeight: 1.55, fontFamily: T.fontSans }}>
+                          {point.statement}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                    {t("dash_review_points_empty")}
+                  </p>
+                )}
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <Btn onClick={() => router.push(mappedNext ? `/${mappedNext.page}` : "/final")}>
+                  {mappedNext ? t("dash_resume_week") : t("dash_review_final")}
+                </Btn>
+                <Btn variant="secondary" onClick={() => router.push("/final")}>
+                  {t("dash_review_open_final")}
+                </Btn>
+              </div>
+            </div>
+          )}
+        </Card>
+
+        <Card>
+          <h3 style={{ margin: "0 0 6px", fontSize: "20px", color: T.primary, fontFamily: T.font }}>
+            {t("dash_last_preached")}
+          </h3>
+          <p style={{ margin: "0 0 14px", color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+            {t("dash_last_preached_desc")}
+          </p>
+
+          {!latestPreached ? (
+            <Notice color="blue">{t("dash_last_preached_empty")}</Notice>
+          ) : (
+            <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ padding: "14px 16px", borderRadius: "16px", background: T.surface2, border: `1px solid ${T.line}` }}>
+                <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "17px", lineHeight: 1.4, fontFamily: T.font }}>
+                  {lastPreached.title || latestPreached.full_content?.title}
+                </p>
+                <p style={{ margin: 0, color: T.muted, fontSize: "12px", fontFamily: T.fontSans }}>
+                  {latestPreached.full_content?.passage || lastPreached.passage} · {formatPreachedAt(latestPreached.preached_at)}
+                </p>
+              </div>
+
+              {lastPreached.bigIdea && (
+                <div style={{ padding: "14px 16px", borderRadius: "16px", background: "#eef4ff", border: `1px solid rgba(11,42,91,.08)` }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                    {t("dash_review_bigidea")}
+                  </p>
+                  <p style={{ margin: 0, color: T.primary, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                    {lastPreached.bigIdea}
+                  </p>
+                </div>
+              )}
+
+              {lastPreached.challenge && (
+                <div style={{ padding: "14px 16px", borderRadius: "16px", background: T.violetSoft, border: `1px solid rgba(99,102,241,.12)` }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: "#5b21b6", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                    {t("dash_review_challenge")}
+                  </p>
+                  <p style={{ margin: 0, color: "#4c1d95", fontSize: "13px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+                    {lastPreached.challenge}
+                  </p>
+                </div>
+              )}
+
+              <Btn variant="secondary" onClick={() => router.push("/sermons")}>
+                {t("dash_my_sermons")}
+              </Btn>
+            </div>
+          )}
+        </Card>
+      </div>
+
     </AppLayout>
   );
 }
@@ -350,6 +531,7 @@ function ThisWeek({ profile, activeSerie, onNewSerie, onWeekComplete }) {
 // ── Page ────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [estado, setEstado] = useState(null);
+  const [latestPreached, setLatestPreached] = useState(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
   const router = useRouter();
@@ -358,7 +540,17 @@ export default function DashboardPage() {
   async function recarregar() {
     const novo = await loadFullState();
     if (novo.authenticated) {
+      const session = await auth.getSession();
+      const { data: lastHistory } = await supabase
+        .from("sermon_history")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("preached_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
       setEstado(novo);
+      setLatestPreached(lastHistory || null);
       if ((novo.profile?.plan || "simple") !== "plus") {
         router.push("/chat");
       }
@@ -444,6 +636,7 @@ export default function DashboardPage() {
     <ThisWeek
       profile={estado.profile}
       activeSerie={estado.series?.find((s) => !s.is_archived) ?? null}
+      latestPreached={latestPreached}
       onNewSerie={recarregar}
       onWeekComplete={handleWeekComplete}
     />
