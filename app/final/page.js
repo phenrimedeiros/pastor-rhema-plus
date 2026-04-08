@@ -87,6 +87,214 @@ function buildFullText({ serie, week, builder, illustrations, application }) {
   return text;
 }
 
+function escapeHtml(value) {
+  return asText(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+    .replaceAll("\n", "<br />");
+}
+
+function toSlug(value) {
+  return asText(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "sermon";
+}
+
+function buildExportDocument({ serie, week, builder, illustrations, application, labels }) {
+  const finalPoints = builder?.approvedPoints || builder?.points || [];
+  const finalIllustrations = illustrations?.approvedIllustrations
+    ? illustrations.approvedIllustrations.filter((item) => item.includeInFinal !== false)
+    : illustrations?.illustrations || [];
+
+  const pointsMarkup = finalPoints
+    .map((point, index) => {
+      const illustration = finalIllustrations[index];
+      const pointApplication = application?.applications?.[index];
+
+      return `
+        <section class="point">
+          <h3>${escapeHtml(point.label)}: ${escapeHtml(point.statement)}</h3>
+          <p>${escapeHtml(point.explanation)}</p>
+          ${illustration?.story ? `
+            <div class="support support-illustration">
+              <div class="support-label">${escapeHtml(labels.illustration)}</div>
+              <p>${escapeHtml(illustration.story)}</p>
+            </div>
+          ` : ""}
+          ${pointApplication?.action ? `
+            <div class="support support-application">
+              <div class="support-label">${escapeHtml(labels.application)}</div>
+              <p>${escapeHtml(pointApplication.action)}</p>
+            </div>
+          ` : ""}
+          ${point.transition ? `<p class="transition">${escapeHtml(point.transition)}</p>` : ""}
+        </section>
+      `;
+    })
+    .join("");
+
+  return `<!doctype html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>${escapeHtml(builder.selectedTitle || builder.titleOptions?.[0] || week?.title)}</title>
+      <style>
+        body {
+          margin: 0;
+          padding: 40px 28px 56px;
+          background: #f5f7fb;
+          color: #172033;
+          font-family: Georgia, "Times New Roman", serif;
+        }
+        .page {
+          max-width: 860px;
+          margin: 0 auto;
+          background: #ffffff;
+          border: 1px solid #d9e1ee;
+          border-radius: 24px;
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+          padding: 40px;
+        }
+        .eyebrow {
+          margin: 0 0 8px;
+          font: 700 11px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #b7862d;
+        }
+        h1 {
+          margin: 0 0 8px;
+          font-size: 34px;
+          line-height: 1.2;
+          color: #0b2a5b;
+        }
+        .meta {
+          margin: 0 0 28px;
+          color: #64748b;
+          font: 500 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .big-idea {
+          margin: 0 0 24px;
+          padding: 18px 20px;
+          border-radius: 18px;
+          background: #eef4ff;
+          border: 1px solid rgba(11, 42, 91, 0.08);
+          color: #0b2a5b;
+          font-size: 19px;
+          line-height: 1.7;
+          font-weight: 700;
+        }
+        .section {
+          margin-bottom: 18px;
+          padding: 18px 20px;
+          border-radius: 18px;
+          border: 1px solid #d9e1ee;
+          background: #ffffff;
+        }
+        .section-title {
+          margin: 0 0 10px;
+          color: #64748b;
+          font: 700 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .section p,
+        .point p {
+          margin: 0;
+          font-size: 15px;
+          line-height: 1.8;
+        }
+        .point {
+          margin-bottom: 16px;
+          padding: 20px;
+          border-radius: 18px;
+          border: 1px solid #d9e1ee;
+          background: #ffffff;
+        }
+        .point h3 {
+          margin: 0 0 10px;
+          color: #0b2a5b;
+          font-size: 21px;
+          line-height: 1.35;
+        }
+        .support {
+          margin-top: 14px;
+          padding: 14px 16px;
+          border-radius: 14px;
+        }
+        .support-illustration {
+          background: rgba(202, 161, 74, 0.14);
+          color: #6b4e13;
+        }
+        .support-application {
+          background: rgba(22, 163, 74, 0.12);
+          color: #166534;
+        }
+        .support-label {
+          margin-bottom: 6px;
+          font: 800 11px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .transition {
+          margin-top: 12px !important;
+          color: #b7862d;
+          font-style: italic;
+        }
+        @media print {
+          body {
+            background: #ffffff;
+            padding: 0;
+          }
+          .page {
+            max-width: none;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <main class="page">
+        <p class="eyebrow">${escapeHtml(labels.title)}</p>
+        <h1>${escapeHtml(builder.selectedTitle || builder.titleOptions?.[0] || week?.title)}</h1>
+        <p class="meta">${escapeHtml(week?.passage)} · ${escapeHtml(serie?.series_name)}</p>
+        <div class="big-idea">${escapeHtml(builder.approvedBigIdea || builder.bigIdea)}</div>
+        <section class="section">
+          <p class="section-title">${escapeHtml(labels.intro)}</p>
+          <p>${escapeHtml(builder.introduction)}</p>
+        </section>
+        ${pointsMarkup}
+        <section class="section">
+          <p class="section-title">${escapeHtml(labels.conclusion)}</p>
+          <p>${escapeHtml(builder.conclusion)}</p>
+        </section>
+        ${builder.callToAction ? `
+          <section class="section" style="background: rgba(22, 163, 74, 0.12); border-color: rgba(22, 163, 74, 0.18);">
+            <p class="section-title" style="color: #166534;">${escapeHtml(labels.cta)}</p>
+            <p style="color: #166534;">${escapeHtml(builder.callToAction)}</p>
+          </section>
+        ` : ""}
+        ${application?.approvedWeeklyChallenge || application?.weeklyChallenge ? `
+          <section class="section" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.18);">
+            <p class="section-title" style="color: #5b21b6;">${escapeHtml(labels.weeklyChallenge)}</p>
+            <p style="color: #4c1d95;">${escapeHtml(application.approvedWeeklyChallenge || application.weeklyChallenge)}</p>
+          </section>
+        ` : ""}
+      </main>
+    </body>
+  </html>`;
+}
+
 export default function FinalPage() {
   const [estado, setEstado] = useState(null);
   const [weekContent, setWeekContent] = useState({});
@@ -192,6 +400,68 @@ export default function FinalPage() {
     navigator.clipboard?.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const exportLabels = {
+    title: t("final_title"),
+    intro: t("final_intro"),
+    conclusion: t("final_conclusion"),
+    cta: t("final_cta"),
+    weeklyChallenge: t("final_weekly_challenge"),
+    illustration: t("final_illustration"),
+    application: t("final_application"),
+  };
+
+  const printSermon = () => {
+    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=960,height=900");
+    if (!printWindow) {
+      setError(t("final_print_error"));
+      return;
+    }
+
+    const documentHtml = buildExportDocument({
+      serie: activeSerie,
+      week,
+      builder,
+      illustrations,
+      application,
+      labels: exportLabels,
+    });
+
+    printWindow.document.open();
+    printWindow.document.write(documentHtml);
+    printWindow.document.close();
+    printWindow.focus();
+    window.setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  const downloadWordDocument = () => {
+    try {
+      const documentHtml = buildExportDocument({
+        serie: activeSerie,
+        week,
+        builder,
+        illustrations,
+        application,
+        labels: exportLabels,
+      });
+
+      const blob = new Blob([`\ufeff${documentHtml}`], {
+        type: "application/msword;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${toSlug(builder.selectedTitle || builder.titleOptions?.[0] || week?.title)}.doc`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError(t("final_word_error"));
+    }
   };
 
   const saveFinalEdits = async () => {
@@ -699,15 +969,24 @@ export default function FinalPage() {
 
             <Card>
               <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
-              <div style={{ display: "grid", gap: "10px" }}>
-                <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
-                  {copied ? t("final_copied") : t("final_copy")}
-                </Btn>
-                <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
-                  {t("final_back")}
-                </Btn>
-              </div>
-            </Card>
+          <div style={{ display: "grid", gap: "10px" }}>
+            <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
+              {copied ? t("final_copied") : t("final_copy")}
+            </Btn>
+            <Btn variant="secondary" onClick={printSermon} style={{ width: "100%", justifyContent: "center" }}>
+              {t("final_print")}
+            </Btn>
+            <Btn variant="secondary" onClick={downloadWordDocument} style={{ width: "100%", justifyContent: "center" }}>
+              {t("final_download_word")}
+            </Btn>
+            <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
+              {t("final_back")}
+            </Btn>
+          </div>
+          <p style={{ margin: "12px 0 0", color: T.muted, fontSize: "12px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+            {t("final_export_hint")}
+          </p>
+        </Card>
 
             <Card>
               <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>{t("final_checklist")}</h4>
