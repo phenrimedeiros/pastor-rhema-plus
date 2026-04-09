@@ -10,10 +10,9 @@ import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function LoginPage() {
   const isMobile = useIsMobile();
+  const HOTMART_URL = "https://pay.hotmart.com/W103907822M?checkoutMode=10";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,10 +34,6 @@ export default function LoginPage() {
           redirectTo: `${siteUrl}/reset-password`,
         });
         setSuccess(t("login_forgot_sent"));
-      } else if (isSignUp) {
-        if (!fullName.trim()) { setError(t("login_err_name")); setLoading(false); return; }
-        await auth.signUp(email, password, fullName);
-        setSuccess(t("login_check_email"));
       } else {
         await auth.signIn(email, password);
         setSuccess(t("login_redirecting"));
@@ -56,6 +51,7 @@ export default function LoginPage() {
     <div style={{
       minHeight: "100vh",
       display: "flex",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       background: "linear-gradient(160deg, #0b2a5b 0%, #0d3268 100%)",
@@ -63,25 +59,6 @@ export default function LoginPage() {
       padding: isMobile ? "16px" : "20px",
     }}>
       <div style={{ width: "100%", maxWidth: 380 }}>
-
-        {/* Language switcher */}
-        <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap" }}>
-          {LANGUAGES.map((l) => (
-            <button
-              key={l.code}
-              onClick={() => changeLang(l.code)}
-              style={{
-                minHeight: 40, padding: "7px 12px", borderRadius: "8px", border: "none",
-                background: lang === l.code ? "rgba(255,255,255,.2)" : "transparent",
-                color: lang === l.code ? "#fff" : "rgba(255,255,255,.4)",
-                fontFamily: T.fontSans, fontSize: "12px", fontWeight: lang === l.code ? 700 : 500,
-                cursor: "pointer",
-              }}
-            >
-              {l.flag} {l.code.toUpperCase()}
-            </button>
-          ))}
-        </div>
 
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
@@ -93,11 +70,12 @@ export default function LoginPage() {
             boxShadow: "0 8px 32px rgba(0,0,0,.2)",
             padding: "14px",
             boxSizing: "border-box",
+            overflow: "hidden",
           }}>
             <Image src="/logo.png" alt="Pastor Rhema" width={96} height={96} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
-            {isSignUp ? t("login_signup_subtitle") : t("login_signin_subtitle")}
+            {t("login_signin_subtitle")}
           </p>
         </div>
 
@@ -109,7 +87,7 @@ export default function LoginPage() {
           boxShadow: "0 24px 64px rgba(0,0,0,.25)",
         }}>
           <h2 style={{ margin: "0 0 6px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
-            {isForgot ? t("login_forgot_title") : isSignUp ? t("login_signup_title") : t("login_signin_title")}
+            {isForgot ? t("login_forgot_title") : t("login_signin_title")}
           </h2>
           {isForgot && (
             <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, lineHeight: 1.6 }}>
@@ -119,20 +97,6 @@ export default function LoginPage() {
           {!isForgot && <div style={{ marginBottom: "20px" }} />}
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {isSignUp && !isForgot && (
-              <label style={labelStyle}>
-                {t("login_name")}
-                <input
-                  type="text"
-                  placeholder={t("login_name_ph")}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  disabled={loading}
-                  style={inputStyle}
-                />
-              </label>
-            )}
-
             <label style={labelStyle}>
               {t("login_email")}
               <input
@@ -161,7 +125,7 @@ export default function LoginPage() {
               </label>
             )}
 
-            {!isSignUp && !isForgot && (
+            {!isForgot && (
               <div style={{ textAlign: "right", marginTop: "-6px" }}>
                 <button
                   type="button"
@@ -192,7 +156,7 @@ export default function LoginPage() {
                 fontFamily: T.fontSans, opacity: loading ? 0.7 : 1,
               }}
             >
-              {loading ? t("login_loading") : isForgot ? t("login_forgot_btn") : isSignUp ? t("login_signup_btn") : t("login_signin_btn")}
+              {loading ? t("login_loading") : isForgot ? t("login_forgot_btn") : t("login_signin_btn")}
             </button>
           </form>
 
@@ -208,16 +172,16 @@ export default function LoginPage() {
             ) : (
               <>
                 <span style={{ fontSize: "13px", color: T.muted }}>
-                  {isSignUp ? t("login_have_account") : t("login_no_account")}
+                  {t("login_no_access")}
                 </span>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => { setIsSignUp(!isSignUp); resetState(); }}
-                  style={{ background: "none", border: "none", padding: 0, color: T.primary, fontWeight: 700, fontSize: "13px", cursor: "pointer", fontFamily: T.fontSans }}
+                <a
+                  href={HOTMART_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: T.primary, fontWeight: 700, fontSize: "13px", fontFamily: T.fontSans, textDecoration: "none" }}
                 >
-                  {isSignUp ? t("login_goto_signin") : t("login_goto_signup")}
-                </button>
+                  {t("login_get_access")}
+                </a>
               </>
             )}
           </div>
@@ -226,6 +190,25 @@ export default function LoginPage() {
             {t("login_security")}
           </p>
         </div>
+      </div>
+
+      {/* Language switcher — rodapé */}
+      <div style={{ display: "flex", gap: "4px", justifyContent: "center", marginTop: "24px", flexWrap: "wrap" }}>
+        {LANGUAGES.map((l) => (
+          <button
+            key={l.code}
+            onClick={() => changeLang(l.code)}
+            style={{
+              minHeight: 28, padding: "4px 8px", borderRadius: "6px", border: "none",
+              background: lang === l.code ? "rgba(255,255,255,.15)" : "transparent",
+              color: lang === l.code ? "rgba(255,255,255,.7)" : "rgba(255,255,255,.3)",
+              fontFamily: T.fontSans, fontSize: "10px", fontWeight: lang === l.code ? 700 : 400,
+              cursor: "pointer",
+            }}
+          >
+            {l.flag} {l.code.toUpperCase()}
+          </button>
+        ))}
       </div>
     </div>
   );
