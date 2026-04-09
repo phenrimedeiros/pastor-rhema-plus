@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
@@ -26,7 +24,6 @@ export default function IllustrationsPage() {
   const [error, setError] = useState("");
   const [choiceMessage, setChoiceMessage] = useState("");
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   const loadVersions = async (weekId) => {
@@ -150,7 +147,7 @@ export default function IllustrationsPage() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
       <Loader text={t("common_loading")} />
     </div>
   );
@@ -165,14 +162,14 @@ export default function IllustrationsPage() {
         canContinue={!!illustrations}
         savedContentText={week?.illustrations ? t("illus_save") : ""}
       />
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] gap-[16px] md:gap-[22px]">
 
         {/* Left */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-[12px] mb-[16px]">
             <div>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("illus_title")}</h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+              <h4 className="m-0 mb-[6px] text-[20px] font-serif">{t("illus_title")}</h4>
+              <p className="m-0 text-[14px] text-brand-muted font-sans">
                 {t("illus_subtitle")}
               </p>
             </div>
@@ -184,29 +181,15 @@ export default function IllustrationsPage() {
           {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {needsBuilder && (
-            <div style={{
-              textAlign: "center",
-              padding: isMobile ? "26px 0" : "34px 8px",
-              display: "grid",
-              gap: "14px",
-              justifyItems: "center",
-            }}>
-              <div style={{
-                width: 64,
-                height: 64,
-                borderRadius: "20px",
-                background: T.amberSoft,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "28px",
-              }}>
+            <div className="text-center p-[26px_0] md:p-[34px_8px] grid gap-[14px] justify-items-center">
+              <div className="w-[64px] h-[64px] rounded-[20px] bg-brand-amber-soft grid place-items-center text-[28px]">
                 💡
               </div>
-              <div style={{ maxWidth: 520 }}>
-                <h5 style={{ margin: "0 0 8px", fontSize: "18px", color: T.primary, fontFamily: T.font }}>
+              <div className="max-w-[520px]">
+                <h5 className="m-0 mb-[8px] text-[18px] text-brand-primary font-serif">
                   {t("illus_empty_title")}
                 </h5>
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                <p className="m-0 text-[14px] text-brand-muted leading-[1.7] font-sans">
                   {t("illus_empty_desc")}
                 </p>
               </div>
@@ -215,8 +198,8 @@ export default function IllustrationsPage() {
           )}
 
           {!illustrations && !generating && !needsBuilder && (
-            <div style={{ textAlign: "center", padding: "32px 0", display: "grid", gap: "12px", justifyItems: "center" }}>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans, maxWidth: 520 }}>
+            <div className="text-center p-[32px_0] grid gap-[12px] justify-items-center">
+              <p className="m-0 text-[14px] text-brand-muted font-sans max-w-[520px]">
                 {t("illus_empty_desc")}
               </p>
               <Btn onClick={generate}>{t("illus_generate")}</Btn>
@@ -226,12 +209,9 @@ export default function IllustrationsPage() {
           {generating && <Loader text={t("illus_generating")} />}
 
           {approvedIllustrations.map((il, i) => (
-            <div key={i} style={{
-              border: `1px solid ${T.line}`, borderRadius: "18px", padding: "18px",
-              marginBottom: "14px", background: "linear-gradient(180deg, #fff, #fbfcfe)",
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "center", marginBottom: "12px", flexWrap: "wrap" }}>
-                <Pill style={{ background: T.amberSoft, color: "#92400e" }}>
+            <div key={i} className="border border-brand-line rounded-[18px] p-[18px] mb-[14px] bg-gradient-to-b from-white to-[#fbfcfe]">
+              <div className="flex flex-wrap justify-between gap-[12px] items-center mb-[12px]">
+                <Pill className="bg-brand-amber-soft text-amber-800">
                   {il.forPoint}
                 </Pill>
                 <Btn
@@ -242,12 +222,12 @@ export default function IllustrationsPage() {
                       itemIndex === i ? { ...item, includeInFinal: item.includeInFinal === false } : item
                     )),
                   }))}
-                  style={{ minWidth: isMobile ? "100%" : 0 }}
+                  className="w-full md:w-auto min-w-[0]"
                 >
                   {il.includeInFinal === false ? t("illus_include") : t("illus_include")}
                 </Btn>
               </div>
-              <div style={{ display: "grid", gap: "10px" }}>
+              <div className="grid gap-[10px]">
                 <Field label={t("illus_story")}>
                   <textarea
                     value={il.story || ""}
@@ -258,11 +238,7 @@ export default function IllustrationsPage() {
                       )),
                     }))}
                     rows={4}
-                    style={{
-                      width: "100%", padding: "12px 14px", borderRadius: "14px",
-                      border: `1px solid ${T.line}`, background: "#fff", color: T.text,
-                      resize: "vertical", fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans,
-                    }}
+                    className="w-full p-[12px_14px] rounded-[14px] border border-brand-line bg-white text-brand-text resize-y text-[14px] leading-[1.7] font-sans"
                   />
                 </Field>
                 <Field label={t("illus_connection")}>
@@ -275,11 +251,7 @@ export default function IllustrationsPage() {
                       )),
                     }))}
                     rows={2}
-                    style={{
-                      width: "100%", padding: "12px 14px", borderRadius: "14px",
-                      border: `1px solid ${T.line}`, background: "#fff", color: T.text,
-                      resize: "vertical", fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans,
-                    }}
+                    className="w-full p-[12px_14px] rounded-[14px] border border-brand-line bg-white text-brand-text resize-y text-[14px] leading-[1.6] font-sans"
                   />
                 </Field>
               </div>
@@ -287,7 +259,7 @@ export default function IllustrationsPage() {
           ))}
 
           {illustrations && (
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
+            <div className="flex justify-between mt-[18px] flex-wrap gap-[12px]">
               <Btn variant="secondary" onClick={generate}>{t("illus_regenerate")}</Btn>
               <Btn variant="secondary" onClick={saveIllustrationChoices} disabled={savingChoices}>
                 {savingChoices ? t("illus_saving") : t("illus_save")}
@@ -298,7 +270,7 @@ export default function IllustrationsPage() {
         </Card>
 
         {/* Right — Sermon Points */}
-        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+        <div className="grid gap-[22px] content-start">
           <VersionHistoryCard
             title={t("illus_versions")}
             versions={versions}
@@ -308,20 +280,17 @@ export default function IllustrationsPage() {
             onDuplicate={duplicateVersion}
             duplicatingVersionId={duplicatingVersionId}
           />
-          <Card style={{ alignSelf: "start" }}>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("illus_your_points")}</h4>
+          <Card className="self-start">
+            <h4 className="m-0 mb-[12px] text-[18px] font-serif">{t("illus_your_points")}</h4>
             {builderPoints ? (
               builderPoints.map((p, i) => (
-                <div key={i} style={{
-                  padding: "12px", borderRadius: "14px", background: T.surface2,
-                  border: `1px solid ${T.line}`, marginBottom: "10px",
-                }}>
-                  <b style={{ fontSize: "13px", color: T.primary, fontFamily: T.fontSans }}>{p.label}</b>
-                  <p style={{ margin: "4px 0 0", color: T.muted, fontSize: "12.5px", fontFamily: T.fontSans }}>{p.statement}</p>
+                <div key={i} className="p-[12px] rounded-[14px] bg-brand-surface-2 border border-brand-line mb-[10px]">
+                  <b className="text-[13px] text-brand-primary font-sans">{p.label}</b>
+                  <p className="m-[4px_0_0] text-[12.5px] text-brand-muted font-sans">{p.statement}</p>
                 </div>
               ))
             ) : (
-              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>{t("illus_no_points")}</p>
+              <p className="text-[14px] text-brand-muted font-sans">{t("illus_no_points")}</p>
             )}
           </Card>
         </div>

@@ -3,10 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState } from "@/lib/supabase_client";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Loader, Notice } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 
 const STEPS = ["study", "builder", "illustrations", "application"];
@@ -18,19 +16,17 @@ function stepsDone(week) {
 
 function ProgressDots({ done, total = 4 }) {
   return (
-    <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+    <div className="flex gap-[4px] items-center">
       {Array.from({ length: total }).map((_, index) => (
         <div
           key={index}
+          className="w-[8px] h-[8px] rounded-full"
           style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: index < done ? "linear-gradient(135deg, #22c55e, #16a34a)" : T.line,
+            background: index < done ? "linear-gradient(135deg, #22c55e, #16a34a)" : "var(--color-brand-line, #e2e8f0)",
           }}
         />
       ))}
-      <span style={{ marginLeft: "6px", fontSize: "11px", color: T.muted, fontFamily: T.fontSans }}>
+      <span className="ml-[6px] text-[11px] text-brand-muted font-sans tracking-tight">
         {done}/{total}
       </span>
     </div>
@@ -163,7 +159,6 @@ export default function SermonsPage() {
   const [selectedHistoryId, setSelectedHistoryId] = useState("");
   const [copiedId, setCopiedId] = useState("");
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -199,7 +194,7 @@ export default function SermonsPage() {
       setLoading(false);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const series = useMemo(() => estado?.series || [], [estado?.series]);
   const normalizedQuery = search.trim().toLowerCase();
@@ -258,7 +253,7 @@ export default function SermonsPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
         <Loader text={t("common_loading")} />
       </div>
     );
@@ -266,25 +261,25 @@ export default function SermonsPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ marginBottom: "24px" }}>
-        <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+      <div className="mb-[24px]">
+        <p className="m-0 mb-[4px] text-[11px] text-brand-gold font-extrabold tracking-[0.08em] uppercase font-sans">
           {t("sermons_title")}
         </p>
-        <h2 style={{ margin: "0 0 4px", fontSize: "26px", fontFamily: T.font, color: T.primary }}>
+        <h2 className="m-0 mb-[4px] text-[26px] font-serif text-brand-primary">
           {t("sermons_title")}
         </h2>
-        <p style={{ margin: 0, fontSize: "14px", color: T.muted, fontFamily: T.fontSans }}>
+        <p className="m-0 text-[14px] text-brand-muted font-sans">
           {completedSermons} {t("sermons_subtitle_a")} · {totalSermons} {t("sermons_subtitle_b")}
         </p>
       </div>
 
-      <Card style={{ marginBottom: "22px" }}>
-        <div style={{ display: "grid", gap: "14px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: "14px" }}>
+      <Card className="mb-[22px]">
+        <div className="grid gap-[14px]">
+          <div className="grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] gap-[14px]">
             <div>
               <label
                 htmlFor="sermon-search"
-                style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 700, color: "#334155", fontFamily: T.fontSans }}
+                className="block mb-[8px] text-[13px] font-bold text-slate-700 font-sans"
               >
                 {t("sermons_search")}
               </label>
@@ -293,23 +288,14 @@ export default function SermonsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("sermons_search_ph")}
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "14px",
-                  border: `1px solid ${T.line}`,
-                  background: "#fff",
-                  fontSize: "14px",
-                  fontFamily: T.fontSans,
-                  color: T.text,
-                }}
+                className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] font-sans text-brand-text outline-none"
               />
             </div>
             <div>
-              <p style={{ display: "block", margin: "0 0 8px", fontSize: "13px", fontWeight: 700, color: "#334155", fontFamily: T.fontSans }}>
+              <p className="block m-0 mb-[8px] text-[13px] font-bold text-slate-700 font-sans">
                 {t("sermons_filter")}
               </p>
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <div className="flex gap-[10px] flex-wrap">
                 {FILTERS.map((item) => {
                   const active = filter === item;
                   return (
@@ -332,7 +318,7 @@ export default function SermonsPage() {
         </div>
       </Card>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "14px", marginBottom: "28px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-[14px] mb-[28px]">
         {[
           { val: series.length, label: t("sermons_active"), emoji: "📚" },
           { val: completedSermons, label: t("sermons_preached"), emoji: "✅" },
@@ -340,32 +326,24 @@ export default function SermonsPage() {
         ].map((item, index) => (
           <div
             key={index}
-            style={{
-              border: `1px solid ${T.line}`,
-              borderRadius: "16px",
-              padding: "16px",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              gap: "14px",
-            }}
+            className="border border-brand-line rounded-[16px] p-[16px] bg-white flex items-center gap-[14px]"
           >
-            <span style={{ fontSize: "28px" }}>{item.emoji}</span>
+            <span className="text-[28px]">{item.emoji}</span>
             <div>
-              <b style={{ display: "block", fontSize: "24px", color: T.primary, fontFamily: T.font, lineHeight: 1 }}>
+              <b className="block text-[24px] text-brand-primary font-serif leading-[1]">
                 {item.val}
               </b>
-              <span style={{ fontSize: "12px", color: T.muted, fontFamily: T.fontSans }}>{item.label}</span>
+              <span className="text-[12px] text-brand-muted font-sans">{item.label}</span>
             </div>
           </div>
         ))}
       </div>
 
       {series.length === 0 && (
-        <Card style={{ textAlign: "center", padding: "48px 24px" }}>
-          <p style={{ fontSize: "40px", marginBottom: "12px" }}>📖</p>
-          <h4 style={{ margin: "0 0 8px", fontFamily: T.font, color: T.primary }}>{t("sermons_empty")}</h4>
-          <p style={{ margin: "0 0 20px", color: T.muted, fontFamily: T.fontSans, fontSize: "14px" }}>
+        <Card className="text-center p-[48px_24px]">
+          <p className="text-[40px] mb-[12px]">📖</p>
+          <h4 className="m-0 mb-[8px] font-serif text-brand-primary">{t("sermons_empty")}</h4>
+          <p className="m-0 mb-[20px] text-brand-muted font-sans text-[14px]">
             {t("sermons_empty_desc")}
           </p>
           <Btn onClick={() => router.push("/dashboard")}>{t("sermons_plan")}</Btn>
@@ -373,49 +351,44 @@ export default function SermonsPage() {
       )}
 
       {series.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.05fr .95fr", gap: "22px", alignItems: "start" }}>
-          <div style={{ display: "grid", gap: "18px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] gap-[22px] items-start">
+          <div className="grid gap-[18px]">
             <Card>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
+              <div className="flex justify-between items-center gap-[12px] mb-[16px] flex-wrap">
                 <div>
-                  <h4 style={{ margin: "0 0 4px", fontSize: "18px", fontFamily: T.font }}>{t("sermons_library_title")}</h4>
-                  <p style={{ margin: 0, color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>
+                  <h4 className="m-0 mb-[4px] text-[18px] font-serif">{t("sermons_library_title")}</h4>
+                  <p className="m-0 text-brand-muted text-[13px] font-sans">
                     {t("sermons_library_desc")}
                   </p>
                 </div>
               </div>
 
               {!filteredHistory.length ? (
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                <p className="m-0 text-brand-muted text-[14px] font-sans">
                   {t("sermons_no_results")}
                 </p>
               ) : (
-                <div style={{ display: "grid", gap: "12px" }}>
+                <div className="grid gap-[12px]">
                   {filteredHistory.map((entry) => {
                     const active = selectedHistory?.id === entry.id;
                     return (
                       <div
                         key={entry.id}
-                        style={{
-                          border: `1px solid ${active ? "rgba(11,42,91,.18)" : T.line}`,
-                          borderRadius: "16px",
-                          padding: "14px",
-                          background: active ? "#eef4ff" : "#fff",
-                        }}
+                        className={`border rounded-[16px] p-[14px] ${active ? "border-[#0b2a5b2e] bg-[#eef4ff]" : "border-brand-line bg-white"}`}
                       >
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+                        <div className="flex justify-between gap-[12px] items-start flex-col md:flex-row">
                           <div>
-                            <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "16px", fontWeight: 800, fontFamily: T.fontSans }}>
+                            <p className="m-0 mb-[4px] text-brand-primary text-[16px] font-extrabold font-sans">
                               {entry.title}
                             </p>
-                            <p style={{ margin: "0 0 6px", color: T.muted, fontSize: "12px", fontFamily: T.fontSans }}>
+                            <p className="m-0 mb-[6px] text-brand-muted text-[12px] font-sans">
                               {entry.seriesName} · {entry.full_content?.passage || entry.week?.passage} · {formatDate(entry.preached_at)}
                             </p>
-                            <p style={{ margin: 0, color: T.text, fontSize: "13px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+                            <p className="m-0 text-brand-text text-[13px] leading-[1.6] font-sans">
                               {entry.preview || t("sermons_no_preview")}
                             </p>
                           </div>
-                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                          <div className="flex gap-[8px] flex-wrap">
                             <Btn variant="secondary" onClick={() => setSelectedHistoryId(entry.id)}>
                               {t("sermons_view")}
                             </Btn>
@@ -438,55 +411,31 @@ export default function SermonsPage() {
                 <div key={serie.id}>
                   <div
                     onClick={() => setExpandedSeries((prev) => ({ ...prev, [serie.id]: !prev[serie.id] }))}
-                    style={{
-                      display: "flex",
-                      alignItems: isMobile ? "flex-start" : "center",
-                      justifyContent: "space-between",
-                      flexDirection: isMobile ? "column" : "row",
-                      padding: "16px 20px",
-                      borderRadius: isExpanded ? "18px 18px 0 0" : "18px",
-                      background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
-                      cursor: "pointer",
-                      userSelect: "none",
-                      gap: "14px",
-                    }}
+                    className={`flex items-start md:items-center justify-between flex-col md:flex-row p-[16px_20px] bg-gradient-to-br from-[#0b2a5b] to-[#163d7a] cursor-pointer select-none gap-[14px] ${isExpanded ? "rounded-t-[18px]" : "rounded-[18px]"}`}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    <div className="flex items-center gap-[14px]">
                       <div
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "12px",
-                          background: "rgba(202,161,74,.25)",
-                          display: "grid",
-                          placeItems: "center",
-                          fontSize: "18px",
-                        }}
+                        className="w-[40px] h-[40px] rounded-[12px] bg-[#caa14a40] grid place-items-center text-[18px]"
                       >
                         📚
                       </div>
                       <div>
-                        <p style={{ margin: "0 0 2px", fontSize: "16px", fontWeight: 800, color: "#fff", fontFamily: T.fontSans }}>
+                        <p className="m-0 mb-[2px] text-[16px] font-extrabold text-white font-sans">
                           {serie.series_name}
                         </p>
-                        <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
+                        <p className="m-0 text-[12px] text-white/55 font-sans">
                           {serie.weeks.length} {t("sermons_week")} · {serie.preachedIds.size} {t("sermons_preached_badge")}
                         </p>
                       </div>
                     </div>
-                    <span style={{ color: "rgba(255,255,255,.5)", fontSize: "18px" }}>
+                    <span className="text-white/50 text-[18px]">
                       {isExpanded ? "▲" : "▼"}
                     </span>
                   </div>
 
                   {isExpanded && (
                     <div
-                      style={{
-                        border: `1px solid ${T.line}`,
-                        borderTop: "none",
-                        borderRadius: "0 0 18px 18px",
-                        overflow: "hidden",
-                      }}
+                      className="border border-brand-line border-t-0 rounded-b-[18px] overflow-hidden"
                     >
                       {serie.weeks.map((week, weekIndex) => {
                         const isPreached = serie.preachedIds.has(week.id);
@@ -496,59 +445,29 @@ export default function SermonsPage() {
                         return (
                           <div
                             key={week.id}
-                            style={{
-                              display: "flex",
-                              alignItems: isMobile ? "flex-start" : "center",
-                              justifyContent: "space-between",
-                              flexDirection: isMobile ? "column" : "row",
-                              padding: "14px 20px",
-                              borderBottom: weekIndex < serie.weeks.length - 1 ? `1px solid ${T.line}` : "none",
-                              background: isActive ? "#f0f7ff" : "#fff",
-                              gap: "12px",
-                              cursor: isActive ? "pointer" : "default",
-                            }}
+                            className={`flex items-start md:items-center justify-between flex-col md:flex-row p-[14px_20px] ${weekIndex < serie.weeks.length - 1 ? "border-b border-brand-line" : ""} ${isActive ? "bg-[#f0f7ff] cursor-pointer" : "bg-white cursor-default"} gap-[12px]`}
                             onClick={() => isActive && router.push("/dashboard")}
                           >
-                            <div style={{ display: "flex", alignItems: "center", gap: "14px", width: "100%" }}>
+                            <div className="flex items-center gap-[14px] w-full">
                               <div
-                                style={{
-                                  width: 36,
-                                  height: 36,
-                                  borderRadius: "10px",
-                                  display: "grid",
-                                  placeItems: "center",
-                                  fontSize: "13px",
-                                  fontWeight: 800,
-                                  background: isPreached ? T.greenSoft : isActive ? T.amberSoft : T.surface2,
-                                  color: isPreached ? "#166534" : isActive ? "#92400e" : T.muted,
-                                  fontFamily: T.fontSans,
-                                  flexShrink: 0,
-                                }}
+                                className={`w-[36px] h-[36px] rounded-[10px] grid place-items-center text-[13px] font-extrabold font-sans shrink-0 ${isPreached ? "bg-brand-green-soft text-brand-green" : isActive ? "bg-brand-amber-soft text-amber-800" : "bg-brand-surface-2 text-brand-muted"}`}
                               >
                                 {isPreached ? "✓" : weekIndex + 1}
                               </div>
                               <div>
-                                <p style={{ margin: "0 0 2px", fontSize: "14px", fontWeight: 700, color: T.text, fontFamily: T.fontSans }}>
+                                <p className="m-0 mb-[2px] text-[14px] font-bold text-brand-text font-sans">
                                   {week.title}
                                 </p>
-                                <p style={{ margin: 0, fontSize: "12px", color: T.muted, fontFamily: T.fontSans }}>
+                                <p className="m-0 text-[12px] text-brand-muted font-sans">
                                   {week.passage}
                                 </p>
                               </div>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", width: isMobile ? "100%" : "auto" }}>
+                            <div className="flex items-center justify-between gap-[16px] w-full md:w-auto">
                               {!isPreached && <ProgressDots done={done} />}
                               <span
-                                style={{
-                                  padding: "4px 10px",
-                                  borderRadius: "999px",
-                                  fontSize: "11px",
-                                  fontWeight: 700,
-                                  fontFamily: T.fontSans,
-                                  background: isPreached ? T.greenSoft : isActive ? T.amberSoft : T.surface2,
-                                  color: isPreached ? "#166534" : isActive ? "#92400e" : T.muted,
-                                }}
+                                className={`px-[10px] py-[4px] rounded-full text-[11px] font-bold font-sans ${isPreached ? "bg-brand-green-soft text-brand-green" : isActive ? "bg-brand-amber-soft text-amber-800" : "bg-brand-surface-2 text-brand-muted"}`}
                               >
                                 {isPreached ? t("sermons_preached_badge") : isActive ? t("sermons_active_badge") : t("sermons_planned_badge")}
                               </span>
@@ -563,43 +482,43 @@ export default function SermonsPage() {
             })}
           </div>
 
-          <div style={{ display: "grid", gap: "18px", alignContent: "start" }}>
+          <div className="grid gap-[18px] content-start">
             <Card>
-              <h4 style={{ margin: "0 0 10px", fontSize: "18px", fontFamily: T.font }}>{t("sermons_preview_title")}</h4>
+              <h4 className="m-0 mb-[10px] text-[18px] font-serif">{t("sermons_preview_title")}</h4>
               {!selectedHistory ? (
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                <p className="m-0 text-brand-muted text-[14px] font-sans">
                   {t("sermons_preview_empty")}
                 </p>
               ) : (
-                <div style={{ display: "grid", gap: "14px" }}>
+                <div className="grid gap-[14px]">
                   <div>
-                    <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "18px", fontWeight: 800, fontFamily: T.fontSans }}>
+                    <p className="m-0 mb-[4px] text-brand-primary text-[18px] font-extrabold font-sans">
                       {selectedHistory.title}
                     </p>
-                    <p style={{ margin: 0, color: T.muted, fontSize: "12px", fontFamily: T.fontSans }}>
+                    <p className="m-0 text-brand-muted text-[12px] font-sans">
                       {selectedHistory.seriesName} · {selectedHistory.full_content?.passage || selectedHistory.week?.passage} · {formatDate(selectedHistory.preached_at)}
                     </p>
                   </div>
 
                   {getHistoryBigIdea(selectedHistory) && (
-                    <div style={{ padding: "14px", borderRadius: "14px", background: "#eef4ff", border: `1px solid rgba(11,42,91,.1)` }}>
-                      <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.gold, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", fontFamily: T.fontSans }}>
+                    <div className="p-[14px] rounded-[14px] bg-[#eef4ff] border border-[rgba(11,42,91,.1)]">
+                      <p className="m-0 mb-[6px] text-[12px] text-brand-gold font-extrabold uppercase tracking-[0.08em] font-sans">
                         {t("final_big_idea_label")}
                       </p>
-                      <p style={{ margin: 0, color: T.primary, fontSize: "14px", lineHeight: 1.7, fontFamily: T.font }}>
+                      <p className="m-0 text-brand-primary text-[14px] leading-[1.7] font-serif">
                         {getHistoryBigIdea(selectedHistory)}
                       </p>
                     </div>
                   )}
 
                   {(selectedHistory.full_content?.builder?.approvedPoints || selectedHistory.full_content?.builder?.points)?.length > 0 && (
-                    <div style={{ display: "grid", gap: "10px" }}>
+                    <div className="grid gap-[10px]">
                       {(selectedHistory.full_content.builder.approvedPoints || selectedHistory.full_content.builder.points).map((point, index) => (
-                        <div key={index} style={{ border: `1px solid ${T.line}`, borderRadius: "14px", padding: "12px", background: "#fff" }}>
-                          <p style={{ margin: "0 0 6px", fontSize: "13px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
+                        <div key={index} className="border border-brand-line rounded-[14px] p-[12px] bg-white">
+                          <p className="m-0 mb-[6px] text-[13px] text-brand-primary font-extrabold font-sans">
                             {point.label}: {point.statement}
                           </p>
-                          <p style={{ margin: 0, color: T.muted, fontSize: "12.5px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                          <p className="m-0 text-brand-muted text-[12.5px] leading-[1.65] font-sans">
                             {point.explanation}
                           </p>
                         </div>
@@ -608,17 +527,17 @@ export default function SermonsPage() {
                   )}
 
                   {(selectedHistory.full_content?.application?.approvedWeeklyChallenge || selectedHistory.full_content?.application?.weeklyChallenge) && (
-                    <div style={{ padding: "14px", borderRadius: "14px", background: T.violetSoft, border: `1px solid rgba(99,102,241,.12)` }}>
-                      <p style={{ margin: "0 0 6px", fontSize: "12px", color: "#5b21b6", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", fontFamily: T.fontSans }}>
+                    <div className="p-[14px] rounded-[14px] bg-brand-violet-soft border border-indigo-600/12">
+                      <p className="m-0 mb-[6px] text-[12px] text-violet-800 font-extrabold uppercase tracking-[0.08em] font-sans">
                         {t("final_weekly_challenge")}
                       </p>
-                      <p style={{ margin: 0, color: "#4c1d95", fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                      <p className="m-0 text-violet-900 text-[13px] leading-[1.65] font-sans">
                         {selectedHistory.full_content.application.approvedWeeklyChallenge || selectedHistory.full_content.application.weeklyChallenge}
                       </p>
                     </div>
                   )}
 
-                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  <div className="flex gap-[10px] flex-wrap">
                     <Btn onClick={() => copyHistory(selectedHistory)}>
                       {copiedId === selectedHistory.id ? t("final_copied") : t("sermons_copy")}
                     </Btn>

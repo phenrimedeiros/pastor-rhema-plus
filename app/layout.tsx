@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import type { Viewport } from "next";
+
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://app.pastorrhema.com";
 
 export const metadata: Metadata = {
-  title: "Pastor Rhema PLUS",
+  title: "Pastor Rhema",
   description: "Your AI-powered sermon preparation platform",
   metadataBase: new URL(siteUrl),
   icons: {
@@ -34,6 +36,8 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         <LanguageProvider>{children}</LanguageProvider>
+        <InstallPrompt />
+
       </body>
     </html>
   );

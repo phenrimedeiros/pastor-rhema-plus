@@ -3,48 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, supabase } from "@/lib/supabase_client";
-import { T } from "@/lib/tokens";
 import { Btn } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useLanguage } from "@/lib/i18n";
-import { useIsMobile } from "@/lib/useIsMobile";
 
 const DAILY_LIMIT = 20;
 
 function Message({ msg }) {
-  const isMobile = useIsMobile();
   const isUser = msg.role === "user";
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: isUser ? "flex-end" : "flex-start",
-      marginBottom: "16px",
-    }}>
+    <div className={`flex mb-[16px] ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div style={{
-          width: 32, height: 32, borderRadius: "10px", flexShrink: 0,
-          background: `linear-gradient(135deg, ${T.primary}, ${T.primary2})`,
-          display: "grid", placeItems: "center",
-          color: T.gold, fontSize: "14px", fontWeight: 900,
-          marginRight: "10px", alignSelf: "flex-end",
-        }}>R</div>
+        <div className="w-[32px] h-[32px] rounded-[10px] shrink-0 bg-gradient-to-br from-brand-primary to-brand-primary-2 grid place-items-center text-brand-gold text-[14px] font-black mr-[10px] self-end">
+          R
+        </div>
       )}
-      <div style={{
-        maxWidth: isMobile ? "88%" : "72%",
-        padding: isMobile ? "13px 14px" : "12px 16px",
-        borderRadius: isUser ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-        background: isUser
-          ? `linear-gradient(135deg, ${T.primary}, ${T.primary2})`
-          : "#fff",
-        color: isUser ? "#fff" : T.text,
-        border: isUser ? "none" : `1px solid ${T.line}`,
-        fontSize: isMobile ? "14.5px" : "14px",
-        lineHeight: 1.72,
-        fontFamily: T.fontSans,
-        whiteSpace: "pre-wrap",
-        boxShadow: T.shadow,
-        transition: "transform .18s ease, box-shadow .18s ease",
-      }}>
+      <div className={`max-w-[88%] md:max-w-[72%] p-[13px_14px] md:p-[12px_16px] border ${isUser ? "rounded-[18px_18px_4px_18px] bg-gradient-to-br from-brand-primary to-brand-primary-2 text-white border-transparent" : "rounded-[18px_18px_18px_4px] bg-white text-brand-text border-brand-line"} text-[14.5px] md:text-[14px] leading-[1.72] font-sans whitespace-pre-wrap shadow-brand transition-all duration-150`}>
         {msg.content}
       </div>
     </div>
@@ -57,33 +31,21 @@ function LimitBar({ used, limit, t }) {
   const isLow = remaining <= 5;
 
   return (
-    <div style={{
-      padding: "10px 16px",
-      background: isLow ? "#fef2f2" : T.surface2,
-      border: `1px solid ${isLow ? "#fecaca" : T.line}`,
-      borderRadius: "12px", marginBottom: "12px",
-      boxShadow: isLow ? "0 8px 24px rgba(185,28,28,.08)" : "none",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-        <span style={{ fontSize: "12px", color: isLow ? "#b91c1c" : T.muted, fontFamily: T.fontSans, fontWeight: 600 }}>
+    <div className={`p-[10px_16px] rounded-[12px] mb-[12px] border ${isLow ? "bg-red-50 border-red-200 shadow-[0_8px_24px_rgba(185,28,28,.08)]" : "bg-brand-surface-2 border-brand-line shadow-none"}`}>
+      <div className="flex justify-between items-center mb-[6px]">
+        <span className={`text-[12px] font-semibold font-sans ${isLow ? "text-red-700" : "text-brand-muted"}`}>
           {remaining > 0
             ? `${remaining} de ${limit} ${t("chat_limit_bar")}`
             : t("chat_limit_zero")}
         </span>
         {remaining <= 5 && remaining > 0 && (
-          <span style={{ fontSize: "11px", color: "#b91c1c", fontFamily: T.fontSans }}>
+          <span className="text-[11px] text-red-700 font-sans">
             {t("chat_limit_low")}
           </span>
         )}
       </div>
-      <div style={{ height: 4, background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
-        <div style={{
-          height: "100%", borderRadius: "999px", width: `${pct}%`,
-          background: isLow
-            ? "linear-gradient(90deg, #ef4444, #b91c1c)"
-            : `linear-gradient(90deg, ${T.primary}, ${T.primary2})`,
-          transition: "width .4s ease",
-        }} />
+      <div className="h-[4px] bg-gray-200 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full transition-all duration-400 ${isLow ? "bg-gradient-to-r from-red-500 to-red-700" : "bg-gradient-to-r from-brand-primary to-brand-primary-2"}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -91,15 +53,15 @@ function LimitBar({ used, limit, t }) {
 
 function UpgradePrompt({ router, t }) {
   return (
-    <div style={{ textAlign: "center", padding: "28px 20px", background: "#fef2f2", borderRadius: "16px", border: "1px solid #fecaca" }}>
-      <div style={{ fontSize: "32px", marginBottom: "10px" }}>⏰</div>
-      <h4 style={{ margin: "0 0 8px", fontFamily: T.font, fontSize: "18px", color: T.primary }}>
+    <div className="text-center p-[28px_20px] bg-red-50 rounded-[16px] border border-red-200">
+      <div className="text-[32px] mb-[10px]">⏰</div>
+      <h4 className="m-0 mb-[8px] font-serif text-[18px] text-brand-primary">
         {t("chat_limit_title")}
       </h4>
-      <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, fontFamily: T.fontSans, lineHeight: 1.65 }}>
+      <p className="m-0 mb-[18px] text-[13px] text-brand-muted font-sans leading-[1.65]">
         {t("chat_limit_desc")}
       </p>
-      <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+      <div className="flex gap-[10px] justify-center flex-wrap">
         <Btn onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}>
           {t("chat_upgrade_btn")}
         </Btn>
@@ -113,7 +75,6 @@ function UpgradePrompt({ router, t }) {
 
 export default function ChatPage() {
   const { t } = useLanguage();
-  const isMobile = useIsMobile();
   const [profile, setProfile] = useState(null);
   const [isSimple, setIsSimple] = useState(false);
   const [messagesUsed, setMessagesUsed] = useState(0);
@@ -133,7 +94,6 @@ export default function ChatPage() {
 
       const user = session.user;
 
-      // Load plan and daily usage
       const { data: profileData } = await supabase
         .from("profiles")
         .select("plan, chat_messages_today, chat_messages_reset_date")
@@ -155,7 +115,7 @@ export default function ChatPage() {
       setAuthLoading(false);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -182,7 +142,7 @@ export default function ChatPage() {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          messages: updatedMessages.slice(-20).map(({ role, content }) => ({ role, content })),
+          messages: updatedMessages.slice(-20).filter(({ content }) => content !== null).map(({ role, content }) => ({ role, content })),
         }),
       });
 
@@ -225,29 +185,29 @@ export default function ChatPage() {
   const clearChat = () => setMessages([{ role: "assistant", content: null }]);
 
   if (authLoading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
-      <div style={{ color: "white", fontFamily: T.fontSans }}>Loading...</div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
+      <div className="text-white font-sans">Loading...</div>
     </div>
   );
 
   return (
     <AppLayout profile={profile}>
-      <div style={{ display: "flex", flexDirection: "column", minHeight: isMobile ? "auto" : "calc(100vh - 80px)", maxWidth: 800, margin: "0 auto" }}>
+      <div className="flex flex-col min-h-[auto] md:min-h-[calc(100vh-80px)] max-w-[800px] mx-auto">
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "16px" }}>
+        <div className="flex justify-between items-stretch md:items-center flex-col md:flex-row gap-[12px] mb-[16px]">
           <div>
-            <p style={{ margin: "0 0 4px", fontSize: "11px", color: T.gold, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", fontFamily: T.fontSans }}>
+            <p className="m-0 mb-[4px] text-[11px] text-brand-gold font-extrabold tracking-[.08em] uppercase font-sans">
               AI Assistant
             </p>
-            <h2 style={{ margin: 0, fontSize: "22px", fontFamily: T.font, color: T.primary }}>
+            <h2 className="m-0 text-[22px] font-serif text-brand-primary">
               {t("chat_title")}
             </h2>
-            <p style={{ margin: 0, fontSize: "13px", color: T.muted, fontFamily: T.fontSans }}>
+            <p className="m-0 text-[13px] text-brand-muted font-sans">
               {t("chat_subtitle")}
             </p>
           </div>
-          <Btn variant="secondary" onClick={clearChat} style={{ fontSize: "13px", padding: "8px 14px", width: isMobile ? "100%" : "auto" }}>
+          <Btn variant="secondary" onClick={clearChat} className="text-[13px] p-[8px_14px] w-full md:w-auto">
             {t("chat_new")}
           </Btn>
         </div>
@@ -258,46 +218,31 @@ export default function ChatPage() {
         )}
 
         {/* Messages */}
-        <div style={{
-          flex: 1, overflowY: "auto", padding: isMobile ? "16px" : "20px",
-          background: T.surface2, borderRadius: "20px",
-          border: `1px solid ${T.line}`, marginBottom: "16px", minHeight: isMobile ? "48vh" : 0,
-        }}>
-          {isMobile && messages.length <= 1 && !loading && (
-            <div style={{
-              marginBottom: "14px",
-              padding: "14px",
-              borderRadius: "16px",
-              background: "#fff",
-              border: `1px solid ${T.line}`,
-            }}>
-              <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
-                Sugestao para comecar
-              </p>
-              <p style={{ margin: 0, fontSize: "13px", color: T.muted, lineHeight: 1.6, fontFamily: T.fontSans }}>
-                Peça um esboço, uma aplicação prática ou uma ilustração baseada no texto bíblico da semana.
-              </p>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto p-[16px] md:p-[20px] bg-brand-surface-2 rounded-[20px] border border-brand-line mb-[16px] min-h-[48vh] md:min-h-0">
+          <div className="md:hidden">
+            {messages.length <= 1 && !loading && (
+              <div className="mb-[14px] p-[14px] rounded-[16px] bg-white border border-brand-line">
+                <p className="m-0 mb-[6px] text-[12px] text-brand-primary font-extrabold font-sans">
+                  Sugestao para comecar
+                </p>
+                <p className="m-0 text-[13px] text-brand-muted leading-[1.6] font-sans">
+                  Peça um esboço, uma aplicação prática ou uma ilustração baseada no texto bíblico da semana.
+                </p>
+              </div>
+            )}
+          </div>
           {messages.map((msg, i) => (
             <Message key={i} msg={{ ...msg, content: msg.content ?? t("chat_welcome") }} />
           ))}
 
           {loading && (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: "10px",
-                background: `linear-gradient(135deg, ${T.primary}, ${T.primary2})`,
-                display: "grid", placeItems: "center",
-                color: T.gold, fontSize: "14px", fontWeight: 900,
-              }}>R</div>
-              <div style={{ display: "flex", gap: "4px" }}>
+            <div className="flex items-center gap-[10px] mb-[16px]">
+              <div className="w-[32px] h-[32px] rounded-[10px] bg-gradient-to-br from-brand-primary to-brand-primary-2 grid place-items-center text-brand-gold text-[14px] font-black">
+                R
+              </div>
+              <div className="flex gap-[4px]">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} style={{
-                    width: 8, height: 8, borderRadius: "50%",
-                    background: T.muted,
-                    animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-                  }} />
+                  <div key={i} className="w-[8px] h-[8px] rounded-full bg-brand-muted animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
                 ))}
               </div>
             </div>
@@ -310,32 +255,20 @@ export default function ChatPage() {
         {limitReached ? (
           <UpgradePrompt router={router} t={t} />
         ) : (
-          <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: isMobile ? "column" : "row" }}>
+          <div className="flex gap-[10px] items-end flex-col md:flex-row">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t("chat_placeholder")}
               rows={3}
-              style={{
-                flex: 1, width: "100%", padding: "14px 16px", border: `1px solid ${T.line}`,
-                borderRadius: "16px", fontSize: "14px", fontFamily: T.fontSans,
-                resize: "none", outline: "none", background: "#fff",
-                lineHeight: 1.5, color: T.text, boxSizing: "border-box",
-              }}
+              className="flex-1 w-full p-[14px_16px] border border-brand-line rounded-[16px] text-[14px] font-sans resize-none outline-none bg-white leading-[1.5] text-brand-text box-border focus:border-brand-primary focus:shadow-[0_0_0_2px_rgba(202,161,74,.4)]"
             />
-            <Btn onClick={send} disabled={loading || !input.trim()} style={isMobile ? { width: "100%" } : { padding: "14px 20px", alignSelf: "stretch" }}>
+            <Btn onClick={send} disabled={loading || !input.trim()} className="w-full md:w-auto p-[14px_20px] self-stretch">
               {t("chat_send")}
             </Btn>
           </div>
         )}
-
-        <style>{`
-          @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-6px); opacity: 1; }
-          }
-        `}</style>
       </div>
     </AppLayout>
   );

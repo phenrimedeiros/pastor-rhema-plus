@@ -2,75 +2,51 @@
 
 import { useRouter } from "next/navigation";
 import { Btn, Notice } from "@/components/ui";
-import { T } from "@/lib/tokens";
 import { SERMON_FLOW_STEPS, getSermonFlowStatus } from "@/lib/sermonFlow";
-import { useIsMobile } from "@/lib/useIsMobile";
 
 const STATUS_STYLES = {
   done: {
-    bg: "rgba(22,163,74,.10)",
-    border: "rgba(22,163,74,.18)",
-    text: "#166534",
+    bg: "bg-green-600/10",
+    border: "border-green-600/20",
+    text: "text-green-800",
     icon: "✓",
   },
   current: {
-    bg: "rgba(202,161,74,.14)",
-    border: "rgba(202,161,74,.22)",
-    text: "#8a6414",
+    bg: "bg-brand-gold/15",
+    border: "border-brand-gold/20",
+    text: "text-amber-800",
     icon: "•",
   },
   locked: {
-    bg: T.surface2,
-    border: T.line,
-    text: T.muted,
+    bg: "bg-brand-surface-2",
+    border: "border-brand-line",
+    text: "text-brand-muted",
     icon: "·",
   },
 };
 
 export default function SermonFlowNav({ currentStepKey, week, canContinue, savedContentText = "" }) {
   const router = useRouter();
-  const isMobile = useIsMobile();
   const currentIndex = SERMON_FLOW_STEPS.findIndex((step) => step.key === currentStepKey);
   const previousStep = SERMON_FLOW_STEPS[currentIndex - 1];
   const nextStep = SERMON_FLOW_STEPS[currentIndex + 1];
 
   return (
-    <div style={{
-      marginBottom: "18px",
-      padding: isMobile ? "16px" : "18px",
-      borderRadius: "24px",
-      border: `1px solid ${T.line}`,
-      background: "linear-gradient(180deg, #ffffff 0%, #f9fbfe 100%)",
-      boxShadow: T.shadow,
-    }}>
-      <div style={{
-        display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        justifyContent: "space-between",
-        alignItems: isMobile ? "stretch" : "center",
-        gap: "14px",
-      }}>
+    <div className="mb-[18px] p-[16px] md:p-[18px] rounded-[24px] border border-brand-line bg-gradient-to-b from-white to-[#f9fbfe] shadow-brand">
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-[14px]">
         <div>
-          <p style={{
-            margin: "0 0 4px",
-            color: T.gold,
-            fontSize: "11px",
-            letterSpacing: ".08em",
-            textTransform: "uppercase",
-            fontWeight: 800,
-            fontFamily: T.fontSans,
-          }}>
+          <p className="m-0 mb-[4px] text-brand-gold text-[11px] tracking-[.08em] uppercase font-extrabold font-sans">
             Guided Sermon Flow
           </p>
-          <h3 style={{ margin: "0 0 6px", fontSize: isMobile ? "20px" : "22px", fontFamily: T.font }}>
+          <h3 className="m-0 mb-[6px] text-[20px] md:text-[22px] font-serif">
             {SERMON_FLOW_STEPS[currentIndex]?.fullLabel}
           </h3>
-          <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+          <p className="m-0 text-brand-muted text-[14px] font-sans">
             Move step by step without losing what was already generated for this week.
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div className="flex gap-[10px] flex-wrap">
           {previousStep && (
             <Btn variant="secondary" onClick={() => router.push(previousStep.page)}>
               ← {previousStep.label}
@@ -88,17 +64,12 @@ export default function SermonFlowNav({ currentStepKey, week, canContinue, saved
       </div>
 
       {savedContentText && (
-        <div style={{ marginTop: "14px" }}>
+        <div className="mt-[14px]">
           <Notice color="blue">{savedContentText}</Notice>
         </div>
       )}
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "repeat(5, minmax(0, 1fr))",
-        gap: "10px",
-        marginTop: "8px",
-      }}>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-[10px] mt-[8px]">
         {SERMON_FLOW_STEPS.map((step, index) => {
           const status = getSermonFlowStatus(week, index);
           const style = STATUS_STYLES[status];
@@ -111,29 +82,17 @@ export default function SermonFlowNav({ currentStepKey, week, canContinue, saved
               type="button"
               onClick={() => isClickable && router.push(step.page)}
               disabled={!isClickable}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "10px",
-                padding: "12px 13px",
-                borderRadius: "16px",
-                border: `1px solid ${style.border}`,
-                background: isCurrent ? "#fff" : style.bg,
-                boxShadow: isCurrent ? "inset 0 0 0 1px rgba(11,42,91,.08)" : "none",
-                cursor: isClickable ? "pointer" : "not-allowed",
-                opacity: isClickable ? 1 : 0.75,
-              }}
+              className={`flex items-center justify-between gap-[10px] p-[12px_13px] rounded-[16px] border ${style.border} ${isCurrent ? "bg-white shadow-[inset_0_0_0_1px_rgba(11,42,91,.08)]" : style.bg} ${isClickable ? "cursor-pointer opacity-100 transition-opacity hover:opacity-90" : "cursor-not-allowed opacity-75"} text-left`}
             >
-              <div style={{ textAlign: "left" }}>
-                <p style={{ margin: "0 0 2px", fontSize: "11px", color: style.text, fontWeight: 800, fontFamily: T.fontSans }}>
+              <div>
+                <p className={`m-0 mb-[2px] text-[11px] font-extrabold font-sans ${style.text}`}>
                   Step {index + 1}
                 </p>
-                <p style={{ margin: 0, color: isCurrent ? T.primary : style.text, fontSize: "13px", fontWeight: isCurrent ? 800 : 700, fontFamily: T.fontSans }}>
+                <p className={`m-0 text-[13px] font-sans ${isCurrent ? "text-brand-primary font-extrabold" : `${style.text} font-bold`}`}>
                   {step.label}
                 </p>
               </div>
-              <span style={{ color: isCurrent ? T.primary : style.text, fontSize: "18px", fontWeight: 800 }}>
+              <span className={`text-[18px] font-extrabold ${isCurrent ? "text-brand-primary" : style.text}`}>
                 {isCurrent ? "→" : style.icon}
               </span>
             </button>

@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import { Btn, Card } from "@/components/ui";
 import { useLanguage } from "@/lib/i18n";
-import { T } from "@/lib/tokens";
 
-function formatGeneratedAt(value) {
-  if (!value) return "Unknown time";
+const LOCALE_MAP = { pt: "pt-BR", en: "en-US", es: "es-ES" };
+
+function formatGeneratedAt(value, lang) {
+  if (!value) return "—";
   const date = new Date(value);
-  return date.toLocaleString("en-US", {
+  return date.toLocaleString(LOCALE_MAP[lang] || "pt-BR", {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -60,7 +61,7 @@ function toPreviewText(value, depth = 0) {
 }
 
 export default function VersionHistoryCard({
-  title = "Version History",
+  title,
   versions = [],
   activeVersionId,
   onRestore,
@@ -69,7 +70,7 @@ export default function VersionHistoryCard({
   duplicatingVersionId,
 }) {
   const [compareVersionId, setCompareVersionId] = useState("");
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const activeVersion = useMemo(
     () => versions.find((version) => version.id === activeVersionId) || null,
@@ -84,9 +85,9 @@ export default function VersionHistoryCard({
   if (!versions.length) return null;
 
   return (
-    <Card style={{ alignSelf: "start" }}>
-      <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{title}</h4>
-      <div style={{ display: "grid", gap: "10px" }}>
+    <Card className="self-start">
+      <h4 className="m-0 mb-[12px] text-[18px] font-serif">{title}</h4>
+      <div className="grid gap-[10px]">
         {versions.map((version) => {
           const isActive = version.id === activeVersionId;
           const isRestoring = restoringVersionId === version.id;
@@ -96,34 +97,29 @@ export default function VersionHistoryCard({
           return (
             <div
               key={version.id}
-              style={{
-                padding: "12px",
-                borderRadius: "14px",
-                border: `1px solid ${isActive ? "rgba(22,163,74,.22)" : T.line}`,
-                background: isActive ? T.greenSoft : T.surface2,
-              }}
+              className={`p-[12px] rounded-[14px] border ${isActive ? "border-green-600/20 bg-brand-green-soft" : "border-brand-line bg-brand-surface-2"}`}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
+              <div className="flex justify-between gap-[10px] items-center mb-[8px]">
                 <div>
-                  <p style={{ margin: "0 0 2px", fontSize: "13px", color: isActive ? "#166534" : T.text, fontWeight: 800, fontFamily: T.fontSans }}>
+                  <p className={`m-0 mb-[2px] text-[13px] font-extrabold font-sans ${isActive ? "text-green-800" : "text-brand-text"}`}>
                     {t("version_label")} {version.version}
                   </p>
-                  <p style={{ margin: 0, fontSize: "12px", color: T.muted, fontFamily: T.fontSans }}>
-                    {formatGeneratedAt(version.generated_at || version.created_at)}
+                  <p className="m-0 text-[12px] text-brand-muted font-sans">
+                    {formatGeneratedAt(version.generated_at || version.created_at, lang)}
                   </p>
                 </div>
-                <span style={{ fontSize: "12px", color: isActive ? "#166534" : T.muted, fontWeight: 700, fontFamily: T.fontSans }}>
+                <span className={`text-[12px] font-bold font-sans ${isActive ? "text-green-800" : "text-brand-muted"}`}>
                   {isActive ? t("version_current") : t("version_saved")}
                 </span>
               </div>
 
-              <div style={{ display: "grid", gap: "8px" }}>
+              <div className="grid gap-[8px]">
                 {!isActive && (
                   <Btn
                     variant="secondary"
                     onClick={() => onRestore(version)}
                     disabled={!!restoringVersionId || !!duplicatingVersionId}
-                    style={{ width: "100%" }}
+                    className="w-full"
                   >
                     {isRestoring ? t("version_restoring") : t("version_restore")}
                   </Btn>
@@ -133,7 +129,7 @@ export default function VersionHistoryCard({
                   variant="secondary"
                   onClick={() => setCompareVersionId((prev) => (prev === version.id ? "" : version.id))}
                   disabled={!!restoringVersionId || !!duplicatingVersionId}
-                  style={{ width: "100%" }}
+                  className="w-full"
                 >
                   {isComparing ? t("version_hide_compare") : t("version_compare")}
                 </Btn>
@@ -143,7 +139,7 @@ export default function VersionHistoryCard({
                     variant="secondary"
                     onClick={() => onDuplicate(version)}
                     disabled={!!restoringVersionId || !!duplicatingVersionId}
-                    style={{ width: "100%" }}
+                    className="w-full"
                   >
                     {isDuplicating ? t("version_duplicating") : t("version_duplicate")}
                   </Btn>
@@ -155,41 +151,26 @@ export default function VersionHistoryCard({
       </div>
 
       {compareVersion && activeVersion && compareVersion.id !== activeVersion.id && (
-        <div style={{ marginTop: "16px", display: "grid", gap: "12px" }}>
+        <div className="mt-[16px] grid gap-[12px]">
           <div>
-            <h5 style={{ margin: "0 0 6px", fontSize: "15px", fontFamily: T.font }}>{t("version_compare_title")}</h5>
-            <p style={{ margin: 0, fontSize: "13px", color: T.muted, lineHeight: 1.6, fontFamily: T.fontSans }}>
+            <h5 className="m-0 mb-[6px] text-[15px] font-serif">{t("version_compare_title")}</h5>
+            <p className="m-0 text-[13px] text-brand-muted leading-[1.6] font-sans">
               {t("version_compare_hint")}
             </p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>
+          <div className="grid grid-cols-1 gap-[12px]">
             {[
               { label: `${t("version_current")} · ${t("version_label")} ${activeVersion.version}`, version: activeVersion },
               { label: `${t("version_saved")} · ${t("version_label")} ${compareVersion.version}`, version: compareVersion },
             ].map((item) => (
               <div
                 key={item.label}
-                style={{
-                  border: `1px solid ${T.line}`,
-                  borderRadius: "14px",
-                  background: "#fff",
-                  padding: "12px",
-                }}
+                className="border border-brand-line rounded-[14px] bg-white p-[12px]"
               >
-                <p style={{ margin: "0 0 8px", fontSize: "12px", color: T.primary, fontWeight: 800, fontFamily: T.fontSans }}>
+                <p className="m-0 mb-[8px] text-[12px] text-brand-primary font-extrabold font-sans">
                   {item.label}
                 </p>
-                <pre
-                  style={{
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    color: T.muted,
-                    fontSize: "12px",
-                    lineHeight: 1.6,
-                    fontFamily: T.fontSans,
-                  }}
-                >
+                <pre className="m-0 whitespace-pre-wrap break-words text-brand-muted text-[12px] leading-[1.6] font-sans">
                   {toPreviewText(item.version.content) || t("version_no_preview")}
                 </pre>
               </div>

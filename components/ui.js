@@ -1,187 +1,91 @@
 "use client";
 
-import { T } from "@/lib/tokens";
-import { useIsMobile } from "@/lib/useIsMobile";
+export function Btn({ children, variant = "primary", onClick, className, style, disabled, type = "button" }) {
+  const baseClasses = "border-none rounded-brand-sm font-extrabold font-sans transition-all duration-150 inline-flex items-center gap-2 min-h-[44px] justify-center transform translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed hover:disabled:translate-y-0 active:disabled:translate-y-0 hover:-translate-y-[1px] active:translate-y-[1px] px-[18px] py-[14px] text-[15px] md:py-[13px] md:text-[14px]";
 
-export function Btn({ children, variant = "primary", onClick, style, disabled, type = "button" }) {
-  const isMobile = useIsMobile();
-  const base = {
-    border: "none",
-    borderRadius: T.radiusSm,
-    padding: isMobile ? "14px 18px" : "13px 18px",
-    fontWeight: 800,
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontFamily: T.fontSans,
-    fontSize: isMobile ? "15px" : "14px",
-    transition: "transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, opacity .16s ease",
-    opacity: disabled ? 0.5 : 1,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    minHeight: 44,
-    justifyContent: "center",
-    transform: "translateY(0)",
+  const variantClasses = {
+    primary: "bg-gradient-to-b from-brand-green to-brand-green-dark text-white shadow-brand",
+    secondary: "bg-brand-surface text-brand-primary border border-brand-line shadow-none",
+    hero: "bg-gradient-to-b from-brand-gold to-[#b7862d] text-[#1f2937] font-black shadow-brand",
+    ghost: "bg-white/10 text-white border border-white/20 shadow-none",
   };
-  const variants = {
-    primary: {
-      background: `linear-gradient(180deg, ${T.green} 0%, ${T.greenDark} 100%)`,
-      color: "#fff",
-      boxShadow: T.shadow,
-    },
-    secondary: {
-      background: T.surface,
-      color: T.primary,
-      border: `1px solid ${T.line}`,
-      boxShadow: "none",
-    },
-    hero: {
-      background: `linear-gradient(180deg, ${T.gold} 0%, #b7862d 100%)`,
-      color: "#1f2937",
-      fontWeight: 900,
-      boxShadow: T.shadow,
-    },
-    ghost: {
-      background: "rgba(255,255,255,.10)",
-      color: "#fff",
-      border: "1px solid rgba(255,255,255,.18)",
-      boxShadow: "none",
-    },
-  };
+
   return (
     <button
       type={type}
-      style={{ ...base, ...variants[variant], ...style }}
+      className={`${baseClasses} ${variantClasses[variant] || variantClasses.primary} ${className || ""}`}
+      style={style}
       onClick={onClick}
       disabled={disabled}
-      onMouseEnter={(e) => {
-        if (disabled) return;
-        e.currentTarget.style.transform = "translateY(-1px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
-      onMouseDown={(e) => {
-        if (disabled) return;
-        e.currentTarget.style.transform = "translateY(1px)";
-      }}
-      onMouseUp={(e) => {
-        if (disabled) return;
-        e.currentTarget.style.transform = "translateY(-1px)";
-      }}
     >
       {children}
     </button>
   );
 }
 
-export function Card({ children, style }) {
-  const isMobile = useIsMobile();
+export function Card({ children, className, style }) {
   return (
     <div
-      style={{
-        background: T.surface,
-        border: `1px solid ${T.line}`,
-        borderRadius: "24px",
-        boxShadow: T.shadow,
-        padding: isMobile ? "18px" : "22px",
-        transition: "box-shadow .2s ease, transform .2s ease, border-color .2s ease",
-        ...style,
-      }}
+      className={`bg-brand-surface border border-brand-line rounded-[24px] shadow-brand p-[18px] md:p-[22px] transition-all duration-200 ease-in-out ${className || ""}`}
+      style={style}
     >
       {children}
     </div>
   );
 }
 
-export function Notice({ children, color = "blue" }) {
+export function Notice({ children, color = "blue", className, style }) {
   const colors = {
-    blue: { bg: T.blueSoft, color: T.primary },
-    green: { bg: T.greenSoft, color: "#166534" },
-    gold: { bg: "rgba(202,161,74,.16)", color: "#6b4e13" },
-    red: { bg: T.redSoft, color: "#991b1b" },
+    blue: "bg-brand-blue-soft text-brand-primary",
+    green: "bg-brand-green-soft text-[#166534]",
+    gold: "bg-[#caa14a]/16 text-[#6b4e13]",
+    red: "bg-brand-red-soft text-[#991b1b]",
   };
   return (
     <div
-      style={{
-        padding: "12px 14px",
-        borderRadius: T.radiusSm,
-        fontSize: "13px",
-        lineHeight: 1.55,
-        fontWeight: 600,
-        marginBottom: "14px",
-        background: colors[color].bg,
-        color: colors[color].color,
-        fontFamily: T.fontSans,
-      }}
+      className={`p-[12px_14px] rounded-brand-sm text-[13px] leading-[1.55] font-semibold mb-[14px] font-sans ${colors[color]} ${className || ""}`}
+      style={style}
     >
       {children}
     </div>
   );
 }
 
-export function Pill({ children, style }) {
+export function Pill({ children, className, style }) {
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        padding: "7px 10px",
-        borderRadius: "999px",
-        background: T.blueSoft,
-        color: T.primary,
-        fontSize: "12px",
-        fontWeight: 800,
-        whiteSpace: "nowrap",
-        fontFamily: T.fontSans,
-        ...style,
-      }}
+      className={`inline-flex items-center gap-[6px] py-[7px] px-[10px] rounded-full bg-brand-blue-soft text-brand-primary text-[12px] font-extrabold whitespace-nowrap font-sans ${className || ""}`}
+      style={style}
     >
       {children}
     </span>
   );
 }
 
-export function Loader({ text = "Generating..." }) {
+export function Loader({ text = "Generating...", className, style }) {
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "48px 24px",
-        gap: "16px",
-      }}
+      className={`flex flex-col items-center justify-center p-[48px_24px] gap-[16px] ${className || ""}`}
+      style={style}
     >
       <div
-        style={{
-          width: 40,
-          height: 40,
-          border: `3px solid ${T.line}`,
-          borderTopColor: T.gold,
-          borderRadius: "50%",
-          animation: "spin 0.8s linear infinite",
-        }}
+        className="w-10 h-10 border-[3px] border-brand-line border-t-brand-gold rounded-full animate-spin"
       />
-      <span style={{ color: T.muted, fontSize: "14px", fontWeight: 600, fontFamily: T.fontSans }}>
+      <span className="text-brand-muted text-[14px] font-semibold font-sans">
         {text}
       </span>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
 
-export function Field({ label, children }) {
+export function Field({ label, children, className, style }) {
   return (
-    <div style={{ display: "grid", gap: "8px" }}>
+    <div 
+      className={`grid gap-[8px] ${className || ""}`}
+      style={style}
+    >
       <label
-        style={{
-          fontSize: "13px",
-          fontWeight: 700,
-          color: "#334155",
-          fontFamily: T.fontSans,
-        }}
+        className="text-[13px] font-bold text-[#334155] font-sans"
       >
         {label}
       </label>

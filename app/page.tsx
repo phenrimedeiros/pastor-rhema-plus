@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/supabase_client";
-import { T } from "@/lib/tokens";
 
 export default function Home() {
   const router = useRouter();
@@ -21,32 +20,12 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(160deg, #0b2a5b 0%, #0d3268 100%)",
-        color: "rgba(255,255,255,.82)",
-        fontFamily: T.fontSans,
-      }}
-    >
-      <div style={{ display: "grid", justifyItems: "center", gap: "14px" }}>
-        <div
-          style={{
-            width: 38,
-            height: 38,
-            border: "3px solid rgba(255,255,255,.18)",
-            borderTopColor: T.gold,
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-          }}
-        />
-        <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, letterSpacing: ".02em" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#0d3268] text-white/80 font-sans">
+      <div className="grid justify-items-center gap-[14px]">
+        <div className="w-[38px] h-[38px] border-[3px] border-white/20 border-t-brand-gold rounded-full animate-spin" />
+        <p className="m-0 text-[14px] font-bold tracking-[.02em]">
           Entrando no Pastor Rhema...
         </p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
   );

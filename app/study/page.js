@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
@@ -55,7 +53,6 @@ export default function StudyPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   const loadVersions = async (weekId) => {
@@ -81,7 +78,7 @@ export default function StudyPage() {
       setLoading(false);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -152,7 +149,7 @@ export default function StudyPage() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
       <Loader text={t("common_loading")} />
     </div>
   );
@@ -177,14 +174,14 @@ export default function StudyPage() {
         canContinue={!!study}
         savedContentText={week?.study ? t("study_use") : ""}
       />
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] gap-[16px] md:gap-[22px]">
 
         {/* Left — Main */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-[12px] mb-[16px]">
             <div>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("study_title")}</h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+              <h4 className="m-0 mb-[6px] text-[20px] font-serif">{t("study_title")}</h4>
+              <p className="m-0 text-[14px] text-brand-muted font-sans">
                 {t("study_subtitle")}
               </p>
             </div>
@@ -200,29 +197,15 @@ export default function StudyPage() {
           {message && <Notice color="green">{message}</Notice>}
 
           {!study && !generating && week && (
-            <div style={{
-              textAlign: "center",
-              padding: isMobile ? "28px 0" : "36px 8px",
-              display: "grid",
-              gap: "14px",
-              justifyItems: "center",
-            }}>
-              <div style={{
-                width: 64,
-                height: 64,
-                borderRadius: "20px",
-                background: T.blueSoft,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "28px",
-              }}>
+            <div className="text-center p-[28px_0] md:p-[36px_8px] grid gap-[14px] justify-items-center">
+              <div className="w-[64px] h-[64px] rounded-[20px] bg-blue-50 grid place-items-center text-[28px]">
                 🧠
               </div>
-              <div style={{ maxWidth: 520 }}>
-                <h5 style={{ margin: "0 0 8px", fontSize: "18px", color: T.primary, fontFamily: T.font }}>
+              <div className="max-w-[520px]">
+                <h5 className="m-0 mb-[8px] text-[18px] text-brand-primary font-serif">
                   {t("study_empty_title")}
                 </h5>
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                <p className="m-0 text-[14px] text-brand-muted leading-[1.7] font-sans">
                   {t("study_empty_desc")}
                 </p>
               </div>
@@ -234,25 +217,25 @@ export default function StudyPage() {
 
           {study && (
             <>
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div className="grid gap-[12px]">
                 {studyBlocks.map((block) => (
-                  <div key={block.title} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                    <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{block.title}</h5>
-                    <p style={{ margin: 0, color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>{block.content}</p>
+                  <div key={block.title} className="border border-brand-line rounded-[16px] p-[15px]">
+                    <h5 className="m-0 mb-[8px] text-[14px] font-sans">{block.title}</h5>
+                    <p className="m-0 text-[13px] text-brand-muted leading-[1.65] font-sans">{block.content}</p>
                   </div>
                 ))}
 
                 {keyTerms.length > 0 && (
-                  <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px" }}>
-                    <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans }}>{t("study_key_terms")}</h5>
+                  <div className="border border-brand-line rounded-[16px] p-[15px]">
+                    <h5 className="m-0 mb-[8px] text-[14px] font-sans">{t("study_key_terms")}</h5>
                     {keyTerms.map((term, i) => (
-                      <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>• {term}</p>
+                      <p key={i} className="m-[4px_0] text-[13px] text-brand-muted font-sans">• {term}</p>
                     ))}
                   </div>
                 )}
               </div>
 
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
+              <div className="flex justify-between mt-[18px] flex-wrap gap-[12px]">
                 <Btn variant="secondary" onClick={generate}>{t("study_regenerate")}</Btn>
                 <Btn onClick={() => router.push("/builder")}>{t("study_use")}</Btn>
               </div>
@@ -261,7 +244,7 @@ export default function StudyPage() {
         </Card>
 
         {/* Right — Snapshot */}
-        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+        <div className="grid gap-[22px] content-start">
           <VersionHistoryCard
             title={t("study_versions")}
             versions={versions}
@@ -272,26 +255,26 @@ export default function StudyPage() {
             duplicatingVersionId={duplicatingVersionId}
           />
           <Card>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("study_snapshot")}</h4>
+            <h4 className="m-0 mb-[12px] text-[18px] font-serif">{t("study_snapshot")}</h4>
             {study ? (
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div className="grid gap-[12px]">
                 {snapshotBlocks.map((r) => (
-                  <div key={r.title} style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "14px", background: T.surface2 }}>
-                    <b style={{ display: "block", fontSize: "13px", marginBottom: "4px", fontFamily: T.fontSans }}>{r.title}</b>
-                    <span style={{ color: T.muted, fontSize: "12.5px", lineHeight: 1.5, fontFamily: T.fontSans }}>{r.content}</span>
+                  <div key={r.title} className="border border-brand-line rounded-[16px] p-[14px] bg-brand-surface-2">
+                    <b className="block text-[13px] mb-[4px] font-sans">{r.title}</b>
+                    <span className="text-[12.5px] text-brand-muted leading-[1.5] font-sans">{r.content}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>{t("study_no_snapshot")}</p>
+              <p className="text-[14px] text-brand-muted font-sans">{t("study_no_snapshot")}</p>
             )}
           </Card>
 
           {crossReferences.length > 0 && (
             <Card>
-              <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("study_cross_refs")}</h4>
+              <h4 className="m-0 mb-[10px] text-[16px] font-serif">{t("study_cross_refs")}</h4>
               {crossReferences.map((r, i) => (
-                <p key={i} style={{ margin: "4px 0", color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>📖 {r}</p>
+                <p key={i} className="m-[4px_0] text-[13px] text-brand-muted font-sans">📖 {r}</p>
               ))}
             </Card>
           )}

@@ -3,14 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState } from "@/lib/supabase_client";
-import { T, inputStyle } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 
 function SeriesForm({ onSuccess, hasSeries }) {
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
   const [form, setForm] = useState({
     theme: "", weeks: "6",
@@ -60,12 +57,14 @@ function SeriesForm({ onSuccess, hasSeries }) {
     { key: "series_tone_devotional", val: "Devotional" },
   ];
 
+  const inputClasses = "w-full min-h-[46px] px-[14px] py-[10px] rounded-[14px] border border-brand-line bg-brand-surface text-[15px] font-sans text-brand-text mb-[6px] outline-none transition-shadow duration-150 focus:shadow-[0_0_0_2px_rgba(202,161,74,.4)] focus:border-brand-gold";
+
   return (
     <Card>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
+      <div className="flex flex-col md:flex-row justify-between items-start gap-[12px] mb-[16px]">
         <div>
-          <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("series_title")}</h4>
-          <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+          <h4 className="m-0 mb-[6px] text-[20px] font-serif">{t("series_title")}</h4>
+          <p className="m-0 text-brand-muted text-[14px] font-sans">
             {t("series_subtitle")}
           </p>
         </div>
@@ -76,40 +75,40 @@ function SeriesForm({ onSuccess, hasSeries }) {
       {error && <Notice color="red">{error}</Notice>}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px] mb-[14px]">
           <Field label={t("series_theme")}>
             <input name="theme" value={form.theme} onChange={handleChange} required
-              placeholder={t("series_theme_ph")} style={inputStyle} />
+              placeholder={t("series_theme_ph")} className={inputClasses} />
           </Field>
           <Field label={t("series_weeks")}>
-            <select name="weeks" value={form.weeks} onChange={handleChange} style={inputStyle}>
+            <select name="weeks" value={form.weeks} onChange={handleChange} className={inputClasses}>
               {[4, 5, 6, 7, 8].map((n) => <option key={n} value={n}>{n} {t("series_weeks_unit")}</option>)}
             </select>
           </Field>
           <Field label={t("series_audience")}>
-            <select name="audience" value={form.audience} onChange={handleChange} style={inputStyle}>
+            <select name="audience" value={form.audience} onChange={handleChange} className={inputClasses}>
               {audiences.map((a) => <option key={a.val} value={a.val}>{t(a.key)}</option>)}
             </select>
           </Field>
           <Field label={t("series_tone")}>
-            <select name="tone" value={form.tone} onChange={handleChange} style={inputStyle}>
+            <select name="tone" value={form.tone} onChange={handleChange} className={inputClasses}>
               {tones.map((tn) => <option key={tn.val} value={tn.val}>{t(tn.key)}</option>)}
             </select>
           </Field>
-          <div style={{ gridColumn: "1 / -1" }}>
+          <div className="col-span-1 md:col-span-2">
             <Field label={t("series_goal")}>
               <textarea name="goal" value={form.goal} onChange={handleChange} required rows={3}
                 placeholder={t("series_goal_ph")}
-                style={{ ...inputStyle, resize: "vertical" }} />
+                className={`${inputClasses} resize-y h-auto`} />
             </Field>
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-          <span style={{ color: T.muted, fontSize: "12.5px", fontFamily: T.fontSans }}>
+        <div className="flex justify-between items-center flex-wrap gap-[12px]">
+          <span className="text-brand-muted text-[12.5px] font-sans">
             {t("series_tip")}
           </span>
-          <Btn type="submit" disabled={loading || !form.theme || !form.goal} style={isMobile ? { width: "100%" } : undefined}>
+          <Btn type="submit" disabled={loading || !form.theme || !form.goal} className="w-full md:w-auto">
             {loading ? t("series_generating") : t("series_generate")}
           </Btn>
         </div>
@@ -121,45 +120,35 @@ function SeriesForm({ onSuccess, hasSeries }) {
 }
 
 function SeriesPreview({ serie, currentWeek, onStudy }) {
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
   return (
     <Card>
-      <h4 style={{ margin: "0 0 8px", fontSize: "20px", fontFamily: T.font }}>{serie.series_name}</h4>
-      <p style={{ margin: "0 0 20px", color: T.muted, fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+      <h4 className="m-0 mb-[8px] text-[20px] font-serif">{serie.series_name}</h4>
+      <p className="m-0 mb-[20px] text-brand-muted text-[14px] leading-[1.6] font-sans">
         {serie.overview}
       </p>
-      <div style={{ display: "grid", gap: "12px" }}>
+      <div className="grid gap-[12px]">
         {serie.weeks?.map((w) => {
           const isCurrent = w.week_number === currentWeek;
           const isDone = w.week_number < currentWeek;
           return (
-            <div key={w.id} style={{
-              border: `1px solid ${isCurrent ? "rgba(202,161,74,.38)" : T.line}`,
-              borderRadius: "18px", padding: "16px",
-              background: isCurrent
-                ? "linear-gradient(180deg, rgba(202,161,74,.10), #fff)"
-                : "linear-gradient(180deg, #fff, #fbfcfe)",
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row" }}>
+            <div key={w.id} className={`border rounded-[18px] p-[16px] ${isCurrent ? "border-brand-gold/40 bg-gradient-to-b from-brand-gold/10 to-white" : "border-brand-line bg-gradient-to-b from-white to-[#fbfcfe]"}`}>
+              <div className="flex flex-col md:flex-row justify-between items-start gap-[12px]">
                 <div>
-                  <b style={{ display: "block", fontSize: "15px", marginBottom: "4px", fontFamily: T.fontSans }}>
+                  <b className="block text-[15px] mb-[4px] font-sans">
                     {t("series_week")} {w.week_number} — {w.title}
                   </b>
-                  <span style={{ color: T.muted, fontSize: "13px", fontFamily: T.fontSans }}>
+                  <span className="text-brand-muted text-[13px] font-sans">
                     {w.passage} · {w.focus}
                   </span>
                 </div>
-                <Pill style={
-                  isDone ? { background: T.greenSoft, color: "#166534" } :
-                  isCurrent ? { background: T.amberSoft, color: "#92400e" } : {}
-                }>
+                <Pill className={isDone ? "bg-brand-green-soft text-green-800" : isCurrent ? "bg-brand-amber-soft text-amber-800" : ""}>
                   {isDone ? t("series_completed") : isCurrent ? t("series_current") : t("series_upcoming")}
                 </Pill>
               </div>
               {isCurrent && (
-                <div style={{ marginTop: "12px" }}>
-                  <Btn onClick={onStudy} style={{ fontSize: "13px", padding: "10px 14px", width: isMobile ? "100%" : "auto" }}>
+                <div className="mt-[12px]">
+                  <Btn onClick={onStudy} className="text-[13px] p-[10px_14px] w-full md:w-auto">
                     {t("series_start_week")}
                   </Btn>
                 </div>
@@ -176,7 +165,6 @@ export default function SeriesPage() {
   const [estado, setEstado] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   const carregar = async () => {
@@ -193,10 +181,10 @@ export default function SeriesPage() {
       void carregar();
     });
     return () => window.cancelAnimationFrame(frame);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
       <Loader text={t("common_loading")} />
     </div>
   );
@@ -205,7 +193,7 @@ export default function SeriesPage() {
 
   return (
     <AppLayout profile={estado.profile}>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
+      <div className="grid md:grid-cols-[1.2fr_.8fr] grid-cols-1 gap-[16px] md:gap-[22px]">
         <SeriesForm hasSeries={!!activeSerie} onSuccess={carregar} />
         <SeriesPreview
           serie={activeSerie ?? { series_name: t("series_preview"), overview: t("series_no_preview"), weeks: [] }}

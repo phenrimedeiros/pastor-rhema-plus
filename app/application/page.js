@@ -4,10 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 import { upsertCurrentWeekStep, upsertCurrentWeekStepRecord } from "@/lib/sermonFlow";
@@ -42,7 +40,6 @@ export default function ApplicationPage() {
   const [choiceMessage, setChoiceMessage] = useState("");
   const [saveState, setSaveState] = useState("idle");
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
   const lastSavedSignatureRef = useRef("");
 
@@ -75,7 +72,7 @@ export default function ApplicationPage() {
       setLoading(false);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -186,10 +183,10 @@ export default function ApplicationPage() {
     }, 900);
 
     return () => window.clearTimeout(timeoutId);
-  }, [application, week]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [application, week]);
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
       <Loader text={t("common_loading")} />
     </div>
   );
@@ -204,14 +201,14 @@ export default function ApplicationPage() {
         canContinue={!!application}
         savedContentText={week?.application ? t("app_save") : ""}
       />
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr .8fr", gap: isMobile ? "16px" : "22px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] gap-[16px] md:gap-[22px]">
 
         {/* Left */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexDirection: isMobile ? "column" : "row", marginBottom: "16px" }}>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-[12px] mb-[16px]">
             <div>
-              <h4 style={{ margin: "0 0 6px", fontSize: "20px", fontFamily: T.font }}>{t("app_title")}</h4>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+              <h4 className="m-0 mb-[6px] text-[20px] font-serif">{t("app_title")}</h4>
+              <p className="m-0 text-[14px] text-brand-muted font-sans">
                 {t("app_subtitle")}
               </p>
             </div>
@@ -223,7 +220,7 @@ export default function ApplicationPage() {
           {choiceMessage && <Notice color="green">{choiceMessage}</Notice>}
 
           {!application && !generating && !needsBuilder && (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
+            <div className="text-center p-[32px_0]">
               <Btn onClick={generate}>{t("app_generate")}</Btn>
             </div>
           )}
@@ -231,31 +228,25 @@ export default function ApplicationPage() {
           {generating && <Loader text={t("app_generating")} />}
 
           {application?.applications?.map((a, i) => (
-            <div key={i} style={{
-              border: `1px solid ${T.line}`, borderRadius: "18px", padding: "18px",
-              marginBottom: "14px", background: "linear-gradient(180deg, #fff, #fbfcfe)",
-            }}>
-              <Pill style={{ marginBottom: "12px", background: T.violetSoft, color: "#5b21b6" }}>
+             <div key={i} className="border border-brand-line rounded-[18px] p-[18px] mb-[14px] bg-gradient-to-b from-white to-[#fbfcfe]">
+              <Pill className="mb-[12px] bg-brand-violet-soft text-violet-800">
                 {a.forPoint}
               </Pill>
-              <p style={{ margin: "0 0 8px", color: T.text, fontSize: isMobile ? "15px" : "14px", fontWeight: 700, lineHeight: 1.55, fontFamily: T.fontSans }}>
+              <p className="m-0 mb-[8px] text-brand-text text-[14px] md:text-[15px] font-bold leading-[1.55] font-sans">
                 {a.action}
               </p>
-              <p style={{ margin: "0 0 6px", color: T.muted, fontSize: "13px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+              <p className="m-0 mb-[6px] text-brand-muted text-[13px] leading-[1.65] font-sans">
                 {t("app_when")} {a.context}
               </p>
-              <p style={{ margin: 0, color: T.green, fontSize: "13px", fontWeight: 600, fontStyle: "italic", fontFamily: T.fontSans }}>
+              <p className="m-0 text-brand-green text-[13px] font-semibold italic font-sans">
                 &quot;{a.encouragement}&quot;
               </p>
             </div>
           ))}
 
           {application?.weeklyChallenge && (
-            <div style={{
-              border: `1px solid rgba(22,163,74,.18)`, borderRadius: "18px", padding: "18px",
-              background: T.greenSoft, marginBottom: "14px",
-            }}>
-              <h5 style={{ margin: "0 0 12px", fontSize: "15px", color: "#166534", fontFamily: T.fontSans }}>
+            <div className="border border-green-600/18 rounded-[18px] p-[18px] bg-brand-green-soft mb-[14px]">
+              <h5 className="m-0 mb-[12px] text-[15px] text-green-800 font-sans">
                 {t("app_weekly_challenge")}
               </h5>
               <Field label={t("app_final_challenge")}>
@@ -263,16 +254,12 @@ export default function ApplicationPage() {
                   value={approvedWeeklyChallenge}
                   onChange={(e) => setApplication((prev) => ({ ...prev, approvedWeeklyChallenge: e.target.value }))}
                   rows={4}
-                  style={{
-                    width: "100%", padding: "12px 14px", borderRadius: "14px",
-                    border: "1px solid rgba(22,163,74,.18)", background: "#fff", color: T.text,
-                    resize: "vertical", fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans,
-                  }}
+                  className="w-full p-[12px_14px] rounded-[14px] border border-green-600/18 bg-white text-brand-text resize-y text-[14px] leading-[1.6] font-sans"
                 />
               </Field>
-              <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  <span style={{ fontSize: "12px", color: saveState === "error" ? "#b91c1c" : T.muted, fontFamily: T.fontSans }}>
+              <div className="mt-[12px] flex justify-end">
+                <div className="flex items-center gap-[12px] flex-wrap justify-end">
+                  <span className={`text-[12px] font-sans ${saveState === "error" ? "text-red-700" : "text-brand-muted"}`}>
                     {saveState === "pending"
                       ? t("common_unsaved")
                       : saveState === "saving"
@@ -290,7 +277,7 @@ export default function ApplicationPage() {
           )}
 
           {application && (
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "18px", flexWrap: "wrap", gap: "12px" }}>
+            <div className="flex justify-between mt-[18px] flex-wrap gap-[12px]">
               <Btn variant="secondary" onClick={generate}>{t("app_regenerate")}</Btn>
               <Btn onClick={() => router.push("/final")}>{t("app_next")}</Btn>
             </div>
@@ -298,7 +285,7 @@ export default function ApplicationPage() {
         </Card>
 
         {/* Right — Reflection Questions */}
-        <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+        <div className="grid gap-[22px] content-start">
           <VersionHistoryCard
             title={t("app_versions")}
             versions={versions}
@@ -309,20 +296,17 @@ export default function ApplicationPage() {
             duplicatingVersionId={duplicatingVersionId}
           />
           <Card>
-            <h4 style={{ margin: "0 0 12px", fontSize: "18px", fontFamily: T.font }}>{t("app_reflection")}</h4>
+            <h4 className="m-0 mb-[12px] text-[18px] font-serif">{t("app_reflection")}</h4>
             {application?.reflectionQuestions ? (
               application.reflectionQuestions.map((q, i) => (
-                <div key={i} style={{
-                  padding: "12px", borderRadius: "14px", background: T.surface2,
-                  border: `1px solid ${T.line}`, marginBottom: "10px",
-                }}>
-                  <p style={{ margin: 0, color: T.text, fontSize: "13px", fontFamily: T.fontSans }}>
+                <div key={i} className="p-[12px] rounded-[14px] bg-brand-surface-2 border border-brand-line mb-[10px]">
+                  <p className="m-0 text-brand-text text-[13px] font-sans">
                     {i + 1}. {q}
                   </p>
                 </div>
               ))
             ) : (
-              <p style={{ color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+              <p className="text-brand-muted text-[14px] font-sans">
                 {t("app_no_reflection")}
               </p>
             )}

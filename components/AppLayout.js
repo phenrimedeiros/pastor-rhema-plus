@@ -3,9 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { T } from "@/lib/tokens";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
-import { useIsMobile } from "@/lib/useIsMobile";
 
 const NAV_ITEMS = [
   { page: "dashboard",     key: "nav_dashboard",     plan: "plus" },
@@ -29,39 +27,27 @@ const PLUS_PAGES = new Set(["dashboard", "series", "study", "builder", "illustra
 
 function UpgradeWall({ router, t }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
-      <div style={{ textAlign: "center", maxWidth: 480 }}>
-        <div style={{
-          width: 72, height: 72, borderRadius: "20px", margin: "0 auto 20px",
-          background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
-          display: "grid", placeItems: "center", fontSize: "32px",
-        }}>🔒</div>
-        <h2 style={{ margin: "0 0 10px", fontFamily: T.font, color: T.primary, fontSize: "26px" }}>
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="text-center max-w-[480px]">
+        <div className="w-[72px] h-[72px] rounded-[20px] mx-auto mb-[20px] bg-gradient-to-br from-brand-primary to-[#163d7a] grid place-items-center text-[32px]">
+          🔒
+        </div>
+        <h2 className="m-0 mb-[10px] font-serif text-brand-primary text-[26px]">
           {t("upgrade_title")}
         </h2>
-        <p style={{ margin: "0 0 24px", color: T.muted, fontFamily: T.fontSans, lineHeight: 1.7, fontSize: "15px" }}>
+        <p className="m-0 mb-[24px] text-brand-muted font-sans leading-[1.7] text-[15px]">
           {t("upgrade_desc")}
         </p>
-        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="flex gap-[12px] justify-center flex-wrap">
           <button
             onClick={() => router.push("/chat")}
-            style={{
-              padding: "12px 24px", borderRadius: "14px", border: "none",
-              background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
-              color: "#fff", fontFamily: T.fontSans, fontSize: "14px",
-              fontWeight: 700, cursor: "pointer",
-            }}
+            className="px-[24px] py-[12px] rounded-[14px] border-none bg-gradient-to-br from-brand-primary to-[#163d7a] text-white font-sans text-[14px] font-bold cursor-pointer transition-transform hover:-translate-y-[1px]"
           >
             {t("upgrade_chat_btn")}
           </button>
           <button
             onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
-            style={{
-              padding: "12px 24px", borderRadius: "14px",
-              border: `1.5px solid ${T.line}`,
-              background: "#fff", color: T.primary, fontFamily: T.fontSans,
-              fontSize: "14px", fontWeight: 700, cursor: "pointer",
-            }}
+            className="px-[24px] py-[12px] rounded-[14px] border-[1.5px] border-brand-line bg-white text-brand-primary font-sans text-[14px] font-bold cursor-pointer transition-transform hover:-translate-y-[1px]"
           >
             {t("upgrade_plan_btn")}
           </button>
@@ -76,7 +62,6 @@ export default function AppLayout({ children, profile }) {
   const pathname = usePathname();
   const current = pathname.replace("/", "") || "dashboard";
   const { lang, changeLang, t } = useLanguage();
-  const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const plan = profile?.plan || "simple";
@@ -89,61 +74,34 @@ export default function AppLayout({ children, profile }) {
   }, [current, t, visibleNav]);
 
   useEffect(() => {
-    if (!isMobile || !menuOpen) return undefined;
-
+    if (!menuOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isMobile, menuOpen]);
+  }, [menuOpen]);
 
-  const navButtonStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    padding: isMobile ? "14px 14px" : "12px 14px",
-    borderRadius: "14px",
-    border: "none",
-    cursor: "pointer",
-    width: "100%",
-    textAlign: "left",
-    fontFamily: T.fontSans,
-    fontSize: isMobile ? "14px" : "13px",
-    minHeight: isMobile ? 48 : 44,
-    transition: ".12s ease",
-  };
+  // Classes para nav button padronizado
+  const navBtnBase = "flex items-center gap-[12px] p-[14px] md:p-[12px_14px] rounded-[14px] border-none cursor-pointer w-full text-left font-sans text-[14px] md:text-[13px] min-h-[48px] md:min-h-[44px] transition-all duration-150";
 
   const navigationPanel = (
     <>
-      <div style={{ padding: "0 20px 20px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: "50%",
-          background: "#fff",
-          display: "grid", placeItems: "center",
-          marginBottom: "12px",
-          padding: "8px", boxSizing: "border-box",
-          boxShadow: "0 4px 12px rgba(0,0,0,.2)",
-        }}>
-          <Image src="/logo.png" alt="Pastor Rhema" width={40} height={40} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+      <div className="px-[20px] pb-[20px] border-b border-white/5">
+        <div className="w-[56px] h-[56px] rounded-full bg-white grid place-items-center mb-[12px] p-[8px] shadow-[0_4px_12px_rgba(0,0,0,.2)]">
+          <Image src="/logo.png" alt="Pastor Rhema" width={40} height={40} className="w-full h-full object-contain" />
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-          <div style={{ color: "rgba(255,255,255,.78)", fontSize: isMobile ? "12px" : "11px", fontFamily: T.fontSans }}>
+        <div className="flex items-center justify-between gap-[12px]">
+          <div className="text-white/80 text-[12px] md:text-[11px] font-sans">
             {profile?.full_name || "Pastor"}
           </div>
-          <div style={{
-            display: "inline-flex", alignItems: "center",
-            padding: "5px 9px", borderRadius: "999px",
-            background: isPlus ? "rgba(202,161,74,.2)" : "rgba(255,255,255,.08)",
-            color: isPlus ? T.gold : "rgba(255,255,255,.6)",
-            fontSize: isMobile ? "11px" : "10px", fontWeight: 800, fontFamily: T.fontSans,
-          }}>
+          <div className={`inline-flex items-center px-[9px] py-[5px] rounded-full text-[11px] md:text-[10px] font-extrabold font-sans ${isPlus ? "bg-brand-gold/20 text-brand-gold" : "bg-white/10 text-white/60"}`}>
             {isPlus ? t("plan_plus") : t("plan_simple")}
           </div>
         </div>
       </div>
 
-      <nav style={{ flex: 1, padding: "16px 12px", display: "flex", flexDirection: "column", gap: "6px", overflowY: "auto" }}>
+      <nav className="flex-1 p-[16px_12px] flex flex-col gap-[6px] overflow-y-auto">
         {visibleNav.map(({ page, key, step }) => {
           const active = current === page;
           return (
@@ -153,47 +111,30 @@ export default function AppLayout({ children, profile }) {
                 setMenuOpen(false);
                 router.push(`/${page}`);
               }}
-              style={{
-                ...navButtonStyle,
-                background: active ? "rgba(255,255,255,.12)" : "transparent",
-                color: active ? "#fff" : "rgba(255,255,255,.72)",
-                fontWeight: active ? 700 : 500,
-                boxShadow: active ? "inset 0 0 0 1px rgba(255,255,255,.04)" : "none",
-              }}
+              className={`${navBtnBase} ${active ? "bg-white/10 text-white font-bold shadow-[inset_0_0_0_1px_rgba(255,255,255,.04)]" : "bg-transparent text-white/70 font-medium hover:bg-white/5"}`}
             >
-              <span style={{ fontSize: "16px" }}>{NAV_EMOJI[page]}</span>
-              <span style={{ flex: 1 }}>{t(key)}</span>
+              <span className="text-[16px]">{NAV_EMOJI[page]}</span>
+              <span className="flex-1">{t(key)}</span>
               {step && (
-                <span style={{
-                  fontSize: "11px", fontWeight: 800, padding: "4px 7px", borderRadius: "999px",
-                  background: active ? "rgba(202,161,74,.3)" : "rgba(255,255,255,.08)",
-                  color: active ? T.gold : "rgba(255,255,255,.45)",
-                }}>{step}</span>
+                <span className={`text-[11px] font-extrabold px-[7px] py-[4px] rounded-full ${active ? "bg-brand-gold/30 text-brand-gold" : "bg-white/10 text-white/45"}`}>
+                  {step}
+                </span>
               )}
             </button>
           );
         })}
 
         {!isPlus && (
-          <div style={{
-            marginTop: "auto", padding: "14px",
-            borderRadius: "14px", border: "1px solid rgba(202,161,74,.25)",
-            background: "rgba(202,161,74,.08)",
-          }}>
-            <p style={{ margin: "0 0 8px", color: T.gold, fontSize: "13px", fontWeight: 700, fontFamily: T.fontSans }}>
+          <div className="mt-auto p-[14px] rounded-[14px] border border-brand-gold/20 bg-brand-gold/10">
+            <p className="m-0 mb-[8px] text-brand-gold text-[13px] font-bold font-sans">
               {t("nav_upgrade_title")}
             </p>
-            <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,.62)", fontSize: "12px", fontFamily: T.fontSans, lineHeight: 1.5 }}>
+            <p className="m-0 mb-[10px] text-white/60 text-[12px] font-sans leading-[1.5]">
               {t("nav_upgrade_desc")}
             </p>
             <button
               onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
-              style={{
-                width: "100%", minHeight: 44, padding: "10px 12px", borderRadius: "12px", border: "none",
-                background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
-                color: "#1f2937", fontFamily: T.fontSans, fontSize: "13px",
-                fontWeight: 800, cursor: "pointer",
-              }}
+              className="w-full min-h-[44px] px-[12px] py-[10px] rounded-[12px] border-none bg-gradient-to-br from-brand-gold to-[#b7862d] text-[#1f2937] font-sans text-[13px] font-extrabold cursor-pointer hover:opacity-90"
             >
               {t("nav_upgrade_btn")}
             </button>
@@ -201,37 +142,34 @@ export default function AppLayout({ children, profile }) {
         )}
       </nav>
 
-      <div style={{ padding: "12px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
-        <div style={{ display: "flex", gap: "6px", marginBottom: "10px", justifyContent: "center" }}>
+      <div className="p-[12px] border-t border-white/5">
+        <div className="flex gap-[6px] mb-[10px] justify-center">
           {LANGUAGES.map((l) => (
             <button
               key={l.code}
               onClick={() => changeLang(l.code)}
               title={l.label}
-              style={{
-                flex: 1, minHeight: 40, padding: "8px 6px", borderRadius: "10px", border: "none",
-                background: lang === l.code ? "rgba(255,255,255,.15)" : "transparent",
-                color: lang === l.code ? "#fff" : "rgba(255,255,255,.5)",
-                fontFamily: T.fontSans, fontSize: "12px", fontWeight: lang === l.code ? 700 : 500,
-                cursor: "pointer", transition: ".12s ease",
-              }}
+              className={`flex-1 min-h-[40px] px-[6px] py-[8px] rounded-[10px] border-none font-sans text-[12px] cursor-pointer transition-colors duration-150 ${lang === l.code ? "bg-white/15 text-white font-bold" : "bg-transparent text-white/50 font-medium hover:bg-white/5"}`}
             >
               {l.flag} {l.code.toUpperCase()}
             </button>
           ))}
         </div>
 
+        <a
+          href="mailto:support@pastorrhema.com"
+          className={`${navBtnBase} bg-transparent text-white/70 font-medium no-underline hover:bg-white/5`}
+        >
+          <span>🎧</span>
+          <span>{t("nav_support")}</span>
+        </a>
+
         <button
           onClick={() => {
             setMenuOpen(false);
             router.push("/login");
           }}
-          style={{
-            ...navButtonStyle,
-            background: "transparent",
-            color: "rgba(255,255,255,.7)",
-            fontWeight: 500,
-          }}
+          className={`${navBtnBase} bg-transparent text-white/70 font-medium hover:bg-white/5`}
         >
           <span>🚪</span>
           <span>{t("nav_signout")}</span>
@@ -241,131 +179,68 @@ export default function AppLayout({ children, profile }) {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: T.bg }}>
-      <div style={{ display: "flex", minHeight: isMobile ? "100vh" : "100vh", background: T.bg }}>
-        {!isMobile && (
-          <div style={{
-            width: 240, flexShrink: 0,
-            background: "linear-gradient(180deg, #0b2a5b 0%, #0d3268 100%)",
-            display: "flex", flexDirection: "column",
-            padding: "24px 0",
-            position: "sticky", top: 0, height: "100vh",
-          }}>
-            {navigationPanel}
+    <div className="min-h-screen bg-brand-bg">
+      <div className="flex min-h-screen">
+        
+        {/* Sidebar Desktop */}
+        <div className="hidden md:flex w-[240px] shrink-0 bg-gradient-to-b from-[#0b2a5b] to-[#0d3268] flex-col py-[24px] sticky top-0 h-screen overflow-hidden">
+          {navigationPanel}
+        </div>
+
+        {/* Couterúdo Principal */}
+        <div className="flex-1 min-w-0">
+          
+          {/* Header Mobile */}
+          <div className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-[12px] p-[12px_16px] bg-[#f4f7fb]/95 backdrop-blur-[10px] border-b border-brand-line">
+            <button
+              onClick={() => setMenuOpen(true)}
+              aria-label="Abrir menu"
+              className="w-[44px] h-[44px] rounded-[12px] border border-brand-line bg-white text-[20px] text-brand-primary cursor-pointer flex items-center justify-center"
+            >
+              ☰
+            </button>
+            <div className="min-w-0 flex-1">
+              <p className="m-0 text-[11px] text-brand-muted font-sans">
+                Pastor Rhema PLUS
+              </p>
+              <p className="m-[2px_0_0] text-[15px] text-brand-primary font-sans font-extrabold whitespace-nowrap overflow-hidden text-ellipsis">
+                {currentLabel}
+              </p>
+            </div>
+            <div className="w-[44px] h-[44px] rounded-[12px] bg-gradient-to-br from-[#0b2a5b] to-[#163d7a] text-white grid place-items-center text-[14px] font-bold font-sans">
+              {(profile?.full_name || "P").slice(0, 1).toUpperCase()}
+            </div>
           </div>
-        )}
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {isMobile && (
-            <>
-              <div style={{
-                position: "sticky",
-                top: 0,
-                zIndex: 30,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "12px",
-                padding: "12px 16px",
-                background: "rgba(244,247,251,.96)",
-                backdropFilter: "blur(10px)",
-                borderBottom: `1px solid ${T.line}`,
-              }}>
-                <button
-                  onClick={() => setMenuOpen(true)}
-                  aria-label="Abrir menu"
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "12px",
-                    border: `1px solid ${T.line}`,
-                    background: "#fff",
-                    fontSize: "20px",
-                    color: T.primary,
-                    cursor: "pointer",
-                  }}
-                >
-                  ☰
-                </button>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <p style={{ margin: 0, fontSize: "11px", color: T.muted, fontFamily: T.fontSans }}>
-                    Pastor Rhema PLUS
-                  </p>
-                  <p style={{ margin: "2px 0 0", fontSize: "15px", color: T.primary, fontFamily: T.fontSans, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {currentLabel}
-                  </p>
-                </div>
-                <div style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #0b2a5b, #163d7a)",
-                  color: "#fff",
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  fontFamily: T.fontSans,
-                }}>
-                  {(profile?.full_name || "P").slice(0, 1).toUpperCase()}
-                </div>
-              </div>
-
-              {menuOpen && (
-                <div
-                  onClick={() => setMenuOpen(false)}
-                  style={{
-                    position: "fixed",
-                    inset: 0,
-                    zIndex: 40,
-                    background: "rgba(15,23,42,.42)",
-                  }}
-                />
-              )}
-
-              <div style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                bottom: 0,
-                width: "min(88vw, 320px)",
-                zIndex: 50,
-                background: "linear-gradient(180deg, #0b2a5b 0%, #0d3268 100%)",
-                display: "flex",
-                flexDirection: "column",
-                padding: "20px 0 12px",
-                transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
-                transition: "transform .22s ease",
-                boxShadow: "0 18px 50px rgba(15,23,42,.35)",
-              }}>
-                <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 16px 10px" }}>
-                  <button
-                    onClick={() => setMenuOpen(false)}
-                    aria-label="Fechar menu"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "12px",
-                      border: "1px solid rgba(255,255,255,.12)",
-                      background: "rgba(255,255,255,.08)",
-                      color: "#fff",
-                      cursor: "pointer",
-                      fontSize: "18px",
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-                {navigationPanel}
-              </div>
-            </>
+          {/* Drawer Overlay */}
+          {menuOpen && (
+            <div
+              onClick={() => setMenuOpen(false)}
+              className="md:hidden fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm"
+            />
           )}
 
-          <div style={{ padding: isMobile ? "16px" : "28px", overflowY: "auto" }}>
-            <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Sidebar Mobile */}
+          <div className={`md:hidden fixed top-0 left-0 bottom-0 w-[min(88vw,320px)] z-50 bg-gradient-to-b from-[#0b2a5b] to-[#0d3268] flex flex-col pt-[20px] pb-[12px] transition-transform duration-200 shadow-[0_18px_50px_rgba(15,23,42,.35)] ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+            <div className="flex justify-end px-[16px] pb-[10px]">
+              <button
+                onClick={() => setMenuOpen(false)}
+                aria-label="Fechar menu"
+                className="w-[40px] h-[40px] rounded-[12px] border border-white/10 bg-white/10 text-white cursor-pointer text-[18px] flex items-center justify-center hover:bg-white/20"
+              >
+                ×
+              </button>
+            </div>
+            {navigationPanel}
+          </div>
+
+          {/* Wrapper Filhos */}
+          <div className="p-[16px] md:p-[28px] overflow-y-auto">
+            <div className="max-w-[1100px] mx-auto">
               {needsUpgrade ? <UpgradeWall router={router} t={t} /> : children}
             </div>
           </div>
+
         </div>
       </div>
     </div>

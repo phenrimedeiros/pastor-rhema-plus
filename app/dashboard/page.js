@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 import { auth, loadFullState, supabase } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Loader, Notice } from "@/components/ui";
 import SeriesForm from "@/components/SeriesForm";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import { getCompletedSermonFlowCount, getNextSermonFlowStep, getSermonFlowStatus } from "@/lib/sermonFlow";
 
@@ -65,7 +63,6 @@ function getLastPreachedSummary(entry) {
 function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComplete }) {
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
   const SERMON_STEPS = SERMON_STEP_KEYS.map((s) => ({ ...s, label: t(s.labelKey) }));
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -90,157 +87,95 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
     <AppLayout profile={profile}>
 
       {/* ── Hero ── */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(11,42,91,.98), rgba(18,54,108,.92))",
-        color: "white", borderRadius: "28px", padding: isMobile ? "22px 18px" : "28px 32px",
-        boxShadow: T.shadowLg, marginBottom: "22px",
-        position: "relative", overflow: "hidden",
-      }}>
-        <div style={{
-          position: "absolute", right: -60, bottom: -80,
-          width: 280, height: 280,
-          background: "radial-gradient(circle, rgba(202,161,74,.2), transparent 65%)",
-          pointerEvents: "none",
-        }} />
+      <div className="bg-gradient-to-br from-[#0b2a5b]/98 to-[#12366c]/92 text-white rounded-[28px] p-[22px_18px] md:p-[28px_32px] shadow-brand-lg mb-[22px] relative overflow-hidden">
+        <div className="absolute -right-[60px] -bottom-[80px] w-[280px] h-[280px] bg-[radial-gradient(circle,rgba(202,161,74,.2),transparent_65%)] pointer-events-none" />
 
         {activeSerie ? (
-          <div style={{ position: "relative", zIndex: 1 }}>
+          <div className="relative z-10">
             {/* Label */}
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              padding: "6px 12px", borderRadius: "999px",
-              background: "rgba(255,255,255,.10)",
-              fontSize: "12px", fontWeight: 800, marginBottom: "16px", fontFamily: T.fontSans,
-              color: "rgba(255,255,255,.9)",
-            }}>
+            <div className="inline-flex items-center gap-[8px] py-[6px] px-[12px] rounded-full bg-white/10 text-[12px] font-extrabold mb-[16px] font-sans text-white/90">
               📅 {t("dash_this_week")} · {nextSunday()}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto", gap: isMobile ? "18px" : "24px", alignItems: "start" }}>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-[18px] md:gap-[24px] items-start">
               <div>
-                <h2 style={{ margin: "0 0 6px", fontSize: isMobile ? "25px" : "30px", fontFamily: T.font, lineHeight: 1.1, letterSpacing: "-.02em" }}>
+                <h2 className="m-0 mb-[6px] text-[25px] md:text-[30px] font-serif leading-[1.1] tracking-[-.02em]">
                   {week?.title || activeSerie.series_name}
                 </h2>
-                <p style={{ margin: "0 0 4px", fontSize: "15px", color: "rgba(255,255,255,.75)", fontFamily: T.fontSans }}>
+                <p className="m-0 mb-[4px] text-[15px] text-white/75 font-sans">
                   {week?.passage}
                 </p>
-                <p style={{ margin: "0 0 20px", fontSize: "13px", color: T.gold, fontWeight: 700, fontFamily: T.fontSans }}>
+                <p className="m-0 mb-[20px] text-[13px] text-brand-gold font-bold font-sans">
                   {activeSerie.series_name} · {t("dash_week_of")} {activeSerie.current_week} {t("dash_of")} {activeSerie.weeks?.length}
                 </p>
 
-                {isMobile && (
-                  <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "10px",
-                    marginBottom: "18px",
-                  }}>
+                <div className="grid md:hidden grid-cols-2 gap-[10px] mb-[18px]">
                   {[
                     { label: t("dash_next_focus"), value: mappedNext ? `${mappedNext.emoji} ${mappedNext.label}` : t("dash_step_complete") },
                     { label: t("dash_week_status"), value: weekStatusLabel },
                   ].map((item) => (
-                      <div key={item.label} style={{
-                        padding: "12px 13px",
-                        borderRadius: "16px",
-                        background: "rgba(255,255,255,.08)",
-                        border: "1px solid rgba(255,255,255,.08)",
-                        boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
-                      }}>
-                        <p style={{ margin: "0 0 4px", fontSize: "11px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
+                      <div key={item.label} className="p-[12px_13px] rounded-[16px] bg-white/10 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
+                        <p className="m-0 mb-[4px] text-[11px] text-white/55 font-sans">
                           {item.label}
                         </p>
-                        <p style={{ margin: 0, fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: T.fontSans }}>
+                        <p className="m-0 text-[13px] text-white font-bold font-sans">
                           {item.value}
                         </p>
                       </div>
                     ))}
-                  </div>
-                )}
+                </div>
 
                 {/* Progress bar */}
-                <div style={{ marginBottom: "20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                    <span style={{ fontSize: "12px", color: "rgba(255,255,255,.6)", fontFamily: T.fontSans }}>
+                <div className="mb-[20px]">
+                  <div className="flex justify-between mb-[6px]">
+                    <span className="text-[12px] text-white/60 font-sans">
                       {t("dash_sermon_progress")}
                     </span>
-                    <span style={{ fontSize: "12px", fontWeight: 800, color: allDone ? "#86efac" : T.gold, fontFamily: T.fontSans }}>
+                    <span className={`text-[12px] font-extrabold font-sans ${allDone ? 'text-green-300' : 'text-brand-gold'}`}>
                       {pct}% · {done}/{total} steps
                     </span>
                   </div>
-                  <div style={{ height: 6, background: "rgba(255,255,255,.12)", borderRadius: "999px", overflow: "hidden" }}>
-                    <div style={{
-                      height: "100%", borderRadius: "999px",
-                      width: `${pct}%`,
-                      background: allDone
-                        ? "linear-gradient(90deg, #22c55e, #16a34a)"
-                        : `linear-gradient(90deg, ${T.gold}, #b7862d)`,
-                      transition: "width .5s ease",
-                    }} />
+                  <div className="h-[6px] bg-white/10 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-500 ease-in-out ${allDone ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-brand-gold to-[#b7862d]'}`} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
 
                 {/* CTA */}
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
+                <div className="flex gap-[12px] flex-col md:flex-row flex-wrap">
                   {allDone ? (
                     <button
                       onClick={onWeekComplete}
-                      style={{
-                        width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 24px", borderRadius: "14px", border: "none",
-                        background: "linear-gradient(135deg, #22c55e, #16a34a)",
-                        color: "#fff", fontFamily: T.fontSans, fontSize: "15px",
-                        fontWeight: 800, cursor: "pointer",
-                      }}
+                      className="w-full md:w-auto min-h-[46px] px-[24px] py-[13px] rounded-[14px] border-none bg-gradient-to-br from-green-500 to-green-600 text-white font-sans text-[15px] font-extrabold cursor-pointer hover:-translate-y-[1px] transition-transform"
                     >
                       {t("dash_mark_complete")}
                     </button>
                   ) : mappedNext ? (
                     <button
                       onClick={() => router.push(`/${mappedNext.page}`)}
-                      style={{
-                        width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 24px", borderRadius: "14px", border: "none",
-                        background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
-                        color: "#0b2a5b", fontFamily: T.fontSans, fontSize: "15px",
-                        fontWeight: 800, cursor: "pointer",
-                      }}
+                      className="w-full md:w-auto min-h-[46px] px-[24px] py-[13px] rounded-[14px] border-none bg-gradient-to-br from-brand-gold to-[#b7862d] text-brand-primary font-sans text-[15px] font-extrabold cursor-pointer hover:-translate-y-[1px] transition-transform"
                     >
                       {done === 0 ? t("dash_start_week") : t("dash_resume_week")}
                     </button>
                   ) : null}
                   <button
                     onClick={() => router.push("/sermons")}
-                    style={{
-                      width: isMobile ? "100%" : "auto", minHeight: 46, padding: "13px 20px", borderRadius: "14px",
-                      border: "1px solid rgba(255,255,255,.2)",
-                      background: "transparent", color: "rgba(255,255,255,.8)",
-                      fontFamily: T.fontSans, fontSize: "14px", fontWeight: 600, cursor: "pointer",
-                    }}
+                    className="w-full md:w-auto min-h-[46px] px-[20px] py-[13px] rounded-[14px] border border-white/20 bg-transparent text-white/80 font-sans text-[14px] font-semibold cursor-pointer hover:-translate-y-[1px] transition-transform"
                   >
                     {t("dash_my_sermons")}
                   </button>
                 </div>
               </div>
 
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                  gap: "10px",
-                  marginBottom: "18px",
-                }}>
+                <div className="hidden md:grid grid-cols-2 gap-[10px] mb-[18px]">
                   {[
                     { label: t("dash_next_focus"), value: mappedNext ? `${mappedNext.emoji} ${mappedNext.label}` : t("dash_step_complete") },
                     { label: t("dash_week_status"), value: weekStatusLabel },
                   ].map((item) => (
-                    <div key={item.label} style={{
-                      padding: "12px 13px",
-                      borderRadius: "16px",
-                      background: "rgba(255,255,255,.08)",
-                      border: "1px solid rgba(255,255,255,.08)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
-                    }}>
-                      <p style={{ margin: "0 0 4px", fontSize: "11px", color: "rgba(255,255,255,.55)", fontFamily: T.fontSans }}>
+                    <div key={item.label} className="p-[12px_13px] rounded-[16px] bg-white/10 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]">
+                      <p className="m-0 mb-[4px] text-[11px] text-white/55 font-sans">
                         {item.label}
                       </p>
-                      <p style={{ margin: 0, fontSize: "13px", color: "#fff", fontWeight: 700, fontFamily: T.fontSans }}>
+                      <p className="m-0 text-[13px] text-white font-bold font-sans">
                         {item.value}
                       </p>
                     </div>
@@ -248,11 +183,8 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
                 </div>
 
                 {/* Step checklist */}
-                <div style={{
-                  background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.1)",
-                borderRadius: "20px", padding: "16px", minWidth: isMobile ? 0 : 220,
-              }}>
-                <p style={{ margin: "0 0 12px", fontSize: "11px", fontWeight: 800, color: "rgba(255,255,255,.5)", fontFamily: T.fontSans, textTransform: "uppercase", letterSpacing: ".06em" }}>
+                <div className="bg-white/5 border border-white/10 rounded-[20px] p-[16px] min-w-0 md:min-w-[220px]">
+                <p className="m-0 mb-[12px] text-[11px] font-extrabold text-white/50 font-sans uppercase tracking-[.06em]">
                   {t("dash_prep_steps")}
                 </p>
                 {SERMON_STEPS.map((step, i) => {
@@ -261,23 +193,12 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
                     <div
                       key={step.key}
                       onClick={() => status !== "locked" && router.push(`/${step.page}`)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        padding: "11px 10px", borderRadius: "10px", marginBottom: "4px",
-                        background: status === "current" ? "rgba(202,161,74,.2)" : "transparent",
-                        cursor: status === "locked" ? "default" : "pointer",
-                        transition: ".12s ease",
-                      }}
+                      className={`flex items-center gap-[10px] p-[11px_10px] rounded-[10px] mb-[4px] transition-all duration-150 ${status === "current" ? "bg-[#caa14a]/20" : "bg-transparent"} ${status === "locked" ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span style={{ fontSize: "14px" }}>
+                      <span className="text-[14px]">
                         {status === "done" ? "✅" : status === "current" ? "⏳" : "🔒"}
                       </span>
-                      <span style={{
-                        fontSize: "13px", fontFamily: T.fontSans,
-                        color: status === "done" ? "#86efac" : status === "current" ? T.gold : "rgba(255,255,255,.3)",
-                        fontWeight: status === "current" ? 700 : 500,
-                        textDecoration: status !== "locked" ? "none" : "none",
-                      }}>
+                      <span className={`text-[13px] font-sans ${status === "done" ? "text-green-300" : status === "current" ? "text-brand-gold font-bold" : "text-white/30 font-medium"} no-underline`}>
                         {step.label}
                       </span>
                     </div>
@@ -288,29 +209,19 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
           </div>
         ) : (
           // No series — never start from zero
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              padding: "6px 12px", borderRadius: "999px",
-              background: "rgba(255,255,255,.10)",
-              fontSize: "12px", fontWeight: 800, marginBottom: "16px", fontFamily: T.fontSans,
-            }}>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-[8px] py-[6px] px-[12px] rounded-full bg-white/10 text-[12px] font-extrabold mb-[16px] font-sans text-white">
               🚀 Ready to start
             </div>
-            <h2 style={{ margin: "0 0 10px", fontSize: "30px", fontFamily: T.font, lineHeight: 1.1 }}>
+            <h2 className="m-0 mb-[10px] text-[30px] font-serif leading-[1.1] text-white">
               {t("dash_hero_title")}
             </h2>
-            <p style={{ margin: "0 0 20px", fontSize: "15px", color: "rgba(255,255,255,.7)", fontFamily: T.fontSans, maxWidth: 480 }}>
+            <p className="m-0 mb-[20px] text-[15px] text-white/70 font-sans max-w-[480px]">
               {t("dash_hero_desc")}
             </p>
             <button
               onClick={() => setShowForm(true)}
-              style={{
-                minHeight: 46, padding: "13px 28px", borderRadius: "14px", border: "none",
-                background: `linear-gradient(135deg, ${T.gold}, #b7862d)`,
-                color: "#0b2a5b", fontFamily: T.fontSans, fontSize: "15px",
-                fontWeight: 800, cursor: "pointer",
-              }}
+              className="min-h-[46px] px-[28px] py-[13px] rounded-[14px] border-none bg-gradient-to-br from-brand-gold to-[#b7862d] text-brand-primary font-sans text-[15px] font-extrabold cursor-pointer hover:-translate-y-[1px] transition-transform"
             >
               {t("dash_plan_first")}
             </button>
@@ -320,17 +231,17 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
 
       {/* ── New Series Form ── */}
       {showForm && (
-        <Card style={{ marginBottom: "22px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", gap: "12px", marginBottom: "16px" }}>
-            <h3 style={{ margin: 0, fontFamily: T.font, fontSize: "20px", color: T.primary }}>{t("dash_plan_new")}</h3>
-            <Btn variant="secondary" onClick={() => setShowForm(false)} style={{ padding: "8px 12px", fontSize: "13px" }}>{t("dash_cancel")}</Btn>
+        <Card className="mb-[22px]">
+          <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-[12px] mb-[16px]">
+            <h3 className="m-0 font-serif text-[20px] text-brand-primary">{t("dash_plan_new")}</h3>
+            <Btn variant="secondary" onClick={() => setShowForm(false)} className="px-[12px] py-[8px] text-[13px]">{t("dash_cancel")}</Btn>
           </div>
           <SeriesForm onSuccess={() => { setShowForm(false); onNewSerie(); }} />
         </Card>
       )}
 
       {/* ── Bottom grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "16px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px]">
 
         {/* Stats */}
         {[
@@ -338,40 +249,34 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
           { val: `${profile?.weekly_streak ?? 0}w`, label: t("dash_streak"), emoji: "🔥" },
           { val: activeSerie ? `${activeSerie.current_week}/${activeSerie.weeks?.length ?? "?"}` : "—", label: t("dash_series_progress"), emoji: "📊" },
         ].map((s, i) => (
-          <div key={i} style={{
-            border: `1px solid ${T.line}`, borderRadius: "18px", padding: "18px",
-            background: "linear-gradient(180deg, #fff, #fbfcff)",
-          }}>
-            <span style={{ fontSize: "24px" }}>{s.emoji}</span>
-            <b style={{ display: "block", fontSize: "28px", lineHeight: 1.1, margin: "8px 0 4px", color: T.primary, fontFamily: T.font }}>
+          <div key={i} className="border border-brand-line rounded-[18px] p-[18px] bg-gradient-to-b from-white to-[#fbfcff]">
+            <span className="text-[24px]">{s.emoji}</span>
+            <b className="block text-[28px] leading-[1.1] my-[8px] mb-[4px] text-brand-primary font-serif">
               {s.val}
             </b>
-            <span style={{ fontSize: "12.5px", color: T.muted, fontFamily: T.fontSans }}>{s.label}</span>
+            <span className="text-[12.5px] text-brand-muted font-sans">{s.label}</span>
           </div>
         ))}
 
         {/* Quick access */}
         {activeSerie && SERMON_STEPS.slice(0, 3).map((step, i) => {
           const status = getSermonFlowStatus(week, i);
+          const bgConfig = status === "done" ? "bg-brand-green-soft" : status === "current" ? "bg-brand-amber-soft" : "bg-white";
+          const borderConfig = status === "current" ? "border-brand-gold" : status === "done" ? "border-green-600/30" : "border-brand-line";
+          
           return (
             <div
               key={step.key}
               onClick={() => status !== "locked" && router.push(`/${step.page}`)}
-              style={{
-                border: `1.5px solid ${status === "current" ? T.gold : status === "done" ? "rgba(22,163,74,.3)" : T.line}`,
-                borderRadius: "18px", padding: "18px",
-                background: status === "done" ? T.greenSoft : status === "current" ? T.amberSoft : "#fff",
-                cursor: status === "locked" ? "default" : "pointer",
-                opacity: status === "locked" ? 0.5 : 1,
-              }}
+              className={`border-[1.5px] ${borderConfig} rounded-[18px] p-[18px] ${bgConfig} ${status === "locked" ? "cursor-default opacity-50" : "cursor-pointer transition-transform hover:-translate-y-[2px]"}`}
             >
-              <div style={{ fontSize: "24px", marginBottom: "8px" }}>
+              <div className="text-[24px] mb-[8px]">
                 {status === "done" ? "✅" : status === "current" ? step.emoji : "🔒"}
               </div>
-              <b style={{ display: "block", fontSize: "14px", marginBottom: "4px", fontFamily: T.fontSans, color: T.text }}>
+              <b className="block text-[14px] mb-[4px] font-sans text-brand-text">
                 {step.label}
               </b>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: status === "done" ? "#166534" : status === "current" ? "#92400e" : T.muted, fontFamily: T.fontSans }}>
+              <span className={`text-[11px] font-bold font-sans ${status === "done" ? "text-green-800" : status === "current" ? "text-amber-800" : "text-brand-muted"}`}>
                 {status === "done" ? t("dash_step_complete") : status === "current" ? t("dash_step_ready") : t("dash_step_locked")}
               </span>
             </div>
@@ -379,27 +284,19 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
         })}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.15fr .85fr", gap: "16px", marginTop: "16px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1.15fr_.85fr] gap-[16px] mt-[16px]">
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "flex-start", flexDirection: isMobile ? "column" : "row", marginBottom: "14px" }}>
+          <div className="flex justify-between gap-[12px] items-start flex-col md:flex-row mb-[14px]">
             <div>
-              <h3 style={{ margin: "0 0 6px", fontSize: "20px", color: T.primary, fontFamily: T.font }}>
+              <h3 className="m-0 mb-[6px] text-[20px] text-brand-primary font-serif">
                 {t("dash_review_title")}
               </h3>
-              <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+              <p className="m-0 text-brand-muted text-[14px] leading-[1.65] font-sans">
                 {t("dash_review_desc")}
               </p>
             </div>
             {week && (
-              <span style={{
-                padding: "7px 10px",
-                borderRadius: "999px",
-                background: done > 0 ? T.blueSoft : T.surface2,
-                color: done > 0 ? T.primary : T.muted,
-                fontSize: "12px",
-                fontWeight: 800,
-                fontFamily: T.fontSans,
-              }}>
+              <span className={`px-[10px] py-[7px] rounded-full text-[12px] font-extrabold font-sans ${done > 0 ? "bg-brand-blue-soft text-brand-primary" : "bg-brand-surface-2 text-brand-muted"}`}>
                 {mappedNext ? `${t("dash_resume_exact")} ${mappedNext.label}` : t("dash_step_complete")}
               </span>
             )}
@@ -408,60 +305,60 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
           {!week ? (
             <Notice color="gold">{t("dash_review_empty")}</Notice>
           ) : (
-            <div style={{ display: "grid", gap: "12px" }}>
-              <div style={{ padding: "14px 16px", borderRadius: "16px", background: "#eef4ff", border: `1px solid rgba(11,42,91,.08)` }}>
-                <p style={{ margin: "0 0 5px", fontSize: "12px", color: T.gold, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".08em", fontFamily: T.fontSans }}>
+            <div className="grid gap-[12px]">
+              <div className="p-[14px_16px] rounded-[16px] bg-brand-surface-3 border border-brand-primary/10">
+                <p className="m-0 mb-[5px] text-[12px] text-brand-gold font-extrabold uppercase tracking-[.08em] font-sans">
                   {t("dash_review_title_label")}
                 </p>
-                <p style={{ margin: 0, color: T.primary, fontSize: "18px", lineHeight: 1.45, fontFamily: T.font }}>
+                <p className="m-0 text-brand-primary text-[18px] leading-[1.45] font-serif">
                   {review.approvedTitle || week.title}
                 </p>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "12px" }}>
-                <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
-                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
+                <div className="p-[14px_16px] rounded-[16px] border border-brand-line bg-white">
+                  <p className="m-0 mb-[6px] text-[12px] text-brand-muted font-extrabold uppercase tracking-[.06em] font-sans">
                     {t("dash_review_bigidea")}
                   </p>
-                  <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  <p className="m-0 text-brand-text text-[14px] leading-[1.65] font-sans">
                     {review.approvedBigIdea || t("dash_review_missing")}
                   </p>
                 </div>
-                <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
-                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                <div className="p-[14px_16px] rounded-[16px] border border-brand-line bg-white">
+                  <p className="m-0 mb-[6px] text-[12px] text-brand-muted font-extrabold uppercase tracking-[.06em] font-sans">
                     {t("dash_review_challenge")}
                   </p>
-                  <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  <p className="m-0 text-brand-text text-[14px] leading-[1.65] font-sans">
                     {review.approvedChallenge || t("dash_review_missing")}
                   </p>
                 </div>
               </div>
 
-              <div style={{ padding: "14px 16px", borderRadius: "16px", border: `1px solid ${T.line}`, background: "#fff" }}>
-                <p style={{ margin: "0 0 8px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+              <div className="p-[14px_16px] rounded-[16px] border border-brand-line bg-white">
+                <p className="m-0 mb-[8px] text-[12px] text-brand-muted font-extrabold uppercase tracking-[.06em] font-sans">
                   {t("dash_review_points")}
                 </p>
                 {review.approvedPoints.length ? (
-                  <div style={{ display: "grid", gap: "8px" }}>
+                  <div className="grid gap-[8px]">
                     {review.approvedPoints.slice(0, 3).map((point, index) => (
-                      <div key={`${point.label}-${index}`} style={{ padding: "10px 12px", borderRadius: "12px", background: T.surface2 }}>
-                        <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "13px", fontWeight: 800, fontFamily: T.fontSans }}>
+                      <div key={`${point.label}-${index}`} className="p-[10px_12px] rounded-[12px] bg-brand-surface-2">
+                        <p className="m-0 mb-[4px] text-brand-primary text-[13px] font-extrabold font-sans">
                           {point.label}
                         </p>
-                        <p style={{ margin: 0, color: T.text, fontSize: "13px", lineHeight: 1.55, fontFamily: T.fontSans }}>
+                        <p className="m-0 text-brand-text text-[13px] leading-[1.55] font-sans">
                           {point.statement}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p style={{ margin: 0, color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+                  <p className="m-0 text-brand-muted text-[14px] font-sans">
                     {t("dash_review_points_empty")}
                   </p>
                 )}
               </div>
 
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <div className="flex gap-[10px] flex-wrap">
                 <Btn onClick={() => router.push(mappedNext ? `/${mappedNext.page}` : "/final")}>
                   {mappedNext ? t("dash_resume_week") : t("dash_review_final")}
                 </Btn>
@@ -474,43 +371,43 @@ function ThisWeek({ profile, activeSerie, latestPreached, onNewSerie, onWeekComp
         </Card>
 
         <Card>
-          <h3 style={{ margin: "0 0 6px", fontSize: "20px", color: T.primary, fontFamily: T.font }}>
+          <h3 className="m-0 mb-[6px] text-[20px] text-brand-primary font-serif">
             {t("dash_last_preached")}
           </h3>
-          <p style={{ margin: "0 0 14px", color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+          <p className="m-0 mb-[14px] text-brand-muted text-[14px] leading-[1.65] font-sans">
             {t("dash_last_preached_desc")}
           </p>
 
           {!latestPreached ? (
             <Notice color="blue">{t("dash_last_preached_empty")}</Notice>
           ) : (
-            <div style={{ display: "grid", gap: "12px" }}>
-              <div style={{ padding: "14px 16px", borderRadius: "16px", background: T.surface2, border: `1px solid ${T.line}` }}>
-                <p style={{ margin: "0 0 4px", color: T.primary, fontSize: "17px", lineHeight: 1.4, fontFamily: T.font }}>
+            <div className="grid gap-[12px]">
+              <div className="p-[14px_16px] rounded-[16px] bg-brand-surface-2 border border-brand-line">
+                <p className="m-0 mb-[4px] text-brand-primary text-[17px] leading-[1.4] font-serif">
                   {lastPreached.title || latestPreached.full_content?.title}
                 </p>
-                <p style={{ margin: 0, color: T.muted, fontSize: "12px", fontFamily: T.fontSans }}>
+                <p className="m-0 text-brand-muted text-[12px] font-sans">
                   {latestPreached.full_content?.passage || lastPreached.passage} · {formatPreachedAt(latestPreached.preached_at)}
                 </p>
               </div>
 
               {lastPreached.bigIdea && (
-                <div style={{ padding: "14px 16px", borderRadius: "16px", background: "#eef4ff", border: `1px solid rgba(11,42,91,.08)` }}>
-                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: T.muted, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                <div className="p-[14px_16px] rounded-[16px] bg-brand-surface-3 border border-brand-primary/10">
+                  <p className="m-0 mb-[6px] text-[12px] text-brand-muted font-extrabold uppercase tracking-[.06em] font-sans">
                     {t("dash_review_bigidea")}
                   </p>
-                  <p style={{ margin: 0, color: T.primary, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                  <p className="m-0 text-brand-primary text-[14px] leading-[1.65] font-sans">
                     {lastPreached.bigIdea}
                   </p>
                 </div>
               )}
 
               {lastPreached.challenge && (
-                <div style={{ padding: "14px 16px", borderRadius: "16px", background: T.violetSoft, border: `1px solid rgba(99,102,241,.12)` }}>
-                  <p style={{ margin: "0 0 6px", fontSize: "12px", color: "#5b21b6", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".06em", fontFamily: T.fontSans }}>
+                <div className="p-[14px_16px] rounded-[16px] bg-brand-violet-soft border border-indigo-500/10">
+                  <p className="m-0 mb-[6px] text-[12px] text-indigo-800 font-extrabold uppercase tracking-[.06em] font-sans">
                     {t("dash_review_challenge")}
                   </p>
-                  <p style={{ margin: 0, color: "#4c1d95", fontSize: "13px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+                  <p className="m-0 text-indigo-900 text-[13px] leading-[1.6] font-sans">
                     {lastPreached.challenge}
                   </p>
                 </div>
@@ -625,7 +522,7 @@ export default function DashboardPage() {
   };
 
   if (loading || completing) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #0b2a5b, #163d7a)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
       <Loader text={completing ? t("dash_completing") : t("common_loading")} />
     </div>
   );

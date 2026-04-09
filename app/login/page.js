@@ -4,12 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { auth, supabase } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
-import { T } from "@/lib/tokens";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
-import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function LoginPage() {
-  const isMobile = useIsMobile();
   const HOTMART_URL = "https://pay.hotmart.com/W103907822M?checkoutMode=10";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,57 +44,37 @@ export default function LoginPage() {
     setLoading(false);
   };
 
+  const inputClasses = "w-full p-[12px_14px] border-[1.5px] border-brand-line rounded-[12px] text-[14px] font-sans outline-none bg-white text-[#1f2937] box-border mt-[6px] focus:border-brand-primary";
+  const labelClasses = "flex flex-col gap-[2px] text-[13px] font-bold text-brand-text";
+
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(160deg, #0b2a5b 0%, #0d3268 100%)",
-      fontFamily: T.fontSans,
-      padding: isMobile ? "16px" : "20px",
-    }}>
-      <div style={{ width: "100%", maxWidth: 380 }}>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#0d3268] font-sans p-[16px] md:p-[20px]">
+      <div className="w-full max-w-[380px]">
 
         {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: "36px" }}>
-          <div style={{
-            width: isMobile ? 96 : 120, height: isMobile ? 96 : 120, borderRadius: "50%",
-            background: "#fff",
-            display: "grid", placeItems: "center",
-            margin: "0 auto 16px",
-            boxShadow: "0 8px 32px rgba(0,0,0,.2)",
-            padding: "14px",
-            boxSizing: "border-box",
-            overflow: "hidden",
-          }}>
-            <Image src="/logo.png" alt="Pastor Rhema" width={96} height={96} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+        <div className="text-center mb-[36px]">
+          <div className="w-[96px] h-[96px] md:w-[120px] md:h-[120px] rounded-full bg-white grid place-items-center mx-auto mb-[16px] shadow-[0_8px_32px_rgba(0,0,0,.2)] p-[14px] overflow-hidden">
+            <Image src="/logo.png" alt="Pastor Rhema" width={96} height={96} className="w-full h-full object-contain" />
           </div>
-          <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,.45)" }}>
+          <p className="m-0 text-[13px] text-white/45">
             {t("login_signin_subtitle")}
           </p>
         </div>
 
         {/* Card */}
-        <div style={{
-          background: "#fff",
-          borderRadius: "20px",
-          padding: isMobile ? "22px 18px" : "28px",
-          boxShadow: "0 24px 64px rgba(0,0,0,.25)",
-        }}>
-          <h2 style={{ margin: "0 0 6px", fontFamily: T.font, fontSize: "20px", fontWeight: 800, color: T.primary }}>
+        <div className="bg-white rounded-[20px] p-[22px_18px] md:p-[28px] shadow-[0_24px_64px_rgba(0,0,0,.25)]">
+          <h2 className="m-0 mb-[6px] font-serif text-[20px] font-extrabold text-brand-primary">
             {isForgot ? t("login_forgot_title") : t("login_signin_title")}
           </h2>
           {isForgot && (
-            <p style={{ margin: "0 0 18px", fontSize: "13px", color: T.muted, lineHeight: 1.6 }}>
+            <p className="m-0 mb-[18px] text-[13px] text-brand-muted leading-[1.6]">
               {t("login_forgot_subtitle")}
             </p>
           )}
-          {!isForgot && <div style={{ marginBottom: "20px" }} />}
+          {!isForgot && <div className="mb-[20px]" />}
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            <label style={labelStyle}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[14px]">
+            <label className={labelClasses}>
               {t("login_email")}
               <input
                 type="email"
@@ -106,12 +83,12 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
-                style={inputStyle}
+                className={inputClasses}
               />
             </label>
 
             {!isForgot && (
-              <label style={labelStyle}>
+              <label className={labelClasses}>
                 {t("login_password")}
                 <input
                   type="password"
@@ -120,17 +97,17 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
                   required
-                  style={inputStyle}
+                  className={inputClasses}
                 />
               </label>
             )}
 
             {!isForgot && (
-              <div style={{ textAlign: "right", marginTop: "-6px" }}>
+              <div className="text-right mt-[-6px]">
                 <button
                   type="button"
                   onClick={() => { setIsForgot(true); resetState(); }}
-                  style={{ background: "none", border: "none", padding: 0, color: T.primary, fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: T.fontSans }}
+                  className="bg-transparent border-none p-0 text-brand-primary text-[12px] font-bold cursor-pointer font-sans"
                 >
                   {t("login_forgot")}
                 </button>
@@ -138,47 +115,40 @@ export default function LoginPage() {
             )}
 
             {error && (
-              <p style={{ margin: 0, fontSize: "13px", color: "#b91c1c", textAlign: "center" }}>{error}</p>
+              <p className="m-0 text-[13px] text-red-700 text-center">{error}</p>
             )}
             {success && (
-              <p style={{ margin: 0, fontSize: "13px", color: "#166534", textAlign: "center" }}>{success}</p>
+              <p className="m-0 text-[13px] text-green-800 text-center">{success}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                marginTop: "4px", minHeight: 46, padding: "13px",
-                background: `linear-gradient(135deg, ${T.primary}, #163d7a)`,
-                color: "#fff", border: "none", borderRadius: "12px",
-                fontSize: "14px", fontWeight: 700,
-                cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: T.fontSans, opacity: loading ? 0.7 : 1,
-              }}
+              className={`mt-[4px] min-h-[46px] p-[13px] bg-gradient-to-br from-brand-primary to-[#163d7a] text-white border-none rounded-[12px] text-[14px] font-bold font-sans cursor-pointer transition-opacity ${loading ? "opacity-70 cursor-not-allowed" : "opacity-100 hover:opacity-90"}`}
             >
               {loading ? t("login_loading") : isForgot ? t("login_forgot_btn") : t("login_signin_btn")}
             </button>
           </form>
 
-          <div style={{ marginTop: "18px", paddingTop: "20px", borderTop: `1px solid ${T.line}`, textAlign: "center" }}>
+          <div className="mt-[18px] pt-[20px] border-t border-brand-line text-center">
             {isForgot ? (
               <button
                 type="button"
                 onClick={() => { setIsForgot(false); resetState(); }}
-                style={{ background: "none", border: "none", padding: 0, color: T.primary, fontWeight: 700, fontSize: "13px", cursor: "pointer", fontFamily: T.fontSans }}
+                className="bg-transparent border-none p-0 text-brand-primary font-bold text-[13px] cursor-pointer font-sans transition-opacity hover:opacity-80"
               >
                 ← {t("login_back")}
               </button>
             ) : (
               <>
-                <span style={{ fontSize: "13px", color: T.muted }}>
-                  {t("login_no_access")}
+                <span className="text-[13px] text-brand-muted">
+                  {t("login_no_access")}{" "}
                 </span>
                 <a
                   href={HOTMART_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: T.primary, fontWeight: 700, fontSize: "13px", fontFamily: T.fontSans, textDecoration: "none" }}
+                  className="text-brand-primary font-bold text-[13px] font-sans no-underline transition-opacity hover:opacity-80"
                 >
                   {t("login_get_access")}
                 </a>
@@ -186,25 +156,19 @@ export default function LoginPage() {
             )}
           </div>
 
-          <p style={{ marginTop: "16px", textAlign: "center", fontSize: "12px", color: T.muted, lineHeight: 1.6 }}>
+          <p className="mt-[16px] text-center text-[12px] text-brand-muted leading-[1.6]">
             {t("login_security")}
           </p>
         </div>
       </div>
 
       {/* Language switcher — rodapé */}
-      <div style={{ display: "flex", gap: "4px", justifyContent: "center", marginTop: "24px", flexWrap: "wrap" }}>
+      <div className="flex gap-[4px] justify-center mt-[24px] flex-wrap">
         {LANGUAGES.map((l) => (
           <button
             key={l.code}
             onClick={() => changeLang(l.code)}
-            style={{
-              minHeight: 28, padding: "4px 8px", borderRadius: "6px", border: "none",
-              background: lang === l.code ? "rgba(255,255,255,.15)" : "transparent",
-              color: lang === l.code ? "rgba(255,255,255,.7)" : "rgba(255,255,255,.3)",
-              fontFamily: T.fontSans, fontSize: "10px", fontWeight: lang === l.code ? 700 : 400,
-              cursor: "pointer",
-            }}
+            className={`min-h-[28px] p-[4px_8px] rounded-[6px] border-none font-sans text-[10px] cursor-pointer transition-colors ${lang === l.code ? "bg-white/15 text-white/70 font-bold" : "bg-transparent text-white/30 font-normal hover:bg-white/5"}`}
           >
             {l.flag} {l.code.toUpperCase()}
           </button>
@@ -213,21 +177,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%", padding: "12px 14px",
-  border: "1.5px solid #e5e7eb", borderRadius: "12px",
-  fontSize: "14px", fontFamily: "DM Sans, sans-serif",
-  outline: "none", background: "#fff", color: "#1f2937",
-  boxSizing: "border-box",
-  marginTop: "6px",
-};
-
-const labelStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "2px",
-  fontSize: "13px",
-  fontWeight: 700,
-  color: T.text,
-};

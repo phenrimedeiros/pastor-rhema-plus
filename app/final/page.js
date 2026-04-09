@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
-import { T } from "@/lib/tokens";
 import { Btn, Card, Field, Notice, Pill } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
-import { useIsMobile } from "@/lib/useIsMobile";
 import { useLanguage } from "@/lib/i18n";
 import SermonFlowNav from "@/components/SermonFlowNav";
 
@@ -306,7 +304,6 @@ export default function FinalPage() {
   const [saveMessage, setSaveMessage] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const isMobile = useIsMobile();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -336,7 +333,7 @@ export default function FinalPage() {
       setLoading(false);
     };
     init();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!saveMessage) return undefined;
@@ -508,16 +505,8 @@ export default function FinalPage() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(135deg, #0b2a5b, #163d7a)",
-        }}
-      >
-        <div style={{ color: "white", fontFamily: T.fontSans }}>{t("common_loading")}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b2a5b] to-[#163d7a]">
+        <div className="text-white font-sans">{t("common_loading")}</div>
       </div>
     );
   }
@@ -526,9 +515,9 @@ export default function FinalPage() {
     return (
       <AppLayout profile={estado.profile}>
         <Card>
-          <h4 style={{ fontFamily: T.font, marginTop: 0 }}>{t("final_no_sermon")}</h4>
-          <p style={{ color: T.muted, fontFamily: T.fontSans }}>{t("final_no_sermon_desc")}</p>
-          <Btn onClick={() => router.push("/builder")} style={{ marginTop: "16px" }}>
+          <h4 className="m-0 mt-0 font-serif">{t("final_no_sermon")}</h4>
+          <p className="text-brand-muted font-sans">{t("final_no_sermon_desc")}</p>
+          <Btn onClick={() => router.push("/builder")} className="mt-[16px]">
             {t("final_go_builder")}
           </Btn>
         </Card>
@@ -545,46 +534,21 @@ export default function FinalPage() {
         savedContentText={t("final_subtitle")}
       />
 
-      <Card style={{ marginBottom: "18px" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "14px",
-            alignItems: isMobile ? "stretch" : "center",
-            flexDirection: isMobile ? "column" : "row",
-          }}
-        >
+      <Card className="mb-[18px]">
+        <div className="flex flex-col md:flex-row justify-between gap-[14px] items-stretch md:items-center">
           <div>
-            <p
-              style={{
-                margin: "0 0 4px",
-                fontSize: "11px",
-                color: T.gold,
-                fontWeight: 800,
-                letterSpacing: ".08em",
-                textTransform: "uppercase",
-                fontFamily: T.fontSans,
-              }}
-            >
+            <p className="m-0 mb-[4px] text-[11px] text-brand-gold font-extrabold tracking-[0.08em] uppercase font-sans">
               {t("final_title")}
             </p>
-            <h4 style={{ margin: "0 0 6px", fontSize: isMobile ? "22px" : "24px", fontFamily: T.font }}>
+            <h4 className="m-0 mb-[6px] text-[22px] md:text-[24px] font-serif">
               {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
             </h4>
-            <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.6, fontFamily: T.fontSans }}>
+            <p className="m-0 text-[14px] text-brand-muted leading-[1.6] font-sans">
               {t("final_edit_hint")}
             </p>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "10px",
-              justifyContent: isMobile ? "stretch" : "flex-end",
-            }}
-          >
+          <div className="flex flex-wrap gap-[10px] justify-stretch md:justify-end">
             <Btn variant={readingMode ? "secondary" : "primary"} onClick={() => setReadingMode(false)}>
               {t("final_mode_review")}
             </Btn>
@@ -609,36 +573,11 @@ export default function FinalPage() {
         {error && <Notice color="red">{error}</Notice>}
       </Card>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: readingMode || isMobile ? "1fr" : "1.2fr .8fr",
-          gap: isMobile ? "16px" : "22px",
-        }}
-      >
-        <Card style={{ padding: readingMode && !isMobile ? "28px" : undefined }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              gap: "12px",
-              flexDirection: isMobile ? "column" : "row",
-              marginBottom: "16px",
-            }}
-          >
-            <div style={{ width: "100%" }}>
-              <p
-                style={{
-                  margin: "0 0 4px",
-                  fontSize: "11px",
-                  color: T.gold,
-                  fontWeight: 800,
-                  letterSpacing: ".08em",
-                  textTransform: "uppercase",
-                  fontFamily: T.fontSans,
-                }}
-              >
+      <div className={`grid gap-[16px] md:gap-[22px] ${readingMode ? "grid-cols-1" : "grid-cols-1 md:grid-cols-[1.2fr_.8fr]"}`}>
+        <Card className={readingMode ? "md:p-[28px]" : ""}>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-[12px] mb-[16px]">
+            <div className="w-full">
+              <p className="m-0 mb-[4px] text-[11px] text-brand-gold font-extrabold tracking-[0.08em] uppercase font-sans">
                 {t("final_title")}
               </p>
 
@@ -647,132 +586,65 @@ export default function FinalPage() {
                   <input
                     value={builder.selectedTitle || ""}
                     onChange={(e) => updateBuilder({ selectedTitle: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "14px 16px",
-                      borderRadius: "14px",
-                      border: `1px solid ${T.line}`,
-                      background: "#fff",
-                      fontSize: "18px",
-                      fontFamily: T.font,
-                      color: T.text,
-                    }}
+                    className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[18px] font-serif text-brand-text outline-none"
                   />
                 </Field>
               ) : (
-                <h4 style={{ margin: "0 0 4px", fontSize: "22px", fontFamily: T.font }}>
+                <h4 className="m-0 mb-[4px] text-[22px] font-serif">
                   {builder.selectedTitle || builder.titleOptions?.[0] || week?.title}
                 </h4>
               )}
 
-              <p style={{ margin: "8px 0 0", color: T.muted, fontSize: "14px", fontFamily: T.fontSans }}>
+              <p className="m-[8px_0_0] text-[14px] text-brand-muted font-sans">
                 {week?.passage} · {activeSerie?.series_name}
               </p>
             </div>
-            <Pill style={{ background: T.greenSoft, color: "#166534" }}>Complete</Pill>
+            <Pill className="bg-brand-green-soft text-brand-green">Complete</Pill>
           </div>
 
-          <div
-            style={{
-              padding: isMobile ? "18px" : "16px",
-              borderRadius: "16px",
-              background: "#eef4ff",
-              border: `1px solid rgba(11,42,91,.10)`,
-              marginBottom: "16px",
-            }}
-          >
+          <div className="p-[18px] md:p-[16px] rounded-[16px] bg-[#eef4ff] border border-[#0b2a5b1a] mb-[16px]">
             {isEditing ? (
               <Field label={t("final_big_idea_label")}>
                 <textarea
                   value={builder.approvedBigIdea || ""}
                   onChange={(e) => updateBuilder({ approvedBigIdea: e.target.value })}
                   rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "14px",
-                    border: `1px solid ${T.line}`,
-                    background: "#fff",
-                    fontSize: "15px",
-                    lineHeight: 1.7,
-                    fontFamily: T.fontSans,
-                    color: T.text,
-                    resize: "vertical",
-                  }}
+                  className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[15px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
                 />
               </Field>
             ) : (
-              <p
-                style={{
-                  margin: 0,
-                  color: T.primary,
-                  fontSize: isMobile ? "18px" : "16px",
-                  fontWeight: 700,
-                  lineHeight: 1.7,
-                  fontFamily: T.font,
-                }}
-              >
+              <p className="m-0 text-brand-primary text-[18px] md:text-[16px] font-bold leading-[1.7] font-serif">
                 {builder.approvedBigIdea || builder.bigIdea}
               </p>
             )}
           </div>
 
-          <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
-            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_intro")}</h5>
+          <div className="border border-brand-line rounded-[16px] p-[15px] mb-[12px]">
+            <h5 className="m-0 mb-[8px] text-[14px] font-sans text-brand-muted">{t("final_intro")}</h5>
             {isEditing ? (
               <textarea
                 value={builder.introduction || ""}
                 onChange={(e) => updateBuilder({ introduction: e.target.value })}
                 rows={5}
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "14px",
-                  border: `1px solid ${T.line}`,
-                  background: "#fff",
-                  fontSize: "14px",
-                  lineHeight: 1.7,
-                  fontFamily: T.fontSans,
-                  color: T.text,
-                  resize: "vertical",
-                }}
+                className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
               />
             ) : (
-              <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans">
                 {builder.introduction}
               </p>
             )}
           </div>
 
           {finalPoints.map((point, index) => (
-            <div
-              key={index}
-              style={{
-                border: `1px solid ${T.line}`,
-                borderRadius: "16px",
-                padding: isMobile ? "16px" : "18px",
-                marginBottom: "12px",
-              }}
-            >
+            <div key={index} className="border border-brand-line rounded-[16px] p-[16px] md:p-[18px] mb-[12px]">
               {isEditing ? (
-                <div style={{ display: "grid", gap: "12px" }}>
+                <div className="grid gap-[12px]">
                   <Field label={`${point.label} ${t("builder_point_stmt") || "Statement"}`}>
                     <textarea
                       value={point.statement || ""}
                       onChange={(e) => updateBuilderPoint(index, { statement: e.target.value })}
                       rows={2}
-                      style={{
-                        width: "100%",
-                        padding: "14px 16px",
-                        borderRadius: "14px",
-                        border: `1px solid ${T.line}`,
-                        background: "#fff",
-                        fontSize: "15px",
-                        lineHeight: 1.6,
-                        fontFamily: T.font,
-                        color: T.text,
-                        resize: "vertical",
-                      }}
+                      className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[15px] leading-[1.6] font-serif text-brand-text resize-y outline-none"
                     />
                   </Field>
                   <Field label={t("builder_point_exp") || "Explanation"}>
@@ -780,75 +652,53 @@ export default function FinalPage() {
                       value={point.explanation || ""}
                       onChange={(e) => updateBuilderPoint(index, { explanation: e.target.value })}
                       rows={4}
-                      style={{
-                        width: "100%",
-                        padding: "14px 16px",
-                        borderRadius: "14px",
-                        border: `1px solid ${T.line}`,
-                        background: "#fff",
-                        fontSize: "14px",
-                        lineHeight: 1.7,
-                        fontFamily: T.fontSans,
-                        color: T.text,
-                        resize: "vertical",
-                      }}
+                      className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
                     />
                   </Field>
                 </div>
               ) : (
                 <>
-                  <h5 style={{ margin: "0 0 8px", fontSize: "16px", color: T.primary, fontFamily: T.font }}>
+                  <h5 className="m-0 mb-[8px] text-[16px] text-brand-primary font-serif">
                     {point.label}: {point.statement}
                   </h5>
-                  <p style={{ margin: "0 0 12px", color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+                  <p className="m-0 mb-[12px] text-[14px] text-brand-text leading-[1.7] font-sans">
                     {point.explanation}
                   </p>
                 </>
               )}
 
               {finalIllustrations[index] && (
-                <div style={{ padding: "12px", borderRadius: "12px", background: T.amberSoft, marginTop: isEditing ? "12px" : 0, marginBottom: "10px" }}>
-                  <b style={{ fontSize: "12px", color: "#92400e", fontFamily: T.fontSans }}>{t("final_illustration")}</b>
-                  <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#78350f", lineHeight: 1.6, fontFamily: T.fontSans }}>
+                <div className={`p-[12px] rounded-[12px] bg-brand-amber-soft mb-[10px] ${isEditing ? "mt-[12px]" : "mt-0"}`}>
+                  <b className="text-[12px] text-amber-800 font-sans">{t("final_illustration")}</b>
+                  <p className="m-[6px_0_0] text-[13px] text-amber-900 leading-[1.6] font-sans">
                     {asText(finalIllustrations[index].story)}
                   </p>
                 </div>
               )}
 
               {application?.applications?.[index] && (
-                <div style={{ padding: "12px", borderRadius: "12px", background: T.greenSoft }}>
-                  <b style={{ fontSize: "12px", color: "#166534", fontFamily: T.fontSans }}>{t("final_application")}</b>
-                  <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#14532d", lineHeight: 1.6, fontFamily: T.fontSans }}>
+                <div className="p-[12px] rounded-[12px] bg-brand-green-soft">
+                  <b className="text-[12px] text-green-800 font-sans">{t("final_application")}</b>
+                  <p className="m-[6px_0_0] text-[13px] text-green-900 leading-[1.6] font-sans">
                     {application.applications[index].action}
                   </p>
                 </div>
               )}
 
               {isEditing ? (
-                <div style={{ marginTop: "12px" }}>
+                <div className="mt-[12px]">
                   <Field label={t("final_transition")}>
                     <textarea
                       value={point.transition || ""}
                       onChange={(e) => updateBuilderPoint(index, { transition: e.target.value })}
                       rows={2}
-                      style={{
-                        width: "100%",
-                        padding: "14px 16px",
-                        borderRadius: "14px",
-                        border: `1px solid ${T.line}`,
-                        background: "#fff",
-                        fontSize: "14px",
-                        lineHeight: 1.6,
-                        fontFamily: T.fontSans,
-                        color: T.text,
-                        resize: "vertical",
-                      }}
+                      className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.6] font-sans text-brand-text resize-y outline-none"
                     />
                   </Field>
                 </div>
               ) : (
                 point.transition && (
-                  <p style={{ margin: "10px 0 0", color: T.gold, fontSize: "12px", fontWeight: 600, fontStyle: "italic", fontFamily: T.fontSans }}>
+                  <p className="m-[10px_0_0] text-[12px] text-brand-gold font-semibold italic font-sans">
                     → {point.transition}
                   </p>
                 )
@@ -856,64 +706,34 @@ export default function FinalPage() {
             </div>
           ))}
 
-          <div style={{ border: `1px solid ${T.line}`, borderRadius: "16px", padding: "15px", marginBottom: "12px" }}>
-            <h5 style={{ margin: "0 0 8px", fontSize: "14px", fontFamily: T.fontSans, color: T.muted }}>{t("final_conclusion")}</h5>
+          <div className="border border-brand-line rounded-[16px] p-[15px] mb-[12px]">
+            <h5 className="m-0 mb-[8px] text-[14px] font-sans text-brand-muted">{t("final_conclusion")}</h5>
             {isEditing ? (
               <textarea
                 value={builder.conclusion || ""}
                 onChange={(e) => updateBuilder({ conclusion: e.target.value })}
                 rows={4}
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "14px",
-                  border: `1px solid ${T.line}`,
-                  background: "#fff",
-                  fontSize: "14px",
-                  lineHeight: 1.7,
-                  fontFamily: T.fontSans,
-                  color: T.text,
-                  resize: "vertical",
-                }}
+                className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
               />
             ) : (
-              <p style={{ margin: 0, color: T.text, fontSize: "14px", lineHeight: 1.7, fontFamily: T.fontSans }}>
+              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans">
                 {builder.conclusion}
               </p>
             )}
           </div>
 
           {(builder.callToAction || isEditing) && (
-            <div
-              style={{
-                border: `1px solid rgba(22,163,74,.18)`,
-                borderRadius: "16px",
-                padding: "15px",
-                background: T.greenSoft,
-                marginBottom: "12px",
-              }}
-            >
-              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#166534", fontFamily: T.fontSans }}>{t("final_cta")}</h5>
+            <div className="border border-green-600/18 rounded-[16px] p-[15px] bg-brand-green-soft mb-[12px]">
+              <h5 className="m-0 mb-[6px] text-[14px] text-green-800 font-sans">{t("final_cta")}</h5>
               {isEditing ? (
                 <textarea
                   value={builder.callToAction || ""}
                   onChange={(e) => updateBuilder({ callToAction: e.target.value })}
                   rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "14px",
-                    border: `1px solid rgba(22,163,74,.18)`,
-                    background: "#fff",
-                    fontSize: "14px",
-                    lineHeight: 1.7,
-                    fontFamily: T.fontSans,
-                    color: T.text,
-                    resize: "vertical",
-                  }}
+                  className="w-full p-[14px_16px] rounded-[14px] border border-green-600/18 bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
                 />
               ) : (
-                <p style={{ margin: 0, color: "#166534", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                <p className="m-0 text-[14px] text-green-800 leading-[1.65] font-sans">
                   {builder.callToAction}
                 </p>
               )}
@@ -921,35 +741,17 @@ export default function FinalPage() {
           )}
 
           {application && (application.approvedWeeklyChallenge || application.weeklyChallenge || isEditing) && (
-            <div
-              style={{
-                border: `1px solid rgba(99,102,241,.18)`,
-                borderRadius: "16px",
-                padding: "15px",
-                background: T.violetSoft,
-              }}
-            >
-              <h5 style={{ margin: "0 0 6px", fontSize: "14px", color: "#5b21b6", fontFamily: T.fontSans }}>{t("final_weekly_challenge")}</h5>
+            <div className="border border-indigo-600/18 rounded-[16px] p-[15px] bg-brand-violet-soft">
+              <h5 className="m-0 mb-[6px] text-[14px] text-violet-800 font-sans">{t("final_weekly_challenge")}</h5>
               {isEditing ? (
                 <textarea
                   value={application?.approvedWeeklyChallenge || ""}
                   onChange={(e) => updateApplication({ approvedWeeklyChallenge: e.target.value })}
                   rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "14px",
-                    border: `1px solid rgba(99,102,241,.18)`,
-                    background: "#fff",
-                    fontSize: "14px",
-                    lineHeight: 1.7,
-                    fontFamily: T.fontSans,
-                    color: T.text,
-                    resize: "vertical",
-                  }}
+                  className="w-full p-[14px_16px] rounded-[14px] border border-indigo-600/18 bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
                 />
               ) : (
-                <p style={{ margin: 0, color: "#4c1d95", fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                <p className="m-0 text-[14px] text-violet-900 leading-[1.65] font-sans">
                   {application?.approvedWeeklyChallenge || application?.weeklyChallenge}
                 </p>
               )}
@@ -958,15 +760,15 @@ export default function FinalPage() {
         </Card>
 
         {!readingMode && (
-          <div style={{ display: "grid", gap: "22px", alignContent: "start" }}>
+          <div className="grid gap-[22px] content-start">
             {!illustrations && (
               <Card>
-                <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_illustrations")}</h4>
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                <h4 className="m-0 mb-[10px] text-[16px] font-serif">{t("dash_step_illustrations")}</h4>
+                <p className="m-0 text-[14px] text-brand-muted leading-[1.65] font-sans">
                   {t("final_missing_illus")}
                 </p>
-                <div style={{ marginTop: "14px" }}>
-                  <Btn variant="secondary" onClick={() => router.push("/illustrations")} style={{ width: "100%", justifyContent: "center" }}>
+                <div className="mt-[14px]">
+                  <Btn variant="secondary" onClick={() => router.push("/illustrations")} className="w-full justify-center">
                     {t("builder_next")}
                   </Btn>
                 </div>
@@ -975,12 +777,12 @@ export default function FinalPage() {
 
             {!application && (
               <Card>
-                <h4 style={{ margin: "0 0 10px", fontSize: "16px", fontFamily: T.font }}>{t("dash_step_application")}</h4>
-                <p style={{ margin: 0, color: T.muted, fontSize: "14px", lineHeight: 1.65, fontFamily: T.fontSans }}>
+                <h4 className="m-0 mb-[10px] text-[16px] font-serif">{t("dash_step_application")}</h4>
+                <p className="m-0 text-[14px] text-brand-muted leading-[1.65] font-sans">
                   {t("final_missing_app")}
                 </p>
-                <div style={{ marginTop: "14px" }}>
-                  <Btn variant="secondary" onClick={() => router.push("/application")} style={{ width: "100%", justifyContent: "center" }}>
+                <div className="mt-[14px]">
+                  <Btn variant="secondary" onClick={() => router.push("/application")} className="w-full justify-center">
                     {t("illus_next")}
                   </Btn>
                 </div>
@@ -988,28 +790,28 @@ export default function FinalPage() {
             )}
 
             <Card>
-              <h4 style={{ margin: "0 0 16px", fontSize: "18px", fontFamily: T.font }}>{t("final_export")}</h4>
-          <div style={{ display: "grid", gap: "10px" }}>
-            <Btn onClick={copySermon} style={{ width: "100%", justifyContent: "center" }}>
-              {copied ? t("final_copied") : t("final_copy")}
-            </Btn>
-            <Btn variant="secondary" onClick={printSermon} style={{ width: "100%", justifyContent: "center" }}>
-              {t("final_print")}
-            </Btn>
-            <Btn variant="secondary" onClick={downloadWordDocument} style={{ width: "100%", justifyContent: "center" }}>
-              {t("final_download_word")}
-            </Btn>
-            <Btn variant="secondary" onClick={() => router.push("/dashboard")} style={{ width: "100%", justifyContent: "center" }}>
-              {t("final_back")}
-            </Btn>
-          </div>
-          <p style={{ margin: "12px 0 0", color: T.muted, fontSize: "12px", lineHeight: 1.6, fontFamily: T.fontSans }}>
-            {t("final_export_hint")}
-          </p>
-        </Card>
+              <h4 className="m-0 mb-[16px] text-[18px] font-serif">{t("final_export")}</h4>
+              <div className="grid gap-[10px]">
+                <Btn onClick={copySermon} className="w-full justify-center">
+                  {copied ? t("final_copied") : t("final_copy")}
+                </Btn>
+                <Btn variant="secondary" onClick={printSermon} className="w-full justify-center">
+                  {t("final_print")}
+                </Btn>
+                <Btn variant="secondary" onClick={downloadWordDocument} className="w-full justify-center">
+                  {t("final_download_word")}
+                </Btn>
+                <Btn variant="secondary" onClick={() => router.push("/dashboard")} className="w-full justify-center">
+                  {t("final_back")}
+                </Btn>
+              </div>
+              <p className="m-[12px_0_0] text-[12px] text-brand-muted leading-[1.6] font-sans">
+                {t("final_export_hint")}
+              </p>
+            </Card>
 
             <Card>
-              <h4 style={{ margin: "0 0 12px", fontSize: "16px", fontFamily: T.font }}>{t("final_checklist")}</h4>
+              <h4 className="m-0 mb-[12px] text-[16px] font-serif">{t("final_checklist")}</h4>
               {[
                 { label: t("final_check_idea"), done: !!builder?.approvedBigIdea },
                 { label: t("final_check_points"), done: finalPoints.length === 3 },
@@ -1018,19 +820,10 @@ export default function FinalPage() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "10px",
-                    borderRadius: "12px",
-                    marginBottom: "8px",
-                    background: item.done ? T.greenSoft : T.surface2,
-                    border: `1px solid ${item.done ? "rgba(22,163,74,.2)" : T.line}`,
-                  }}
+                  className={`flex items-center gap-[10px] p-[10px] rounded-[12px] mb-[8px] border ${item.done ? "bg-brand-green-soft border-green-600/20" : "bg-brand-surface-2 border-brand-line"}`}
                 >
-                  <span style={{ fontSize: "16px" }}>{item.done ? "✅" : "⬜"}</span>
-                  <span style={{ fontSize: "13px", color: item.done ? "#166534" : T.muted, fontFamily: T.fontSans }}>
+                  <span className="text-[16px]">{item.done ? "✅" : "⬜"}</span>
+                  <span className={`text-[13px] font-sans ${item.done ? "text-green-800" : "text-brand-muted"}`}>
                     {item.label}
                   </span>
                 </div>
