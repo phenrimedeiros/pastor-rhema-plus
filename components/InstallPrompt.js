@@ -58,51 +58,52 @@ export default function InstallPrompt() {
   if (!show) return null;
 
   return (
-    <div style={{
-      position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
-      width: "calc(100% - 32px)", maxWidth: 400,
-      background: "#fff", borderRadius: 16,
-      boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
-      padding: "16px 18px",
-      display: "flex", alignItems: "center", gap: 14,
-      zIndex: 9999,
-      fontFamily: "DM Sans, sans-serif",
-    }}>
-      <Image src="/logo.png" alt="Pastor Rhema" width={44} height={44}
-        style={{ borderRadius: 10, flexShrink: 0, objectFit: "contain", background: "#f0f4ff" }} />
+    <div className="fixed left-1/2 z-[70] w-[calc(100%-24px)] max-w-[420px] -translate-x-1/2 install-prompt-offset">
+      <div className="flex items-center gap-[14px] rounded-[20px] border border-brand-line bg-white/95 px-[16px] py-[15px] shadow-[0_18px_40px_rgba(15,23,42,.18)] backdrop-blur-xl">
+        <div className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[14px] bg-brand-surface-3 p-[8px]">
+          <Image
+            src="/logo.png"
+            alt="Pastor Rhema"
+            width={44}
+            height={44}
+            className="h-full w-full rounded-[10px] object-contain"
+          />
+        </div>
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ margin: "0 0 2px", fontWeight: 700, fontSize: 14, color: "#0b2a5b" }}>
-          Adicionar à tela inicial
-        </p>
-        {isIOS ? (
-          <p style={{ margin: 0, fontSize: 12, color: "#6b7280", lineHeight: 1.5 }}>
-            Toque em <strong>⎋ Compartilhar</strong> e depois em <strong>"Adicionar à Tela de Início"</strong>
+        <div className="min-w-0 flex-1">
+          <p className="m-0 mb-[2px] text-[14px] font-bold text-brand-primary font-sans">
+            Adicionar a tela inicial
           </p>
-        ) : (
-          <p style={{ margin: 0, fontSize: 12, color: "#6b7280" }}>
-            Acesse o Pastor Rhema como um app, sem precisar do navegador.
-          </p>
-        )}
-      </div>
+          {isIOS ? (
+            <p className="m-0 text-[12px] leading-[1.5] text-brand-muted font-sans">
+              Toque em <strong>Compartilhar</strong> e depois em{" "}
+              <strong>Adicionar a Tela de Inicio</strong>.
+            </p>
+          ) : (
+            <p className="m-0 text-[12px] leading-[1.5] text-brand-muted font-sans">
+              Abra o Pastor Rhema como app e volte mais rapido ao seu fluxo.
+            </p>
+          )}
+        </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
-        {!isIOS && (
-          <button onClick={handleInstall} style={{
-            background: "#0b2a5b", color: "#fff", border: "none",
-            borderRadius: 8, padding: "7px 14px", fontSize: 12,
-            fontWeight: 700, cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-          }}>
-            Instalar
+        <div className="flex shrink-0 flex-col gap-[6px]">
+          {!isIOS && (
+            <button
+              type="button"
+              onClick={handleInstall}
+              className="min-h-[36px] rounded-[10px] border-none bg-brand-primary px-[14px] py-[8px] text-[12px] font-extrabold text-white font-sans transition-opacity hover:opacity-90"
+            >
+              Instalar
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="min-h-[36px] rounded-[10px] border-none bg-transparent px-[10px] py-[8px] text-[12px] text-brand-muted font-sans transition-colors hover:text-brand-primary"
+          >
+            Agora nao
           </button>
-        )}
-        <button onClick={handleDismiss} style={{
-          background: "none", color: "#9ca3af", border: "none",
-          borderRadius: 8, padding: "7px 14px", fontSize: 12,
-          cursor: "pointer", fontFamily: "DM Sans, sans-serif",
-        }}>
-          Agora não
-        </button>
+        </div>
       </div>
     </div>
   );

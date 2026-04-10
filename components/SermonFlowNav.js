@@ -69,7 +69,7 @@ export default function SermonFlowNav({ currentStepKey, week, canContinue, saved
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-[10px] mt-[8px]">
+      <div className="mt-[8px] flex gap-[10px] overflow-x-auto px-[2px] pb-[4px] snap-x snap-mandatory md:grid md:grid-cols-5 md:overflow-visible md:px-0 md:pb-0">
         {SERMON_FLOW_STEPS.map((step, index) => {
           const status = getSermonFlowStatus(week, index);
           const style = STATUS_STYLES[status];
@@ -82,7 +82,7 @@ export default function SermonFlowNav({ currentStepKey, week, canContinue, saved
               type="button"
               onClick={() => isClickable && router.push(step.page)}
               disabled={!isClickable}
-              className={`flex items-center justify-between gap-[10px] p-[12px_13px] rounded-[16px] border ${style.border} ${isCurrent ? "bg-white shadow-[inset_0_0_0_1px_rgba(11,42,91,.08)]" : style.bg} ${isClickable ? "cursor-pointer opacity-100 transition-opacity hover:opacity-90" : "cursor-not-allowed opacity-75"} text-left`}
+              className={`flex min-w-[168px] shrink-0 snap-start items-center justify-between gap-[10px] p-[12px_13px] rounded-[16px] border md:min-w-0 ${style.border} ${isCurrent ? "bg-white shadow-[inset_0_0_0_1px_rgba(11,42,91,.08)]" : style.bg} ${isClickable ? "cursor-pointer opacity-100 transition-opacity hover:opacity-90" : "cursor-not-allowed opacity-75"} text-left`}
             >
               <div>
                 <p className={`m-0 mb-[2px] text-[11px] font-extrabold font-sans ${style.text}`}>

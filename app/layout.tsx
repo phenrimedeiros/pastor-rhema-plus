@@ -10,13 +10,17 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://app.pastorrhema.com
 export const metadata: Metadata = {
   title: "Pastor Rhema",
   description: "Your AI-powered sermon preparation platform",
+  applicationName: "Pastor Rhema",
   metadataBase: new URL(siteUrl),
+  appleWebApp: {
+    title: "Pastor Rhema",
+    statusBarStyle: "black-translucent",
+  },
   icons: {
     icon: [
-      { url: "/logo.png", type: "image/png" },
-      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png" },
     ],
-    shortcut: ["/logo.png"],
+    shortcut: ["/icon.png"],
     apple: [{ url: "/logo.png", type: "image/png" }],
   },
 };
@@ -25,6 +29,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#0b2a5b",
 };
 
 export default function RootLayout({
