@@ -231,7 +231,7 @@ export default function AppLayout({ children, profile }) {
 
   return (
     <div className="min-h-dvh bg-[#f7f9fa] md:flex overflow-x-hidden">
-      <div className="hidden h-screen w-[260px] shrink-0 flex-col overflow-y-auto bg-[#0b2a5b] text-white md:flex">
+      <div className="hidden h-dvh w-[260px] shrink-0 flex-col overflow-y-auto bg-[#0b2a5b] text-white md:flex sticky top-0">
         <div className="p-[24px]">
           <div className="flex items-center gap-[12px]">
             <div className="grid h-[36px] w-[36px] place-items-center rounded-[10px] bg-white p-[6px] shadow-[0_2px_8px_rgba(0,0,0,.2)]">
