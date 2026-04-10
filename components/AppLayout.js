@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
 import { auth } from "@/lib/supabase_client";
+import VerseOfDay from "@/components/VerseOfDay";
 
 const ICONS = {
   dashboard: (
@@ -416,6 +417,7 @@ export default function AppLayout({ children, profile }) {
 
         <div className="app-content mb-[92px] p-[16px] md:mb-0 md:p-[32px]">
           <div className="mx-auto max-w-[1200px]">
+            <VerseOfDay />
             {needsUpgrade ? <UpgradeWall router={router} t={t} /> : children}
           </div>
         </div>
