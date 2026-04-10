@@ -333,7 +333,7 @@ export default function FinalPage() {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!saveMessage) return undefined;
@@ -629,7 +629,7 @@ export default function FinalPage() {
                 className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
               />
             ) : (
-              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans">
+              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans whitespace-pre-wrap">
                 {builder.introduction}
               </p>
             )}
@@ -661,7 +661,7 @@ export default function FinalPage() {
                   <h5 className="m-0 mb-[8px] text-[16px] text-brand-primary font-serif">
                     {point.label}: {point.statement}
                   </h5>
-                  <p className="m-0 mb-[12px] text-[14px] text-brand-text leading-[1.7] font-sans">
+                  <p className="m-0 mb-[12px] text-[14px] text-brand-text leading-[1.7] font-sans whitespace-pre-wrap">
                     {point.explanation}
                   </p>
                 </>
@@ -670,7 +670,7 @@ export default function FinalPage() {
               {finalIllustrations[index] && (
                 <div className={`p-[12px] rounded-[12px] bg-brand-amber-soft mb-[10px] ${isEditing ? "mt-[12px]" : "mt-0"}`}>
                   <b className="text-[12px] text-amber-800 font-sans">{t("final_illustration")}</b>
-                  <p className="m-[6px_0_0] text-[13px] text-amber-900 leading-[1.6] font-sans">
+                  <p className="m-[6px_0_0] text-[13px] text-amber-900 leading-[1.6] font-sans whitespace-pre-wrap">
                     {asText(finalIllustrations[index].story)}
                   </p>
                 </div>
@@ -716,7 +716,7 @@ export default function FinalPage() {
                 className="w-full p-[14px_16px] rounded-[14px] border border-brand-line bg-white text-[14px] leading-[1.7] font-sans text-brand-text resize-y outline-none"
               />
             ) : (
-              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans">
+              <p className="m-0 text-[14px] text-brand-text leading-[1.7] font-sans whitespace-pre-wrap">
                 {builder.conclusion}
               </p>
             )}

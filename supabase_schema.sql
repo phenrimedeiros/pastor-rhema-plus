@@ -281,6 +281,22 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+-- Impede troca manual de email no profile; o email deve permanecer sincronizado com auth
+create or replace function public.prevent_profile_email_change()
+returns trigger as $$
+begin
+  if new.email is distinct from old.email then
+    raise exception 'Profile email cannot be changed directly';
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger prevent_profile_email_change_trigger
+  before update on public.profiles
+  for each row execute procedure public.prevent_profile_email_change();
+
 -- ============================================
 -- 11. UPDATED_AT TRIGGERS
 -- ============================================

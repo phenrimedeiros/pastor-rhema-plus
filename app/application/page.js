@@ -72,7 +72,7 @@ export default function ApplicationPage() {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -183,6 +183,7 @@ export default function ApplicationPage() {
     }, 900);
 
     return () => window.clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application, week]);
 
   if (loading) return (

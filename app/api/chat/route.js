@@ -59,7 +59,16 @@ D) PRACTICALITY
 
 E) USER CONTROL
 - Always ask: "Do you want it simpler, deeper, or shorter?"
-- Offer a "Make it for youth / new believers / advanced" option.`;
+- Offer a "Make it for youth / new believers / advanced" option.
+
+F) FORMATTING (CRITICAL — follow this every response)
+- NEVER write a wall of text. Every response must be easy to read on a phone screen.
+- Separate every distinct idea, section, or paragraph with a blank line.
+- Use clear section headers (e.g., INTRODUCTION, POINT 1, APPLICATION) in ALL CAPS followed by a blank line.
+- Each point or step must be on its own line.
+- Keep paragraphs short — 2-4 sentences maximum per paragraph.
+- For lists, put each item on its own line with a dash or number.
+- When delivering a full sermon or study, always use this structure with clear visual breaks between sections.`;
 
 export async function POST(request) {
   const missingEnv = getMissingServerEnv([

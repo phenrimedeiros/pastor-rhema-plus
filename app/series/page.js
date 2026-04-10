@@ -181,6 +181,7 @@ export default function SeriesPage() {
       void carregar();
     });
     return () => window.cancelAnimationFrame(frame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return (

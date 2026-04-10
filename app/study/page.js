@@ -78,7 +78,7 @@ export default function StudyPage() {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -221,7 +221,7 @@ export default function StudyPage() {
                 {studyBlocks.map((block) => (
                   <div key={block.title} className="border border-brand-line rounded-[16px] p-[15px]">
                     <h5 className="m-0 mb-[8px] text-[14px] font-sans">{block.title}</h5>
-                    <p className="m-0 text-[13px] text-brand-muted leading-[1.65] font-sans">{block.content}</p>
+                    <p className="m-0 text-[13px] text-brand-muted leading-[1.65] font-sans whitespace-pre-wrap">{block.content}</p>
                   </div>
                 ))}
 

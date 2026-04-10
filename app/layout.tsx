@@ -38,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <body>
         <LanguageProvider>{children}</LanguageProvider>
         <InstallPrompt />

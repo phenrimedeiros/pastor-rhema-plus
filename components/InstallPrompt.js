@@ -6,7 +6,14 @@ import Image from "next/image";
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [show, setShow] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [isIOS] = useState(() => {
+    if (typeof navigator === "undefined") return false;
+    // Detecta iOS (Safari não dispara beforeinstallprompt)
+    return (
+      /iphone|ipad|ipod/i.test(navigator.userAgent) &&
+      !("standalone" in navigator && navigator.standalone)
+    );
+  });
 
   useEffect(() => {
     // Registra service worker
@@ -14,19 +21,13 @@ export default function InstallPrompt() {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
 
-    // Detecta iOS (Safari não dispara beforeinstallprompt)
-    const ios =
-      /iphone|ipad|ipod/i.test(navigator.userAgent) &&
-      !("standalone" in navigator && navigator.standalone);
-    setIsIOS(ios);
-
     // Já instalado como PWA — não mostra
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
     // Já dispensado nesta sessão
     if (sessionStorage.getItem("pwa-dismissed")) return;
 
-    if (ios) {
+    if (isIOS) {
       // iOS: mostra instruções manuais após 3s
       const timer = setTimeout(() => setShow(true), 3000);
       return () => clearTimeout(timer);
@@ -40,7 +41,7 @@ export default function InstallPrompt() {
     };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  }, [isIOS]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;

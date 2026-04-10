@@ -194,7 +194,7 @@ export default function SermonsPage() {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   const series = useMemo(() => estado?.series || [], [estado?.series]);
   const normalizedQuery = search.trim().toLowerCase();

@@ -72,7 +72,7 @@ export default function BuilderPage() {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   const activeSerie = estado?.series?.find((s) => !s.is_archived);
   const currentWeek = activeSerie?.current_week ?? 1;
@@ -188,6 +188,7 @@ export default function BuilderPage() {
     }, 900);
 
     return () => window.clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [builder, week]);
 
   if (loading) return (
@@ -339,20 +340,20 @@ export default function BuilderPage() {
 
                 <div className="border border-brand-line rounded-[16px] p-[15px]">
                   <h5 className="m-0 mb-[8px] text-[14px] font-sans">{t("builder_intro")}</h5>
-                  <p className="m-0 text-brand-muted text-[13px] leading-[1.65] font-sans">{builder.introduction}</p>
+                  <p className="m-0 text-brand-muted text-[13px] leading-[1.65] font-sans whitespace-pre-wrap">{builder.introduction}</p>
                 </div>
 
                 {approvedPoints.map((p, i) => (
                   <div key={i} className="border border-brand-line rounded-[16px] p-[15px]">
                     <h5 className="m-0 mb-[6px] text-[14px] text-brand-primary font-sans">{p.label}: {p.statement}</h5>
-                    <p className="m-0 mb-[6px] text-[13px] text-brand-muted leading-[1.65] font-sans">{p.explanation}</p>
+                    <p className="m-0 mb-[6px] text-[13px] text-brand-muted leading-[1.65] font-sans whitespace-pre-wrap">{p.explanation}</p>
                     <p className="m-0 text-[12px] text-brand-gold font-semibold italic font-sans">→ {p.transition}</p>
                   </div>
                 ))}
 
                 <div className="border border-brand-line rounded-[16px] p-[15px]">
                   <h5 className="m-0 mb-[8px] text-[14px] font-sans">{t("builder_conclusion")}</h5>
-                  <p className="m-0 text-brand-muted text-[13px] leading-[1.65] font-sans">{builder.conclusion}</p>
+                  <p className="m-0 text-brand-muted text-[13px] leading-[1.65] font-sans whitespace-pre-wrap">{builder.conclusion}</p>
                 </div>
 
                 {builder.callToAction && (
