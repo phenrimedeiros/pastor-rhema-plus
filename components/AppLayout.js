@@ -230,7 +230,7 @@ export default function AppLayout({ children, profile }) {
   });
 
   return (
-    <div className="min-h-screen bg-[#f7f9fa] md:flex">
+    <div className="min-h-screen bg-[#f7f9fa] md:flex overflow-x-hidden">
       <div className="hidden h-screen w-[260px] shrink-0 flex-col overflow-y-auto bg-[#0b2a5b] text-white md:flex">
         <div className="p-[24px]">
           <div className="flex items-center gap-[12px]">

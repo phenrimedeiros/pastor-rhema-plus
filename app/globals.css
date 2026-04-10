@@ -60,6 +60,13 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Prevent long unbroken strings from overflowing on mobile */
+p, span, li, td, th, div {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 input, select, textarea, button {
