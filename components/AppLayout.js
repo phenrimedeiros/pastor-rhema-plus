@@ -230,7 +230,7 @@ export default function AppLayout({ children, profile }) {
   });
 
   return (
-    <div className="min-h-screen bg-[#f7f9fa] md:flex overflow-x-hidden">
+    <div className="min-h-dvh bg-[#f7f9fa] md:flex overflow-x-hidden">
       <div className="hidden h-screen w-[260px] shrink-0 flex-col overflow-y-auto bg-[#0b2a5b] text-white md:flex">
         <div className="p-[24px]">
           <div className="flex items-center gap-[12px]">
@@ -303,7 +303,7 @@ export default function AppLayout({ children, profile }) {
         </div>
       </div>
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      <div className="flex min-h-dvh min-w-0 flex-1 flex-col">
         <div className="hidden h-[72px] items-center justify-between border-b border-[#e2e8f0] bg-white px-[32px] md:flex">
           <span className="text-[13px] font-medium tracking-wide text-[#64748b]">
             App / <span className="font-bold text-[#0f172a]">{currentLabel}</span>
@@ -415,14 +415,14 @@ export default function AppLayout({ children, profile }) {
           </div>
         </div>
 
-        <div className="app-content mb-[92px] p-[16px] md:mb-0 md:p-[32px]">
+        <div className="app-content p-[16px] md:mb-0 md:p-[32px] app-mobile-content">
           <div className="mx-auto max-w-[1200px]">
             <VerseOfDay />
             {needsUpgrade ? <UpgradeWall router={router} t={t} /> : children}
           </div>
         </div>
 
-        <div className="pointer-events-none fixed inset-x-0 bottom-[12px] z-50 flex justify-center px-[12px] md:hidden">
+        <div className="pointer-events-none fixed inset-x-0 z-50 flex justify-center px-[12px] md:hidden" style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}>
           <nav className="pointer-events-auto flex w-full max-w-[400px] items-center justify-between rounded-[24px] border border-[#e2e8f0] bg-white px-[12px] py-[8px] shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             {isPlus ? (
               <>
