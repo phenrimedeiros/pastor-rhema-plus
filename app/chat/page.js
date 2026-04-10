@@ -7,8 +7,6 @@ import { Btn } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
 import { useLanguage } from "@/lib/i18n";
 
-const DAILY_LIMIT = 20;
-
 function Message({ msg }) {
   const isUser = msg.role === "user";
   return (
@@ -76,8 +74,6 @@ function UpgradePrompt({ router, t }) {
 export default function ChatPage() {
   const { t } = useLanguage();
   const [profile, setProfile] = useState(null);
-  const [isSimple, setIsSimple] = useState(false);
-  const [messagesUsed, setMessagesUsed] = useState(0);
   const [messages, setMessages] = useState([
     { role: "assistant", content: null },
   ]);
@@ -94,24 +90,7 @@ export default function ChatPage() {
 
       const user = session.user;
 
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("plan, chat_messages_today, chat_messages_reset_date")
-        .eq("id", user.id)
-        .single();
-
-      const plan = profileData?.plan || "simple";
-      const simple = plan === "simple";
-      setProfile({ full_name: user?.user_metadata?.full_name, plan });
-      setIsSimple(simple);
-
-      if (simple) {
-        const today = new Date().toISOString().split("T")[0];
-        const resetDate = profileData?.chat_messages_reset_date;
-        const count = resetDate === today ? (profileData?.chat_messages_today || 0) : 0;
-        setMessagesUsed(count);
-      }
-
+      setProfile({ full_name: user?.user_metadata?.full_name });
       setAuthLoading(false);
     };
     init();
@@ -121,11 +100,9 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const limitReached = isSimple && messagesUsed >= DAILY_LIMIT;
-
   const send = async () => {
     const text = input.trim();
-    if (!text || loading || limitReached) return;
+    if (!text || loading) return;
 
     const userMsg = { role: "user", content: text };
     const updatedMessages = [...messages, userMsg];
@@ -152,19 +129,9 @@ export default function ChatPage() {
         throw new Error("Resposta inválida do servidor");
       }
 
-      if (res.status === 429 && data?.error === "limit_reached") {
-        setMessagesUsed(DAILY_LIMIT);
-        setLoading(false);
-        return;
-      }
-
       if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
 
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
-
-      if (isSimple && data.messagesLeft !== undefined) {
-        setMessagesUsed(DAILY_LIMIT - data.messagesLeft);
-      }
     } catch (err) {
       setMessages((prev) => [...prev, {
         role: "assistant",
@@ -212,11 +179,6 @@ export default function ChatPage() {
           </Btn>
         </div>
 
-        {/* Daily limit bar — Simple users only */}
-        {isSimple && (
-          <LimitBar used={messagesUsed} limit={DAILY_LIMIT} t={t} />
-        )}
-
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-[16px] md:p-[20px] bg-brand-surface-2 rounded-[20px] border border-brand-line mb-[16px] min-h-[48vh] md:min-h-0">
           <div className="md:hidden">
@@ -251,24 +213,20 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input or upgrade prompt */}
-        {limitReached ? (
-          <UpgradePrompt router={router} t={t} />
-        ) : (
-          <div className="flex gap-[10px] items-end flex-col md:flex-row">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t("chat_placeholder")}
-              rows={3}
-              className="flex-1 w-full p-[14px_16px] border border-brand-line rounded-[16px] text-[14px] font-sans resize-none outline-none bg-white leading-[1.5] text-brand-text box-border focus:border-brand-primary focus:shadow-[0_0_0_2px_rgba(202,161,74,.4)]"
-            />
-            <Btn onClick={send} disabled={loading || !input.trim()} className="w-full md:w-auto p-[14px_20px] self-stretch">
-              {t("chat_send")}
-            </Btn>
-          </div>
-        )}
+        {/* Input */}
+        <div className="flex gap-[10px] items-end flex-col md:flex-row">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={t("chat_placeholder")}
+            rows={3}
+            className="flex-1 w-full p-[14px_16px] border border-brand-line rounded-[16px] text-[14px] font-sans resize-none outline-none bg-white leading-[1.5] text-brand-text box-border focus:border-brand-primary focus:shadow-[0_0_0_2px_rgba(202,161,74,.4)]"
+          />
+          <Btn onClick={send} disabled={loading || !input.trim()} className="w-full md:w-auto p-[14px_20px] self-stretch">
+            {t("chat_send")}
+          </Btn>
+        </div>
       </div>
     </AppLayout>
   );
