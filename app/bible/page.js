@@ -13,35 +13,21 @@ import AppLayout from "@/components/AppLayout";
 import { auth, profiles } from "@/lib/supabase_client";
 import { useLanguage } from "@/lib/i18n";
 
-async function getToken() {
-  const session = await auth.getSession();
-  return session?.access_token ?? null;
-}
-
 async function fetchBooks(lang) {
-  const token = await getToken();
-  const res = await fetch(`/api/bible/books?lang=${lang}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const res = await fetch(`/api/bible/books?lang=${lang}`);
   if (!res.ok) return [];
   const data = await res.json();
   return data.books || [];
 }
 
 async function fetchChapter(lang, bookIdx, chapter) {
-  const token = await getToken();
-  const res = await fetch(`/api/bible/chapter?lang=${lang}&book=${bookIdx}&chapter=${chapter}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const res = await fetch(`/api/bible/chapter?lang=${lang}&book=${bookIdx}&chapter=${chapter}`);
   if (!res.ok) return null;
   return res.json();
 }
 
 async function searchRef(ref, lang) {
-  const token = await getToken();
-  const res = await fetch(`/api/bible?ref=${encodeURIComponent(ref)}&lang=${lang}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const res = await fetch(`/api/bible?ref=${encodeURIComponent(ref)}&lang=${lang}`);
   if (!res.ok) return null;
   return res.json();
 }
