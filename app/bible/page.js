@@ -13,26 +13,36 @@ import AppLayout from "@/components/AppLayout";
 import { auth, profiles } from "@/lib/supabase_client";
 import { useLanguage } from "@/lib/i18n";
 
-async function fetchBooks(lang, accessToken) {
+async function getToken() {
+  const session = await auth.getSession();
+  return session?.access_token ?? null;
+}
+
+async function fetchBooks(lang) {
+  const token = await getToken();
   const res = await fetch(`/api/bible/books?lang=${lang}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
-
-  if (res.status === 401) throw new Error("unauthorized");
   if (!res.ok) return [];
-
   const data = await res.json();
   return data.books || [];
 }
 
-async function fetchChapter(lang, bookIdx, chapter, accessToken) {
+async function fetchChapter(lang, bookIdx, chapter) {
+  const token = await getToken();
   const res = await fetch(`/api/bible/chapter?lang=${lang}&book=${bookIdx}&chapter=${chapter}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
-
-  if (res.status === 401) throw new Error("unauthorized");
   if (!res.ok) return null;
+  return res.json();
+}
 
+async function searchRef(ref, lang) {
+  const token = await getToken();
+  const res = await fetch(`/api/bible?ref=${encodeURIComponent(ref)}&lang=${lang}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) return null;
   return res.json();
 }
 
@@ -129,7 +139,6 @@ function BiblePageClient() {
   const { lang, t } = useLanguage();
 
   const [profile, setProfile] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(42);
   const [selectedChapter, setSelectedChapter] = useState(3);
@@ -141,89 +150,56 @@ function BiblePageClient() {
   const [copiedVerse, setCopiedVerse] = useState(null);
   const topRef = useRef(null);
 
+  // Auth check on mount only — never redirect mid-session
   useEffect(() => {
     let active = true;
-
     async function init() {
       try {
         const session = await auth.getSession();
-        if (!session) {
-          router.push("/login");
-          return;
-        }
-
+        if (!session) { router.push("/login"); return; }
         const user = await auth.getUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-
+        if (!user) { router.push("/login"); return; }
         const currentProfile = await profiles.getProfile(user.id);
-        if (!active) return;
-
-        setAccessToken(session.access_token);
-        setProfile(currentProfile);
-      } catch (error) {
-        console.error("Erro ao carregar Biblia:", error);
+        if (active) setProfile(currentProfile);
+      } catch {
         if (active) router.push("/login");
       }
     }
-
     init();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [router]);
 
+  // Load books whenever language changes (after auth)
   useEffect(() => {
-    if (!accessToken) return;
+    if (!profile) return;
+    fetchBooks(lang).then(setBooks).catch(console.error);
+  }, [profile, lang]);
 
-    fetchBooks(lang, accessToken)
-      .then(setBooks)
-      .catch((error) => {
-        console.error("Erro ao carregar livros da Biblia:", error);
-        if (error.message === "unauthorized") {
-          router.push("/login");
-        }
-      });
-  }, [accessToken, lang, router]);
-
+  // Read initial position from URL params
   useEffect(() => {
     const bookParam = searchParams.get("b");
     const chapterParam = searchParams.get("c");
-
     startTransition(() => {
       if (bookParam !== null) setSelectedBook(parseInt(bookParam, 10));
       if (chapterParam !== null) setSelectedChapter(parseInt(chapterParam, 10));
     });
   }, [searchParams]);
 
-  const loadChapter = useCallback(
-    async (bookIdx, chapter, langCode, token) => {
-      setLoading(true);
-      setChapterData(null);
-
-      try {
-        const data = await fetchChapter(langCode, bookIdx, chapter, token);
-        setChapterData(data);
-      } catch (error) {
-        console.error("Erro ao carregar capitulo da Biblia:", error);
-        if (error.message === "unauthorized") {
-          router.push("/login");
-        }
-      } finally {
-        setLoading(false);
-        topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    },
-    [router]
-  );
+  // Load chapter — token fetched fresh on every call
+  const loadChapter = useCallback(async (bookIdx, chapter, langCode) => {
+    setLoading(true);
+    setChapterData(null);
+    const data = await fetchChapter(langCode, bookIdx, chapter);
+    setChapterData(data);
+    setLoading(false);
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   useEffect(() => {
-    if (!profile || !accessToken) return;
-    loadChapter(selectedBook, selectedChapter, lang, accessToken);
-  }, [accessToken, lang, loadChapter, profile, selectedBook, selectedChapter]);
+    if (!profile) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadChapter(selectedBook, selectedChapter, lang);
+  }, [profile, selectedBook, selectedChapter, lang, loadChapter]);
 
   const currentBook = books[selectedBook];
   const totalChapters = currentBook?.chapters || 1;
@@ -241,33 +217,16 @@ function BiblePageClient() {
 
   const handleSearch = async (event) => {
     event.preventDefault();
-    if (!searchQuery.trim() || !accessToken) return;
-
+    if (!searchQuery.trim()) return;
     setSearchError("");
-
-    try {
-      const res = await fetch(`/api/bible?ref=${encodeURIComponent(searchQuery.trim())}&lang=${lang}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
-
-      if (!res.ok) {
-        setSearchError(t("bible_not_found"));
-        return;
-      }
-
-      const data = await res.json();
-      setSelectedBook(data.bookIdx ?? selectedBook);
-      setSelectedChapter(data.chapter ?? selectedChapter);
-      setSearchQuery("");
-    } catch (error) {
-      console.error("Erro ao buscar referencia da Biblia:", error);
+    const data = await searchRef(searchQuery.trim(), lang);
+    if (!data) {
       setSearchError(t("bible_not_found"));
+      return;
     }
+    setSelectedBook(data.bookIdx ?? selectedBook);
+    setSelectedChapter(data.chapter ?? selectedChapter);
+    setSearchQuery("");
   };
 
   const copyVerse = (verse) => {
