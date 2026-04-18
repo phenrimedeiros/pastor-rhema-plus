@@ -93,6 +93,12 @@ const ICONS = {
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
   ),
+  admin: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z" />
+      <path d="M9.5 12.5 11 14l3.5-4" />
+    </svg>
+  ),
 };
 
 const NAV_ITEMS = [
@@ -161,6 +167,7 @@ export default function AppLayout({ children, profile }) {
   const current = pathname.replace("/", "") || "dashboard";
   const { lang, changeLang, t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const plan = profile?.plan || "simple";
   const isPlus = plan === "plus";
@@ -169,6 +176,7 @@ export default function AppLayout({ children, profile }) {
 
   const currentLabel = useMemo(() => {
     if (current === "profile") return t("nav_profile");
+    if (current === "admin") return t("nav_admin");
     const currentItem = NAV_ITEMS.find((item) => item.page === current);
     return currentItem ? t(currentItem.key) : "Pastor Rhema";
   }, [current, t]);
@@ -181,6 +189,38 @@ export default function AppLayout({ children, profile }) {
       document.body.style.overflow = previousOverflow;
     };
   }, [menuOpen]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAdminStatus() {
+      try {
+        const session = await auth.getSession();
+        if (!session) {
+          if (active) setIsAdmin(false);
+          return;
+        }
+
+        const res = await fetch("/api/admin/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+
+        if (!active) return;
+        setIsAdmin(res.ok);
+      } catch {
+        if (active) setIsAdmin(false);
+      }
+    }
+
+    loadAdminStatus();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSignOut = async () => {
     setMenuOpen(false);
@@ -287,6 +327,15 @@ export default function AppLayout({ children, profile }) {
           </div>
 
           <div className="flex flex-col gap-[6px]">
+            {isAdmin ? (
+              <button
+                onClick={() => router.push("/admin")}
+                className={`flex h-[42px] w-full items-center justify-center gap-[8px] rounded-[10px] border border-white/5 text-[13px] font-bold transition-colors ${current === "admin" ? "bg-[#2563eb]/20 text-[#60a5fa] border-[#2563eb]/30" : "bg-white/5 text-white/90 hover:bg-white/10"}`}
+              >
+                {ICONS.admin}
+                {t("nav_admin")}
+              </button>
+            ) : null}
             <button
               onClick={() => router.push("/profile")}
               className={`flex h-[42px] w-full items-center justify-center gap-[8px] rounded-[10px] border border-white/5 text-[13px] font-bold transition-colors ${current === "profile" ? "bg-[#2563eb]/20 text-[#60a5fa] border-[#2563eb]/30" : "bg-white/5 text-white/90 hover:bg-white/10"}`}
@@ -377,6 +426,18 @@ export default function AppLayout({ children, profile }) {
               {t("mobile_dock_account")}
             </h3>
             <div className="flex flex-col gap-[6px]">
+              {isAdmin ? (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/admin");
+                  }}
+                  className={`flex w-full items-center gap-[12px] rounded-[10px] border-none p-[12px] text-left transition-colors ${current === "admin" ? "bg-[#2563eb]/10 text-[#2563eb]" : "bg-slate-50 text-slate-700 hover:bg-slate-100"}`}
+                >
+                  {ICONS.admin}
+                  <span className="text-[14px] font-medium">{t("nav_admin")}</span>
+                </button>
+              ) : null}
               <button
                 onClick={() => {
                   setMenuOpen(false);
