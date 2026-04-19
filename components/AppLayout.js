@@ -422,6 +422,22 @@ export default function AppLayout({ children, profile }) {
               {mobileFlowNav}
             </div>
 
+            {!isPlus && (
+              <div className="mt-[16px] rounded-[16px] bg-gradient-to-br from-[#1d4ed8] to-[#1e3a8a] p-[16px]">
+                <p className="m-0 mb-[4px] text-[14px] font-bold text-white">{t("nav_upgrade_title")}</p>
+                <p className="m-0 mb-[12px] text-[12px] leading-[1.55] text-white/70">{t("nav_upgrade_desc")}</p>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    window.open("https://pastorrhema.com/upgrade/", "_blank");
+                  }}
+                  className="min-h-[40px] w-full cursor-pointer rounded-[10px] border-none bg-white py-[10px] text-[13px] font-bold text-[#1d4ed8]"
+                >
+                  {t("nav_upgrade_btn")}
+                </button>
+              </div>
+            )}
+
             <h3 className="mb-[16px] mt-[24px] text-[13px] font-extrabold uppercase tracking-wide text-slate-400">
               {t("mobile_dock_account")}
             </h3>
