@@ -150,7 +150,7 @@ function UpgradeWall({ router, t }) {
             {t("upgrade_chat_btn")}
           </button>
           <button
-            onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
+            onClick={() => window.open("https://pastorrhema.com/upgrade/", "_blank")}
             className="cursor-pointer rounded-[14px] border border-[#e2e8f0] bg-white px-[24px] py-[12px] text-[14px] font-bold text-[#2563eb] transition-transform hover:-translate-y-[1px]"
           >
             {t("upgrade_plan_btn")}
@@ -302,7 +302,7 @@ export default function AppLayout({ children, profile }) {
                 {t("nav_upgrade_desc")}
               </p>
               <button
-                onClick={() => window.open("mailto:contato@pastorrhema.com?subject=Upgrade%20para%20Plus", "_blank")}
+                onClick={() => window.open("https://pastorrhema.com/upgrade/", "_blank")}
                 className="min-h-[42px] w-full cursor-pointer rounded-[10px] border-none bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] px-[12px] py-[10px] text-[13px] font-bold text-white"
               >
                 {t("nav_upgrade_btn")}
