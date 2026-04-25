@@ -1,7 +1,9 @@
 import {
+  DISABLED_USER_BAN_DURATION,
   ensureProfile,
   findAuthUserByEmail,
   getProfileByUserId,
+  isAdminEmail,
   mapAdminUser,
   requireAdminRequest,
 } from "@/lib/server/admin";
@@ -68,11 +70,16 @@ export async function POST(request) {
     const email = normalizeEmail(body?.email);
     const fullName = normalizeName(body?.fullName);
     const plan = normalizePlan(body?.plan);
-    const password = validatePassword(body?.password, true);
+    const password = validatePassword(body?.password, false) || "rhema123";
     const emailConfirmed = body?.emailConfirmed === true;
+    const accessEnabled = body?.accessEnabled !== false;
 
     if (!email) {
       return Response.json({ error: "Informe um email válido." }, { status: 400 });
+    }
+
+    if (!accessEnabled && isAdminEmail(email)) {
+      return Response.json({ error: "Não é possível desabilitar um administrador." }, { status: 400 });
     }
 
     const existing = await findAuthUserByEmail(context.serviceSupabase, email);
@@ -96,6 +103,16 @@ export async function POST(request) {
     const authUser = data?.user;
     if (!authUser) throw new Error("Supabase não retornou o usuário criado.");
 
+    let currentAuthUser = authUser;
+    if (!accessEnabled) {
+      const { data: disabledData, error: disabledError } = await context.serviceSupabase.auth.admin.updateUserById(
+        authUser.id,
+        { ban_duration: DISABLED_USER_BAN_DURATION }
+      );
+      if (disabledError) throw new Error(disabledError.message);
+      currentAuthUser = disabledData?.user || authUser;
+    }
+
     const profile = await ensureProfile(context.serviceSupabase, authUser.id, {
       full_name: fullName || authUser.user_metadata?.full_name || null,
       plan,
@@ -103,7 +120,7 @@ export async function POST(request) {
 
     return Response.json({
       created: true,
-      user: mapAdminUser(authUser, profile),
+      user: mapAdminUser(currentAuthUser, profile),
     }, { status: 201 });
   } catch (error) {
     return Response.json({ error: error.message || "Falha ao criar usuário." }, { status: 500 });

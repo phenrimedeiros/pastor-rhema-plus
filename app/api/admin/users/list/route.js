@@ -45,6 +45,9 @@ function matchesQuery(user, query) {
     user.fullName,
     user.plan,
     user.isAdmin ? "admin" : "",
+    user.accessEnabled
+      ? "habilitado enabled ativo active"
+      : "desabilitado disabled bloqueado blocked inativo inactive",
   ]
     .filter(Boolean)
     .join(" ")
@@ -69,6 +72,7 @@ function buildStats(users) {
     activeToday: users.filter((user) => isWithinDays(user.lastSignInAt, 1)).length,
     activeThisWeek: users.filter((user) => isWithinDays(user.lastSignInAt, 7)).length,
     neverLoggedIn: users.filter((user) => !user.lastSignInAt).length,
+    disabledUsers: users.filter((user) => !user.accessEnabled).length,
   };
 }
 

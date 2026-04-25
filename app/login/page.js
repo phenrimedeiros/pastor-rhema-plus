@@ -74,10 +74,10 @@ export default function LoginPage() {
           {!isForgot && <div className="mb-[20px]" />}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-[14px]">
-            <label className={labelClasses}>
+            <label htmlFor="email" className={labelClasses}>
               {t("login_email")}
               <input
-                type="email"
+                type="email" id="email"
                 placeholder={t("login_email")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -88,10 +88,10 @@ export default function LoginPage() {
             </label>
 
             {!isForgot && (
-              <label className={labelClasses}>
+              <label htmlFor="password" className={labelClasses}>
                 {t("login_password")}
                 <input
-                  type="password"
+                  type="password" id="password"
                   placeholder={t("login_password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -115,10 +115,10 @@ export default function LoginPage() {
             )}
 
             {error && (
-              <p className="m-0 text-[13px] text-red-700 text-center">{error}</p>
+              <p className="m-0 text-[13px] text-red-700 text-center" aria-live="assertive">{error}</p>
             )}
             {success && (
-              <p className="m-0 text-[13px] text-green-800 text-center">{success}</p>
+              <p className="m-0 text-[13px] text-green-800 text-center" aria-live="assertive">{success}</p>
             )}
 
             <button

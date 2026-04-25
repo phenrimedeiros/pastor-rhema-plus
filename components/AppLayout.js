@@ -388,7 +388,7 @@ export default function AppLayout({ children, profile }) {
           </div>
         </div>
 
-        <div className="sticky top-0 z-20 flex h-[60px] items-center justify-between border-b border-[#e2e8f0] bg-white px-[16px] shadow-sm md:hidden">
+        <div className="app-mobile-header sticky top-0 z-20 flex items-center justify-between border-b border-[#e2e8f0] bg-white shadow-sm md:hidden">
           <div className="flex items-center gap-[12px]">
             <div className="grid h-[32px] w-[32px] place-items-center rounded-[8px] bg-white p-[4px] shadow-[0_2px_8px_rgba(0,0,0,.1)]">
               <Image src="/logo.png" alt="Pastor Rhema" width={24} height={24} className="h-full w-full object-contain" />
@@ -412,9 +412,18 @@ export default function AppLayout({ children, profile }) {
           />
         )}
 
-        <div className={`fixed inset-x-0 bottom-0 z-50 max-h-[85vh] rounded-t-[28px] bg-white shadow-[0_-18px_50px_rgba(15,23,42,.15)] transition-transform duration-200 md:hidden ${menuOpen ? "translate-y-0" : "translate-y-full"}`}>
-          <div className="mx-auto mb-[8px] mt-[12px] h-[5px] w-[50px] rounded-full bg-slate-200" />
-          <div className="max-h-[calc(85vh-32px)] overflow-y-auto px-[20px] py-[16px]">
+        <div className={`fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] rounded-t-[28px] bg-white shadow-[0_-18px_50px_rgba(15,23,42,.15)] transition-transform duration-200 md:hidden ${menuOpen ? "translate-y-0" : "translate-y-full"}`}>
+          <div className="flex items-center justify-between px-[20px] pt-[12px]">
+            <div className="h-[5px] w-[50px] rounded-full bg-slate-200" />
+            <button
+              onClick={() => setMenuOpen(false)}
+              aria-label={t("mobile_dock_close")}
+              className="grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-none bg-slate-100 text-[18px] font-bold text-slate-500 transition-colors hover:bg-slate-200"
+            >
+              ×
+            </button>
+          </div>
+          <div className="max-h-[calc(88dvh-52px)] overflow-y-auto px-[20px] pb-[calc(28px+env(safe-area-inset-bottom,0px))] pt-[12px]">
             <h3 className="m-0 mb-[16px] text-[13px] font-extrabold uppercase tracking-wide text-slate-400">
               {t("mobile_dock_more")}
             </h3>
@@ -508,72 +517,74 @@ export default function AppLayout({ children, profile }) {
           </div>
         </div>
 
-        <div className="pointer-events-none fixed inset-x-0 z-50 flex justify-center px-[12px] md:hidden" style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}>
-          <nav className="pointer-events-auto flex w-full max-w-[400px] items-center justify-between rounded-[24px] border border-[#e2e8f0] bg-white px-[12px] py-[8px] shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-            {isPlus ? (
-              <>
+        {!menuOpen && (
+          <div className="pointer-events-none fixed inset-x-0 z-50 flex justify-center px-[12px] md:hidden" style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }}>
+            <nav className="pointer-events-auto flex w-full max-w-[400px] items-center justify-between rounded-[24px] border border-[#e2e8f0] bg-white px-[12px] py-[8px] shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+              {isPlus ? (
+                <>
+                  <button
+                    onClick={() => router.push("/dashboard")}
+                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "dashboard" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  >
+                    {ICONS.dashboard}
+                    <span className="text-[10px] font-bold">{t("mobile_dock_home")}</span>
+                  </button>
+                  <button
+                    onClick={() => router.push("/series")}
+                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "series" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  >
+                    {ICONS.series}
+                    <span className="text-[10px] font-bold">{t("mobile_dock_plans")}</span>
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={() => router.push("/dashboard")}
-                  className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "dashboard" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  onClick={() => router.push("/chat")}
+                  className={`flex w-[30%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "chat" ? "text-[#2563eb]" : "text-slate-400"}`}
                 >
-                  {ICONS.dashboard}
-                  <span className="text-[10px] font-bold">{t("mobile_dock_home")}</span>
+                  {ICONS.chat}
+                  <span className="text-[10px] font-bold">{t("mobile_dock_chat")}</span>
                 </button>
-                <button
-                  onClick={() => router.push("/series")}
-                  className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "series" ? "text-[#2563eb]" : "text-slate-400"}`}
-                >
-                  {ICONS.series}
-                  <span className="text-[10px] font-bold">{t("mobile_dock_plans")}</span>
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => router.push("/chat")}
-                className={`flex w-[30%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "chat" ? "text-[#2563eb]" : "text-slate-400"}`}
-              >
-                {ICONS.chat}
-                <span className="text-[10px] font-bold">{t("mobile_dock_chat")}</span>
-              </button>
-            )}
+              )}
 
-            <div className={`relative flex flex-col items-center justify-center ${isPlus ? "w-[20%]" : "w-[30%]"} -mt-[32px]`}>
-              <button
-                onClick={() => setMenuOpen((open) => !open)}
-                className="flex h-[56px] w-[56px] cursor-pointer items-center justify-center rounded-[18px] border-[4px] border-[#f7f9fa] bg-white p-[10px] shadow-[0_4px_14px_rgba(0,0,0,.15)] transition-transform hover:scale-105 active:scale-95"
-              >
-                <Image src="/logo.png" alt="Pastor Rhema" width={32} height={32} className="h-full w-full object-contain" />
-              </button>
-            </div>
-
-            {isPlus ? (
-              <>
+              <div className={`relative flex flex-col items-center justify-center ${isPlus ? "w-[20%]" : "w-[30%]"} -mt-[32px]`}>
                 <button
-                  onClick={() => router.push("/sermons")}
-                  className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "sermons" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="flex h-[56px] w-[56px] cursor-pointer items-center justify-center rounded-[18px] border-[4px] border-[#f7f9fa] bg-white p-[10px] shadow-[0_4px_14px_rgba(0,0,0,.15)] transition-transform hover:scale-105 active:scale-95"
                 >
-                  {ICONS.sermons}
-                  <span className="text-[10px] font-bold">{t("mobile_dock_library")}</span>
+                  <Image src="/logo.png" alt="Pastor Rhema" width={32} height={32} className="h-full w-full object-contain" />
                 </button>
+              </div>
+
+              {isPlus ? (
+                <>
+                  <button
+                    onClick={() => router.push("/sermons")}
+                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "sermons" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  >
+                    {ICONS.sermons}
+                    <span className="text-[10px] font-bold">{t("mobile_dock_library")}</span>
+                  </button>
+                  <button
+                    onClick={() => router.push("/profile")}
+                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "profile" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  >
+                    {ICONS.profile}
+                    <span className="text-[10px] font-bold">{t("mobile_dock_profile")}</span>
+                  </button>
+                </>
+              ) : (
                 <button
                   onClick={() => router.push("/profile")}
-                  className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "profile" ? "text-[#2563eb]" : "text-slate-400"}`}
+                  className={`flex w-[30%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "profile" ? "text-[#2563eb]" : "text-slate-400"}`}
                 >
                   {ICONS.profile}
                   <span className="text-[10px] font-bold">{t("mobile_dock_profile")}</span>
                 </button>
-              </>
-            ) : (
-              <button
-                onClick={() => router.push("/profile")}
-                className={`flex w-[30%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "profile" ? "text-[#2563eb]" : "text-slate-400"}`}
-              >
-                {ICONS.profile}
-                <span className="text-[10px] font-bold">{t("mobile_dock_profile")}</span>
-              </button>
-            )}
-          </nav>
-        </div>
+              )}
+            </nav>
+          </div>
+        )}
       </div>
     </div>
   );

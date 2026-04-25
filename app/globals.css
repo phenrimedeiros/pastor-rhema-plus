@@ -78,7 +78,10 @@ button, input, select, textarea {
 }
 
 .app-mobile-header {
-  padding-top: calc(12px + var(--safe-area-top));
+  --mobile-header-top-gap: max(var(--safe-area-top), 10px);
+  min-height: calc(64px + var(--mobile-header-top-gap));
+  padding-top: calc(10px + var(--mobile-header-top-gap));
+  padding-bottom: 10px;
   padding-left: calc(16px + var(--safe-area-left));
   padding-right: calc(16px + var(--safe-area-right));
 }

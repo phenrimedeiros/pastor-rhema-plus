@@ -99,7 +99,27 @@ create table if not exists public.podcast_exports (
 );
 
 -- ============================================
--- 8. INDEXES (Performance)
+-- 8. BIBLE NOTES TABLE
+-- ============================================
+create table if not exists public.bible_notes (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  lang text not null default 'pt' check (lang in ('pt', 'en', 'es')),
+  book_idx integer not null check (book_idx between 0 and 65),
+  book_name text not null,
+  chapter integer not null check (chapter > 0),
+  verse_start integer not null check (verse_start > 0),
+  verse_end integer not null check (verse_end >= verse_start),
+  selected_text text not null,
+  note text default '',
+  highlight_color text default 'gold' check (highlight_color in ('gold', 'blue', 'green', 'rose')),
+  ai_context jsonb,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- ============================================
+-- 9. INDEXES (Performance)
 -- ============================================
 create index idx_series_user_id on public.series(user_id);
 create index idx_series_weeks_series_id on public.series_weeks(series_id);
@@ -108,9 +128,10 @@ create index idx_sermon_content_step on public.sermon_content(step);
 create index idx_sermon_history_user_id on public.sermon_history(user_id);
 create index idx_sermon_history_series_id on public.sermon_history(series_id);
 create index idx_podcast_exports_user_id on public.podcast_exports(user_id);
+create index idx_bible_notes_user_chapter on public.bible_notes(user_id, lang, book_idx, chapter);
 
 -- ============================================
--- 9. ROW LEVEL SECURITY (Segurança)
+-- 10. ROW LEVEL SECURITY (Segurança)
 -- ============================================
 
 -- Enable RLS on all tables
@@ -120,6 +141,7 @@ alter table public.series_weeks enable row level security;
 alter table public.sermon_content enable row level security;
 alter table public.sermon_history enable row level security;
 alter table public.podcast_exports enable row level security;
+alter table public.bible_notes enable row level security;
 
 -- PROFILES: Usuários só conseguem ver/editar seu próprio profile
 create policy "Users can view their own profile"
@@ -262,8 +284,29 @@ create policy "Users can delete their own podcast exports"
   for delete
   using (auth.uid() = user_id);
 
+-- BIBLE_NOTES: Usuários só conseguem ver/editar suas próprias notas bíblicas
+create policy "Users can view their own bible notes"
+  on public.bible_notes
+  for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert their own bible notes"
+  on public.bible_notes
+  for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update their own bible notes"
+  on public.bible_notes
+  for update
+  using (auth.uid() = user_id);
+
+create policy "Users can delete their own bible notes"
+  on public.bible_notes
+  for delete
+  using (auth.uid() = user_id);
+
 -- ============================================
--- 10. TRIGGERS (Automatizar criação de profile)
+-- 11. TRIGGERS (Automatizar criação de profile)
 -- ============================================
 
 -- Função para criar profile ao novo signup
@@ -298,7 +341,7 @@ create trigger prevent_profile_email_change_trigger
   for each row execute procedure public.prevent_profile_email_change();
 
 -- ============================================
--- 11. UPDATED_AT TRIGGERS
+-- 12. UPDATED_AT TRIGGERS
 -- ============================================
 
 -- Function para atualizar updated_at
@@ -323,6 +366,9 @@ create trigger update_series_weeks_updated_at before update on public.series_wee
 create trigger update_sermon_content_updated_at before update on public.sermon_content
   for each row execute procedure public.update_updated_at_column();
 
+create trigger update_bible_notes_updated_at before update on public.bible_notes
+  for each row execute procedure public.update_updated_at_column();
+
 -- ============================================
 -- COMENTÁRIOS E DOCUMENTAÇÃO
 -- ============================================
@@ -333,6 +379,7 @@ comment on table public.series_weeks is 'Semanas dentro de cada série';
 comment on table public.sermon_content is 'Conteúdo gerado pela IA para cada etapa (study, builder, illustrations, application, planner, final) com versionamento';
 comment on table public.sermon_history is 'Histórico de sermões completados/pregados';
 comment on table public.podcast_exports is 'Exportações em formato podcast';
+comment on table public.bible_notes is 'Marcações, destaques, notas e estudos contextuais criados na Bíblia Interativa';
 
 -- ============================================
 -- ✅ SCHEMA COMPLETO!

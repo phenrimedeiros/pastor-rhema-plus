@@ -1,6 +1,8 @@
 import {
+  DISABLED_USER_BAN_DURATION,
   ensureProfile,
   getAuthUserById,
+  isAdminEmail,
   mapAdminUser,
   requireAdminRequest,
 } from "@/lib/server/admin";
@@ -24,6 +26,10 @@ function normalizePassword(value) {
   return password;
 }
 
+function normalizeAccessEnabled(value) {
+  return typeof value === "boolean" ? value : undefined;
+}
+
 export async function PATCH(request, { params }) {
   const context = await requireAdminRequest(request);
   if (context.response) return context.response;
@@ -39,6 +45,19 @@ export async function PATCH(request, { params }) {
     const plan = normalizePlan(body?.plan);
     const password = normalizePassword(body?.password);
     const confirmEmail = body?.emailConfirmed === true;
+    const accessEnabled = normalizeAccessEnabled(body?.accessEnabled);
+
+    let authUser = null;
+    if (accessEnabled === false) {
+      authUser = await getAuthUserById(context.serviceSupabase, userId);
+      if (!authUser) {
+        return Response.json({ error: "Usuário não encontrado." }, { status: 404 });
+      }
+
+      if (isAdminEmail(authUser.email)) {
+        return Response.json({ error: "Não é possível desabilitar um administrador." }, { status: 400 });
+      }
+    }
 
     const adminUpdates = {};
     if (fullName !== undefined) {
@@ -50,10 +69,14 @@ export async function PATCH(request, { params }) {
     if (confirmEmail) {
       adminUpdates.email_confirm = true;
     }
+    if (accessEnabled !== undefined) {
+      adminUpdates.ban_duration = accessEnabled ? "none" : DISABLED_USER_BAN_DURATION;
+    }
 
     if (Object.keys(adminUpdates).length > 0) {
-      const { error } = await context.serviceSupabase.auth.admin.updateUserById(userId, adminUpdates);
+      const { data, error } = await context.serviceSupabase.auth.admin.updateUserById(userId, adminUpdates);
       if (error) throw new Error(error.message);
+      authUser = data?.user || authUser;
     }
 
     const profile = await ensureProfile(context.serviceSupabase, userId, {
@@ -61,7 +84,9 @@ export async function PATCH(request, { params }) {
       ...(plan !== undefined ? { plan } : {}),
     });
 
-    const authUser = await getAuthUserById(context.serviceSupabase, userId);
+    if (!authUser) {
+      authUser = await getAuthUserById(context.serviceSupabase, userId);
+    }
     if (!authUser) {
       return Response.json({ error: "Usuário não encontrado." }, { status: 404 });
     }

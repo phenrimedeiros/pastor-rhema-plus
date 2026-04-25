@@ -15,6 +15,7 @@ const EMPTY_EDITOR = {
   plan: "simple",
   password: "",
   confirmEmail: true,
+  accessEnabled: true,
 };
 
 const USERS_PER_PAGE = 12;
@@ -23,6 +24,7 @@ const EMPTY_STATS = {
   activeToday: 0,
   activeThisWeek: 0,
   neverLoggedIn: 0,
+  disabledUsers: 0,
 };
 const EMPTY_PAGINATION = {
   page: 1,
@@ -199,6 +201,7 @@ export default function AdminPage() {
       plan: user.plan || "simple",
       password: "",
       confirmEmail: !user.emailConfirmed,
+      accessEnabled: user.accessEnabled !== false,
     });
   }
 
@@ -245,6 +248,7 @@ export default function AdminPage() {
       const payload = {
         fullName: editor.fullName.trim(),
         plan: editor.plan,
+        accessEnabled: editor.accessEnabled === true,
       };
 
       if (editor.password.trim()) {
@@ -269,6 +273,7 @@ export default function AdminPage() {
           plan: payload.plan,
           password: payload.password,
           emailConfirmed: payload.emailConfirmed === true,
+          accessEnabled: payload.accessEnabled,
         });
 
         openUserRecord(result.user);
@@ -381,7 +386,7 @@ export default function AdminPage() {
               </Btn>
             </div>
 
-            <div className="grid gap-[12px] sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-[12px] sm:grid-cols-2 xl:grid-cols-5">
               <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-[14px]">
                 <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
                   {t("admin_stat_total_users")}
@@ -406,6 +411,15 @@ export default function AdminPage() {
                 </p>
                 <p className="m-0 text-[24px] font-black text-blue-800">
                   {usersStats.activeThisWeek}
+                </p>
+              </div>
+
+              <div className="rounded-[18px] border border-red-100 bg-red-50 p-[14px]">
+                <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-red-700/70">
+                  {t("admin_stat_disabled_users")}
+                </p>
+                <p className="m-0 text-[24px] font-black text-red-800">
+                  {usersStats.disabledUsers}
                 </p>
               </div>
 
@@ -475,6 +489,10 @@ export default function AdminPage() {
                               {user.plan === "plus" ? t("plan_plus") : t("plan_simple")}
                             </span>
 
+                            <span className={`inline-flex items-center rounded-full px-[10px] py-[6px] text-[11px] font-extrabold uppercase tracking-[.08em] ${user.accessEnabled ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                              {user.accessEnabled ? t("admin_access_enabled") : t("admin_access_disabled")}
+                            </span>
+
                             <span className={`inline-flex items-center rounded-full px-[10px] py-[6px] text-[11px] font-extrabold uppercase tracking-[.08em] ${getActivityBadgeClass(activityState)}`}>
                               {t(`admin_status_activity_${activityState}`)}
                             </span>
@@ -494,7 +512,7 @@ export default function AdminPage() {
                         </Btn>
                       </div>
 
-                      <div className="mt-[14px] grid gap-[10px] md:grid-cols-3">
+                      <div className="mt-[14px] grid gap-[10px] md:grid-cols-4">
                         <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-[12px]">
                           <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
                             {t("admin_last_signin")}
@@ -519,6 +537,15 @@ export default function AdminPage() {
                           </p>
                           <p className="m-0 text-[14px] font-semibold text-slate-800">
                             {user.emailConfirmed ? t("admin_email_confirmed") : t("admin_email_unconfirmed")}
+                          </p>
+                        </div>
+
+                        <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-[12px]">
+                          <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
+                            {t("admin_access_status")}
+                          </p>
+                          <p className={`m-0 text-[14px] font-semibold ${user.accessEnabled ? "text-emerald-700" : "text-red-700"}`}>
+                            {user.accessEnabled ? t("admin_access_enabled") : t("admin_access_disabled")}
                           </p>
                         </div>
                       </div>
@@ -636,6 +663,19 @@ export default function AdminPage() {
                   </select>
                 </Field>
 
+                <Field label={t("admin_access_label")}>
+                  <label className="flex items-start gap-[10px] rounded-[16px] border border-slate-200 bg-slate-50 px-[14px] py-[12px] text-[13px] text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={editor.accessEnabled}
+                      onChange={(event) => setEditor((current) => ({ ...current, accessEnabled: event.target.checked }))}
+                      disabled={saving || (mode === "edit" && record?.isAdmin && editor.accessEnabled)}
+                      className="mt-[2px]"
+                    />
+                    <span>{t("admin_access_enabled_toggle")}</span>
+                  </label>
+                </Field>
+
                 <Field label={t("admin_password_label")}>
                   <input
                     type="text"
@@ -702,13 +742,22 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid gap-[12px] md:grid-cols-2 xl:grid-cols-1">
+                <div className="grid gap-[12px] md:grid-cols-3 xl:grid-cols-1">
                   <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-[14px]">
                     <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
                       {t("admin_plan_label")}
                     </p>
                     <p className="m-0 text-[15px] font-semibold text-slate-800">
                       {editor.plan === "plus" ? t("plan_plus") : t("plan_simple")}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[18px] border border-slate-200 bg-slate-50 p-[14px]">
+                    <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
+                      {t("admin_access_status")}
+                    </p>
+                    <p className={`m-0 text-[15px] font-semibold ${editor.accessEnabled ? "text-emerald-700" : "text-red-700"}`}>
+                      {editor.accessEnabled ? t("admin_access_enabled") : t("admin_access_disabled")}
                     </p>
                   </div>
 

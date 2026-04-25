@@ -1,8 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
-import { randomBytes } from "crypto";
 
 // Eventos da Hotmart que indicam compra aprovada/concluída
-const PURCHASE_EVENTS = ["PURCHASE_COMPLETE", "PURCHASE_APPROVED", "PURCHASE_OUT_OF_SHOPPING_CART"];
+const PURCHASE_EVENTS = ["PURCHASE_COMPLETE", "PURCHASE_APPROVED"];
+const PLAN_CHANGE_EVENTS = ["SWITCH_PLAN", "SUBSCRIPTION_PLAN_CHANGED", "SUBSCRIPTION_PLAN_CHANGE"];
+const ACCESS_EVENTS = [...PURCHASE_EVENTS, ...PLAN_CHANGE_EVENTS];
+const PLAN_PRIORITY = { simple: 1, plus: 2 };
 
 // IDs de produto na Hotmart
 const PRODUCT_PLAN_MAP = {
@@ -34,9 +36,174 @@ async function findAuthUserByEmail(supabase, email) {
   }
 }
 
-function resolvePlan(productId) {
-  if (!productId) return "simple";
-  return PRODUCT_PLAN_MAP[String(productId)] ?? "simple";
+function normalizeText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function resolvePlanFromText(value) {
+  const text = normalizeText(value);
+  if (!text) return null;
+
+  if (text.includes("plus")) return "plus";
+  if (text.includes("simple") || text.includes("simples")) return "simple";
+
+  return null;
+}
+
+function collectPlanCandidates(body, event) {
+  const data = body?.data || {};
+  const purchase = data.purchase || {};
+  const subscription = data.subscription || {};
+  const product = data.product || subscription.product || {};
+  const offer = purchase.offer || data.offer || {};
+  const plan = subscription.plan || data.plan || {};
+  const newPlan = data.new_plan || data.newPlan || subscription.new_plan || subscription.newPlan || {};
+  const currentSwitchPlan = Array.isArray(data.plans)
+    ? data.plans.find((item) => item?.current === true) || {}
+    : {};
+
+  const planCandidates = [
+    currentSwitchPlan.id,
+    currentSwitchPlan.code,
+    currentSwitchPlan.name,
+    currentSwitchPlan.offer?.key,
+    currentSwitchPlan.offer?.code,
+    plan.id,
+    plan.code,
+    plan.name,
+    plan.offer?.key,
+    plan.offer?.code,
+    newPlan.id,
+    newPlan.code,
+    newPlan.name,
+    newPlan.offer?.key,
+    newPlan.offer?.code,
+  ];
+
+  if (PLAN_CHANGE_EVENTS.includes(event)) {
+    return planCandidates.filter((value) => value !== undefined && value !== null && value !== "");
+  }
+
+  return [
+    ...planCandidates,
+    product.id,
+    product.ucode,
+    product.name,
+    offer.code,
+    offer.id,
+    offer.key,
+    offer.name,
+    body?.prod,
+    body?.Prod,
+    body?.off,
+    body?.Off,
+    body?.product_id,
+    body?.product_name,
+    body?.offer_code,
+    body?.offer_name,
+  ].filter((value) => value !== undefined && value !== null && value !== "");
+}
+
+function resolvePlan(body, event) {
+  const candidates = collectPlanCandidates(body, event);
+
+  for (const candidate of candidates) {
+    const mappedPlan = PRODUCT_PLAN_MAP[String(candidate)];
+    if (mappedPlan) return mappedPlan;
+  }
+
+  for (const candidate of candidates) {
+    const textPlan = resolvePlanFromText(candidate);
+    if (textPlan) return textPlan;
+  }
+
+  return null;
+}
+
+function resolveBuyerEmail(body) {
+  return String(
+    body?.data?.buyer?.email ||
+    body?.data?.subscriber?.email ||
+    body?.data?.subscription?.user?.email ||
+    body?.email ||
+    body?.Email ||
+    ""
+  ).trim().toLowerCase();
+}
+
+function resolveBuyerName(body) {
+  return (
+    body?.data?.buyer?.name ||
+    body?.data?.subscriber?.name ||
+    body?.name ||
+    body?.Name ||
+    ""
+  );
+}
+
+function shouldApplyPlan(currentPlan, nextPlan, event) {
+  if (!currentPlan || currentPlan === nextPlan) return true;
+  if (PLAN_CHANGE_EVENTS.includes(event)) return true;
+
+  return (PLAN_PRIORITY[nextPlan] || 0) >= (PLAN_PRIORITY[currentPlan] || 0);
+}
+
+async function setProfilePlan(supabase, authUser, { buyerName, plan, event }) {
+  const { data: existingProfile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, full_name, plan")
+    .eq("id", authUser.id)
+    .maybeSingle();
+
+  if (profileError) throw profileError;
+
+  if (!existingProfile) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .insert([{
+        id: authUser.id,
+        full_name: buyerName || authUser.user_metadata?.full_name || null,
+        plan,
+      }])
+      .select("id, full_name, plan")
+      .single();
+
+    if (error) throw error;
+    return { profile: data, applied: true, createdProfile: true };
+  }
+
+  const updates = {};
+  const applyPlan = shouldApplyPlan(existingProfile.plan, plan, event);
+
+  if (applyPlan) {
+    updates.plan = plan;
+  }
+
+  if (buyerName && !existingProfile.full_name) {
+    updates.full_name = buyerName;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return {
+      profile: existingProfile,
+      applied: false,
+      skippedDowngrade: existingProfile.plan === "plus" && plan === "simple",
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .update(updates)
+    .eq("id", authUser.id)
+    .select("id, full_name, plan")
+    .single();
+
+  if (error) throw error;
+  return {
+    profile: data,
+    applied: Boolean(updates.plan),
+    skippedDowngrade: !applyPlan,
+  };
 }
 
 export async function POST(request) {
@@ -65,13 +232,12 @@ export async function POST(request) {
   }
 
   const event = body?.event;
-  const email = String(body?.data?.buyer?.email || "").trim().toLowerCase();
-  const buyerName = body?.data?.buyer?.name || "";
-  const productId = body?.data?.product?.id;
-  const plan = resolvePlan(productId);
+  const email = resolveBuyerEmail(body);
+  const buyerName = resolveBuyerName(body);
+  const plan = resolvePlan(body, event);
 
-  // Ignora eventos que não são de compra aprovada
-  if (!PURCHASE_EVENTS.includes(event)) {
+  // Ignora eventos que não liberam ou alteram acesso
+  if (!ACCESS_EVENTS.includes(event)) {
     return Response.json({ ok: true, skipped: true, event });
   }
 
@@ -80,31 +246,56 @@ export async function POST(request) {
     return Response.json({ error: "Buyer email not found" }, { status: 400 });
   }
 
+  if (!plan) {
+    console.error("[Hotmart Webhook] Plano não reconhecido no payload:", JSON.stringify({
+      event,
+      product: body?.data?.product,
+      offer: body?.data?.purchase?.offer || body?.data?.offer,
+      subscription: body?.data?.subscription,
+    }));
+    return Response.json({ ok: true, skipped: true, reason: "unknown_plan", event });
+  }
+
   // Client com Service Role para operações admin
   const supabase = createServiceRoleSupabase();
 
   // Verifica se usuário já existe — pode ser um upgrade de plano
   const existingUser = await findAuthUserByEmail(supabase, email);
   if (existingUser) {
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ plan })
-      .eq("id", existingUser.id);
-
-    if (updateError) {
+    try {
+      const result = await setProfilePlan(supabase, existingUser, { buyerName, plan, event });
+      console.log(`[Hotmart Webhook] Plano '${result.profile.plan}' processado para ${email}`, {
+        event,
+        incomingPlan: plan,
+        applied: result.applied,
+        skippedDowngrade: result.skippedDowngrade || false,
+      });
+      return Response.json({
+        ok: true,
+        existing: true,
+        plan: result.profile.plan,
+        incomingPlan: plan,
+        applied: result.applied,
+        skippedDowngrade: result.skippedDowngrade || false,
+      });
+    } catch (updateError) {
       console.error(`[Hotmart Webhook] Erro ao atualizar plano de ${email}:`, updateError.message);
       return Response.json({ error: updateError.message }, { status: 500 });
     }
+  }
 
-    console.log(`[Hotmart Webhook] Plano atualizado para '${plan}': ${email}`);
-    return Response.json({ ok: true, existing: true, plan });
+  // Usuário não existe ainda. Pode ser order bump onde o webhook do Plus chegou antes
+  // do webhook do Rhema base. Criamos com a senha padrão e o plano correto.
+  // Se o webhook do Rhema chegar depois, ele não fará downgrade (shouldApplyPlan protege).
+  if (plan === "plus") {
+    console.log(`[Hotmart Webhook] Compra Plus sem usuário base para ${email} — possível order bump, criando com plano plus`);
   }
 
   const userMetadata = { hotmart_purchase: true };
   if (buyerName) userMetadata.full_name = buyerName;
 
-  // Gera senha aleatória — usuário deve redefinir via email
-  const temporaryPassword = randomBytes(16).toString("hex");
+  // Senha padrão informada no e-mail de boas-vindas da Hotmart
+  const temporaryPassword = "rhema123";
 
   const { data, error } = await supabase.auth.admin.createUser({
     email,
@@ -116,7 +307,20 @@ export async function POST(request) {
   if (error) {
     // Em caso de corrida, trata usuário já registrado como sucesso idempotente
     if (error.message?.includes("already") || error.message?.includes("registered")) {
-      return Response.json({ ok: true, existing: true });
+      const raceUser = await findAuthUserByEmail(supabase, email);
+      if (!raceUser) {
+        return Response.json({ ok: true, existing: true, pendingProfileSync: true, plan });
+      }
+
+      const result = await setProfilePlan(supabase, raceUser, { buyerName, plan, event });
+      return Response.json({
+        ok: true,
+        existing: true,
+        raceHandled: true,
+        plan: result.profile.plan,
+        incomingPlan: plan,
+        applied: result.applied,
+      });
     }
     console.error("[Hotmart Webhook] Erro ao criar usuário:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
@@ -124,20 +328,11 @@ export async function POST(request) {
 
   // O trigger handle_new_user() cria o profile com plan='simple' por padrão.
   // Atualiza para o plano correto baseado no produto comprado.
-  const { error: planError } = await supabase
-    .from("profiles")
-    .update({ plan })
-    .eq("id", data.user.id);
-
-  if (planError) {
+  try {
+    await setProfilePlan(supabase, data.user, { buyerName, plan, event });
+  } catch (planError) {
     console.error(`[Hotmart Webhook] Usuário criado mas erro ao setar plano '${plan}' para ${email}:`, planError.message);
   }
-
-  // Envia email de redefinição de senha para o novo usuário
-  await supabase.auth.admin.generateLink({
-    type: "recovery",
-    email,
-  });
 
   console.log(`[Hotmart Webhook] Usuário criado com plano '${plan}': ${email} (id: ${data.user.id})`);
   return Response.json({
