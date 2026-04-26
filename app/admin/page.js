@@ -9,6 +9,8 @@ import { adminApi } from "@/lib/adminApi";
 import { useLanguage } from "@/lib/i18n";
 import { loadFullState } from "@/lib/supabase_client";
 
+const EMPTY_AUDIT = { emailsText: "", results: null, stats: null, checking: false, fixing: false, error: "" };
+
 const EMPTY_EDITOR = {
   email: "",
   fullName: "",
@@ -92,6 +94,7 @@ export default function AdminPage() {
   const [usersQuery, setUsersQuery] = useState("");
   const [usersQueryDraft, setUsersQueryDraft] = useState("");
   const [usersError, setUsersError] = useState("");
+  const [audit, setAudit] = useState(EMPTY_AUDIT);
 
   function applyUsersResponse(result) {
     setUsers(result?.users || []);
@@ -295,6 +298,21 @@ export default function AdminPage() {
       setMessage({ type: "error", text: error.message || t("admin_error_generic") });
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleAuditCheck(fix = false) {
+    const emails = audit.emailsText.trim().split(/[\n,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => e.includes("@"));
+    if (emails.length === 0) {
+      setAudit((a) => ({ ...a, error: "Cole pelo menos um email válido." }));
+      return;
+    }
+    setAudit((a) => ({ ...a, error: "", checking: !fix, fixing: fix }));
+    try {
+      const result = await adminApi.plusAudit(emails, fix);
+      setAudit((a) => ({ ...a, results: result.results, stats: result.stats, checking: false, fixing: false }));
+    } catch (err) {
+      setAudit((a) => ({ ...a, error: err.message || "Erro ao verificar.", checking: false, fixing: false }));
     }
   }
 
@@ -813,6 +831,126 @@ export default function AdminPage() {
             </Card>
           </div>
         ) : null}
+        <Card className="border-white/70 bg-white/90 shadow-[0_24px_64px_rgba(15,23,42,.08)] backdrop-blur-xl">
+          <p className="m-0 mb-[8px] text-[11px] font-extrabold uppercase tracking-[.08em] text-[#0b2a5b]/56">
+            {t("admin_plus_audit_badge")}
+          </p>
+          <h2 className="m-0 font-serif text-[24px] text-brand-primary">
+            {t("admin_plus_audit_title")}
+          </h2>
+          <p className="m-[8px_0_0] text-[14px] leading-[1.7] text-brand-muted">
+            {t("admin_plus_audit_desc")}
+          </p>
+
+          <div className="mt-[20px] grid gap-[14px]">
+            <div>
+              <label className="mb-[8px] block text-[13px] font-semibold text-slate-700">
+                {t("admin_plus_audit_label")}
+              </label>
+              <textarea
+                value={audit.emailsText}
+                onChange={(e) => setAudit((a) => ({ ...a, emailsText: e.target.value, results: null, stats: null, error: "" }))}
+                rows={6}
+                className="w-full rounded-[16px] border border-slate-200 bg-white px-[14px] py-[13px] text-[13px] text-slate-800 outline-none transition-colors focus:border-[#2563eb] focus:ring-4 focus:ring-[#2563eb]/10 font-mono"
+                placeholder={t("admin_plus_audit_placeholder")}
+                disabled={audit.checking || audit.fixing}
+              />
+            </div>
+
+            {audit.error ? (
+              <Notice color="red" className="mb-0">{audit.error}</Notice>
+            ) : null}
+
+            <div className="flex flex-wrap gap-[12px]">
+              <Btn onClick={() => handleAuditCheck(false)} disabled={audit.checking || audit.fixing || !audit.emailsText.trim()}>
+                {audit.checking ? t("admin_plus_audit_checking") : t("admin_plus_audit_check_btn")}
+              </Btn>
+
+              {audit.stats?.needsFix > 0 ? (
+                <Btn variant="secondary" onClick={() => handleAuditCheck(true)} disabled={audit.checking || audit.fixing}>
+                  {audit.fixing ? t("admin_plus_audit_fixing") : `${t("admin_plus_audit_fix_btn")} (${audit.stats.needsFix})`}
+                </Btn>
+              ) : null}
+            </div>
+
+            {audit.stats ? (
+              <div className="grid gap-[12px] sm:grid-cols-3">
+                <div className="rounded-[18px] border border-emerald-100 bg-emerald-50 p-[14px]">
+                  <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-emerald-700/70">
+                    {t("admin_plus_audit_stat_plus")}
+                  </p>
+                  <p className="m-0 text-[28px] font-black text-emerald-800">
+                    {audit.stats.plus + (audit.stats.fixed || 0)}
+                  </p>
+                </div>
+
+                <div className={`rounded-[18px] border p-[14px] ${audit.stats.needsFix > 0 ? "border-amber-100 bg-amber-50" : "border-slate-100 bg-slate-50"}`}>
+                  <p className={`m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] ${audit.stats.needsFix > 0 ? "text-amber-700/70" : "text-slate-500"}`}>
+                    {t("admin_plus_audit_stat_fix")}
+                  </p>
+                  <p className={`m-0 text-[28px] font-black ${audit.stats.needsFix > 0 ? "text-amber-800" : "text-slate-400"}`}>
+                    {audit.stats.needsFix}
+                  </p>
+                </div>
+
+                <div className="rounded-[18px] border border-slate-100 bg-slate-50 p-[14px]">
+                  <p className="m-0 mb-[4px] text-[11px] font-extrabold uppercase tracking-[.08em] text-slate-500">
+                    {t("admin_plus_audit_stat_none")}
+                  </p>
+                  <p className="m-0 text-[28px] font-black text-slate-400">
+                    {audit.stats.noAccount}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
+            {audit.stats?.fixed > 0 ? (
+              <Notice color="green" className="mb-0">
+                {audit.stats.fixed} {t("admin_plus_audit_fix_success")}
+              </Notice>
+            ) : null}
+
+            {audit.results?.length > 0 ? (
+              <div className="grid gap-[8px]">
+                {audit.results.map((row) => {
+                  const isOk = row.status === "ok";
+                  const isFixed = row.status === "fixed";
+                  const needsFix = row.status === "needs_fix";
+
+                  return (
+                    <div
+                      key={row.email}
+                      className={`flex flex-col gap-[4px] rounded-[16px] border px-[16px] py-[12px] sm:flex-row sm:items-center sm:justify-between ${
+                        isOk ? "border-emerald-100 bg-emerald-50" :
+                        isFixed ? "border-blue-100 bg-blue-50" :
+                        needsFix ? "border-amber-100 bg-amber-50" :
+                        "border-slate-100 bg-slate-50"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <p className="m-0 truncate text-[13px] font-semibold text-slate-800">{row.email}</p>
+                        {row.name ? <p className="m-0 text-[12px] text-slate-500">{row.name}</p> : null}
+                      </div>
+                      <span className={`shrink-0 rounded-full px-[10px] py-[5px] text-[11px] font-extrabold uppercase tracking-[.06em] ${
+                        isOk ? "bg-emerald-100 text-emerald-700" :
+                        isFixed ? "bg-blue-100 text-blue-700" :
+                        needsFix ? "bg-amber-100 text-amber-700" :
+                        "bg-slate-100 text-slate-500"
+                      }`}>
+                        {isOk ? t("admin_plus_audit_status_ok") :
+                         isFixed ? t("admin_plus_audit_status_fixed") :
+                         needsFix ? t("admin_plus_audit_status_fix") :
+                         t("admin_plus_audit_status_none")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : audit.results !== null ? (
+              <Notice color="blue" className="mb-0">{t("admin_plus_audit_empty")}</Notice>
+            ) : null}
+          </div>
+        </Card>
       </div>
     </AppLayout>
   );
