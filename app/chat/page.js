@@ -1,63 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
-import { auth, profiles } from "@/lib/supabase_client";
+import { auth, profiles, chatThreads, chatMessages, migrateChatFromLocalStorage } from "@/lib/supabase_client";
 import { useLanguage } from "@/lib/i18n";
 
-const CHAT_HISTORY_STORAGE_PREFIX = "rhema_chat_history";
 const LOCALE_BY_LANG = {
   pt: "pt-BR",
   en: "en-US",
   es: "es-ES",
 };
-
-function getChatHistoryKey(userId) {
-  return `${CHAT_HISTORY_STORAGE_PREFIX}:${userId}`;
-}
-
-function readChatHistory(userId) {
-  if (!userId || typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(getChatHistoryKey(userId));
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .filter(
-        (thread) =>
-          thread &&
-          typeof thread.id === "string" &&
-          Array.isArray(thread.messages) &&
-          typeof thread.updatedAt === "string"
-      )
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  } catch (error) {
-    console.error("Erro ao ler histórico local do chat:", error);
-    return [];
-  }
-}
-
-function writeChatHistory(userId, threads) {
-  if (!userId || typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(getChatHistoryKey(userId), JSON.stringify(threads));
-  } catch (error) {
-    console.error("Erro ao salvar histórico local do chat:", error);
-  }
-}
-
-function buildThreadId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-  return `thread-${Date.now()}`;
-}
 
 function buildThreadTitle(messages, fallback) {
   const firstUserMessage = messages.find((message) => message.role === "user");
@@ -115,6 +69,22 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const messagesCacheRef = useRef({});
+
+  const loadThreads = useCallback(async (uid) => {
+    const threads = await chatThreads.getThreads(uid);
+    setHistoryThreads(threads);
+    return threads;
+  }, []);
+
+  const loadMessagesForThread = useCallback(async (threadId) => {
+    if (messagesCacheRef.current[threadId]) return messagesCacheRef.current[threadId];
+
+    const msgs = await chatMessages.getMessages(threadId);
+    const mapped = msgs.map((m) => ({ role: m.role, content: m.content }));
+    messagesCacheRef.current[threadId] = mapped;
+    return mapped;
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -122,29 +92,29 @@ export default function ChatPage() {
     async function init() {
       try {
         const session = await auth.getSession();
-        if (!session) {
-          router.push("/login");
-          return;
-        }
+        if (!session) { router.push("/login"); return; }
 
         const user = await auth.getUser();
-        if (!user) {
-          router.push("/login");
-          return;
-        }
+        if (!user) { router.push("/login"); return; }
 
         const currentProfile = await profiles.getProfile(user.id);
         if (!active) return;
 
-        const storedThreads = readChatHistory(user.id);
+        await migrateChatFromLocalStorage(user.id);
+        if (!active) return;
+
+        const threads = await loadThreads(user.id);
+        if (!active) return;
 
         setUserId(user.id);
         setProfile(currentProfile);
-        setHistoryThreads(storedThreads);
 
-        if (storedThreads.length > 0) {
-          setActiveThreadId(storedThreads[0].id);
-          setMessages(storedThreads[0].messages || []);
+        if (threads.length > 0) {
+          const firstThread = threads[0];
+          setActiveThreadId(firstThread.id);
+          const msgs = await loadMessagesForThread(firstThread.id);
+          if (!active) return;
+          setMessages(msgs);
         }
       } catch (error) {
         console.error("Erro ao carregar chat:", error);
@@ -155,67 +125,49 @@ export default function ChatPage() {
     }
 
     init();
-
-    return () => {
-      active = false;
-    };
-  }, [router]);
+    return () => { active = false; };
+  }, [loadMessagesForThread, loadThreads, router]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const persistConversation = (nextMessages, preferredThreadId = activeThreadId) => {
-    if (!userId || nextMessages.length === 0) return preferredThreadId;
-
-    const storedThreads = readChatHistory(userId);
-    const nextThreadId = preferredThreadId || buildThreadId();
-    const existingThread = storedThreads.find((thread) => thread.id === nextThreadId);
-    const now = new Date().toISOString();
-
-    const nextThread = {
-      id: nextThreadId,
-      title: buildThreadTitle(nextMessages, t("chat_history_untitled")),
-      createdAt: existingThread?.createdAt || now,
-      updatedAt: now,
-      messages: nextMessages,
-    };
-
-    const nextThreads = [nextThread, ...storedThreads.filter((thread) => thread.id !== nextThreadId)];
-
-    writeChatHistory(userId, nextThreads);
-    setHistoryThreads(nextThreads);
-    setActiveThreadId(nextThreadId);
-
-    return nextThreadId;
-  };
-
-  const openThread = (threadId) => {
-    const selectedThread = historyThreads.find((thread) => thread.id === threadId);
-    if (!selectedThread) return;
-
-    setActiveThreadId(selectedThread.id);
-    setMessages(selectedThread.messages || []);
+  const openThread = async (threadId) => {
+    setActiveThreadId(threadId);
+    const msgs = await loadMessagesForThread(threadId);
+    setMessages(msgs);
   };
 
   const send = async () => {
     const text = input.trim();
-    if (!text || loading) return;
+    if (!text || loading || !userId) return;
 
-    const userMsg = { role: "user", content: text };
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
-    setInput("");
     setLoading(true);
+    setInput("");
 
-    const threadId = persistConversation(updatedMessages);
+    let threadId = activeThreadId;
+    let thread = threadId ? historyThreads.find((item) => item.id === threadId) : null;
+    let updatedMessages = [];
 
     try {
-      const session = await auth.getSession();
-      if (!session) {
-        router.push("/login");
-        return;
+      if (!threadId) {
+        thread = await chatThreads.createThread(userId, "");
+        threadId = thread.id;
+        setActiveThreadId(threadId);
+        setHistoryThreads((prev) => [thread, ...prev]);
+        messagesCacheRef.current[threadId] = [];
       }
+
+      const userMsg = { role: "user", content: text };
+      await chatMessages.addMessage(threadId, "user", text);
+
+      const cached = messagesCacheRef.current[threadId] || messages;
+      updatedMessages = [...cached, userMsg];
+      messagesCacheRef.current[threadId] = updatedMessages;
+      setMessages(updatedMessages);
+
+      const session = await auth.getSession();
+      if (!session) { router.push("/login"); return; }
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -230,27 +182,42 @@ export default function ChatPage() {
 
       const raw = await response.text();
       let data;
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        throw new Error(t("chat_invalid_response"));
-      }
-
+      try { data = JSON.parse(raw); } catch { throw new Error(t("chat_invalid_response")); }
       if (!response.ok) throw new Error(data?.error || t("chat_request_failed"));
 
-      const nextMessages = [...updatedMessages, { role: "assistant", content: data.reply }];
+      const assistantMsg = { role: "assistant", content: data.reply };
+      await chatMessages.addMessage(threadId, "assistant", data.reply);
+
+      const nextMessages = [...updatedMessages, assistantMsg];
+      const title = thread?.title || buildThreadTitle(nextMessages, t("chat_history_untitled"));
+      const savedThread = await chatThreads.updateThread(threadId, { title });
+
+      messagesCacheRef.current[threadId] = nextMessages;
       setMessages(nextMessages);
-      persistConversation(nextMessages, threadId);
+
+      setHistoryThreads((prev) =>
+        [savedThread, ...prev.filter((th) => th.id !== threadId)]
+          .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+      );
     } catch (error) {
-      const nextMessages = [
-        ...updatedMessages,
-        {
-          role: "assistant",
-          content: `⚠️ ${error.message}`,
-        },
-      ];
-      setMessages(nextMessages);
-      persistConversation(nextMessages, threadId);
+      const errorMsg = { role: "assistant", content: `⚠️ ${error.message}` };
+
+      if (threadId) {
+        try { await chatMessages.addMessage(threadId, "assistant", errorMsg.content); } catch {}
+        const cached = messagesCacheRef.current[threadId] || updatedMessages;
+        const nextMessages = [...cached, errorMsg];
+        messagesCacheRef.current[threadId] = nextMessages;
+        setMessages(nextMessages);
+
+        try {
+          const title = thread?.title || buildThreadTitle(nextMessages, t("chat_history_untitled"));
+          const savedThread = await chatThreads.updateThread(threadId, { title });
+          setHistoryThreads((prev) =>
+            [savedThread, ...prev.filter((th) => th.id !== threadId)]
+              .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+          );
+        } catch {}
+      }
     } finally {
       setLoading(false);
     }
@@ -260,6 +227,21 @@ export default function ChatPage() {
     setMessages([]);
     setActiveThreadId(null);
     setInput("");
+  };
+
+  const deleteThread = async (threadId) => {
+    try {
+      await chatThreads.deleteThread(threadId);
+      setHistoryThreads((prev) => prev.filter((th) => th.id !== threadId));
+      delete messagesCacheRef.current[threadId];
+
+      if (activeThreadId === threadId) {
+        setMessages([]);
+        setActiveThreadId(null);
+      }
+    } catch (error) {
+      console.error("Erro ao excluir conversa:", error);
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -377,22 +359,34 @@ export default function ChatPage() {
                   const active = thread.id === activeThreadId;
 
                   return (
-                    <button
+                    <div
                       key={thread.id}
-                      onClick={() => openThread(thread.id)}
-                      className={`w-full rounded-[16px] border p-[14px] text-left transition-colors ${
+                      className={`group relative w-full rounded-[16px] border p-[14px] text-left transition-colors ${
                         active
                           ? "border-[#2563eb]/30 bg-[#eff6ff] shadow-sm"
                           : "border-[#e2e8f0] bg-white hover:border-[#cbd5e1] hover:bg-slate-50"
                       }`}
                     >
-                      <p className="m-0 max-h-[40px] overflow-hidden text-[13px] font-bold leading-[1.5] text-[#0f172a]">
-                        {thread.title || t("chat_history_untitled")}
-                      </p>
-                      <p className="mb-0 mt-[8px] text-[11px] font-medium text-[#64748b]">
-                        {formatThreadDate(thread.updatedAt, lang)}
-                      </p>
-                    </button>
+                      <button
+                        onClick={() => openThread(thread.id)}
+                        className="w-full cursor-pointer border-none bg-transparent p-0 text-left"
+                      >
+                        <p className="m-0 max-h-[40px] overflow-hidden text-[13px] font-bold leading-[1.5] text-[#0f172a]">
+                          {thread.title || t("chat_history_untitled")}
+                        </p>
+                        <p className="mb-0 mt-[8px] text-[11px] font-medium text-[#64748b]">
+                          {formatThreadDate(thread.updated_at || thread.created_at, lang)}
+                        </p>
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteThread(thread.id); }}
+                        aria-label={t("chat_delete_thread") || "Excluir"}
+                        className="absolute top-[10px] right-[10px] hidden h-[22px] w-[22px] cursor-pointer place-items-center rounded-full border-none bg-transparent text-[12px] text-[#94a3b8] transition-colors hover:bg-red-50 hover:text-red-500 group-hover:grid"
+                        title={t("chat_delete_thread") || "Excluir"}
+                      >
+                        ×
+                      </button>
+                    </div>
                   );
                 })}
               </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Btn, Card, Loader, Notice } from "@/components/ui";
 import SeriesForm from "@/components/SeriesForm";
 import AppLayout from "@/components/AppLayout";
+import OnboardingTour, { isOnboardingDismissed } from "@/components/OnboardingTour";
 import { useLanguage } from "@/lib/i18n";
 import { getCompletedSermonFlowCount, getNextSermonFlowStep, getSermonFlowStatus } from "@/lib/sermonFlow";
 
@@ -431,6 +432,7 @@ export default function DashboardPage() {
   const [latestPreached, setLatestPreached] = useState(null);
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const router = useRouter();
   const { t } = useLanguage();
 
@@ -450,6 +452,11 @@ export default function DashboardPage() {
       setLatestPreached(lastHistory || null);
       if ((novo.profile?.plan || "simple") !== "plus") {
         router.push("/chat");
+        return;
+      }
+      const hasHistory = (novo.series?.length || 0) > 0;
+      if (!hasHistory && !isOnboardingDismissed(novo.user?.id)) {
+        setShowOnboarding(true);
       }
     } else {
       await auth.signOut();
@@ -530,12 +537,17 @@ export default function DashboardPage() {
   if (!estado) return null;
 
   return (
-    <ThisWeek
-      profile={estado.profile}
-      activeSerie={estado.series?.find((s) => !s.is_archived) ?? null}
-      latestPreached={latestPreached}
-      onNewSerie={recarregar}
-      onWeekComplete={handleWeekComplete}
-    />
+    <>
+      {showOnboarding && estado?.user?.id && (
+        <OnboardingTour userId={estado.user.id} />
+      )}
+      <ThisWeek
+        profile={estado.profile}
+        activeSerie={estado.series?.find((s) => !s.is_archived) ?? null}
+        latestPreached={latestPreached}
+        onNewSerie={recarregar}
+        onWeekComplete={handleWeekComplete}
+      />
+    </>
   );
 }
