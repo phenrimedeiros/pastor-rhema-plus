@@ -273,12 +273,23 @@ export default function ProfilePage() {
               </p>
 
               <form onSubmit={handleUpdatePassword} className="mt-[22px] grid gap-[16px]">
+                <input
+                  type="text"
+                  name="username"
+                  autoComplete="username"
+                  value={user?.email || ""}
+                  readOnly
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="sr-only"
+                />
                 <div>
                   <label className="mb-[7px] block text-[13px] font-bold text-slate-700">
                     {t("profile_password_label")}
                   </label>
                   <input
                     type="password"
+                    autoComplete="new-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     className={inputClass}
@@ -293,6 +304,7 @@ export default function ProfilePage() {
                   </label>
                   <input
                     type="password"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     className={inputClass}

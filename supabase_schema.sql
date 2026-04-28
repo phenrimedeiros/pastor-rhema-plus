@@ -119,7 +119,31 @@ create table if not exists public.bible_notes (
 );
 
 -- ============================================
--- 9. INDEXES (Performance)
+-- 9. SATISFACTION SURVEYS TABLE
+-- ============================================
+create table if not exists public.satisfaction_surveys (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  plan text default 'simple' check (plan in ('simple', 'plus')),
+  role text not null,
+  nps_score integer not null check (nps_score between 0 and 10),
+  primary_tool text not null,
+  time_saved text,
+  ai_quality text,
+  flow_clarity text,
+  personalization text,
+  difficulty text,
+  frequency_driver text,
+  liked_most text,
+  improve_first text,
+  source_page text,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now(),
+  unique (user_id)
+);
+
+-- ============================================
+-- 10. INDEXES (Performance)
 -- ============================================
 create index idx_series_user_id on public.series(user_id);
 create index idx_series_weeks_series_id on public.series_weeks(series_id);
@@ -129,9 +153,10 @@ create index idx_sermon_history_user_id on public.sermon_history(user_id);
 create index idx_sermon_history_series_id on public.sermon_history(series_id);
 create index idx_podcast_exports_user_id on public.podcast_exports(user_id);
 create index idx_bible_notes_user_chapter on public.bible_notes(user_id, lang, book_idx, chapter);
+create index idx_satisfaction_surveys_user_id on public.satisfaction_surveys(user_id);
 
 -- ============================================
--- 10. ROW LEVEL SECURITY (Segurança)
+-- 11. ROW LEVEL SECURITY (Segurança)
 -- ============================================
 
 -- Enable RLS on all tables
@@ -142,6 +167,7 @@ alter table public.sermon_content enable row level security;
 alter table public.sermon_history enable row level security;
 alter table public.podcast_exports enable row level security;
 alter table public.bible_notes enable row level security;
+alter table public.satisfaction_surveys enable row level security;
 
 -- PROFILES: Usuários só conseguem ver/editar seu próprio profile
 create policy "Users can view their own profile"
@@ -305,8 +331,24 @@ create policy "Users can delete their own bible notes"
   for delete
   using (auth.uid() = user_id);
 
+-- SATISFACTION_SURVEYS: Usuários só conseguem ver/enviar/editar sua própria pesquisa
+create policy "Users can view their own satisfaction survey"
+  on public.satisfaction_surveys
+  for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert their own satisfaction survey"
+  on public.satisfaction_surveys
+  for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update their own satisfaction survey"
+  on public.satisfaction_surveys
+  for update
+  using (auth.uid() = user_id);
+
 -- ============================================
--- 11. TRIGGERS (Automatizar criação de profile)
+-- 12. TRIGGERS (Automatizar criação de profile)
 -- ============================================
 
 -- Função para criar profile ao novo signup
@@ -341,7 +383,7 @@ create trigger prevent_profile_email_change_trigger
   for each row execute procedure public.prevent_profile_email_change();
 
 -- ============================================
--- 12. UPDATED_AT TRIGGERS
+-- 13. UPDATED_AT TRIGGERS
 -- ============================================
 
 -- Function para atualizar updated_at
@@ -369,6 +411,9 @@ create trigger update_sermon_content_updated_at before update on public.sermon_c
 create trigger update_bible_notes_updated_at before update on public.bible_notes
   for each row execute procedure public.update_updated_at_column();
 
+create trigger update_satisfaction_surveys_updated_at before update on public.satisfaction_surveys
+  for each row execute procedure public.update_updated_at_column();
+
 -- ============================================
 -- COMENTÁRIOS E DOCUMENTAÇÃO
 -- ============================================
@@ -380,6 +425,7 @@ comment on table public.sermon_content is 'Conteúdo gerado pela IA para cada et
 comment on table public.sermon_history is 'Histórico de sermões completados/pregados';
 comment on table public.podcast_exports is 'Exportações em formato podcast';
 comment on table public.bible_notes is 'Marcações, destaques, notas e estudos contextuais criados na Bíblia Interativa';
+comment on table public.satisfaction_surveys is 'Respostas da pesquisa de satisfação exibida dentro do aplicativo';
 
 -- ============================================
 -- ✅ SCHEMA COMPLETO!

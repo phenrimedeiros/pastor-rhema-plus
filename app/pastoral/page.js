@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/supabase_client";
+import { auth, supabase } from "@/lib/supabase_client";
 import { useLanguage } from "@/lib/i18n";
 import AppLayout from "@/components/AppLayout";
 import { Btn, Card, Notice, Loader } from "@/components/ui";
@@ -123,12 +123,6 @@ export default function PastoralPage() {
       try {
         const session = await auth.getSession();
         if (!session) { router.push("/login"); return; }
-        const { createClient } = await import("@supabase/supabase-js");
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-          { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
-        );
         const { data: prof } = await supabase.from("profiles").select("plan, full_name").eq("id", session.user.id).single();
         setProfile(prof || {});
       } catch {

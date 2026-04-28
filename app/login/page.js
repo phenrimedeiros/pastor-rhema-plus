@@ -5,6 +5,7 @@ import Image from "next/image";
 import { auth, supabase } from "@/lib/supabase_client";
 import { useRouter } from "next/navigation";
 import { useLanguage, LANGUAGES } from "@/lib/i18n";
+import { clearSurveySessionDismissal } from "@/lib/satisfactionSurveyState";
 
 export default function LoginPage() {
   const HOTMART_URL = "https://pay.hotmart.com/W103907822M?checkoutMode=10";
@@ -32,7 +33,8 @@ export default function LoginPage() {
         });
         setSuccess(t("login_forgot_sent"));
       } else {
-        await auth.signIn(email, password);
+        const result = await auth.signIn(email, password);
+        clearSurveySessionDismissal(result?.user?.id);
         setSuccess(t("login_redirecting"));
         setTimeout(() => router.push("/dashboard"), 1200);
       }
@@ -79,6 +81,7 @@ export default function LoginPage() {
               <input
                 type="email" id="email"
                 placeholder={t("login_email")}
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -93,6 +96,7 @@ export default function LoginPage() {
                 <input
                   type="password" id="password"
                   placeholder={t("login_password")}
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
