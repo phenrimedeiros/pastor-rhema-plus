@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent, invalidateStateCache } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { Btn, Card, Pill, Notice, Loader, Field } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
@@ -91,6 +91,7 @@ export default function ApplicationPage() {
         points: builderData.approvedPoints || builderData.points,
       });
       const preparedContent = prepareApplicationContent(data.content);
+      invalidateStateCache();
       setApplication(preparedContent);
       setEstado((prev) => upsertCurrentWeekStep(prev, "application", preparedContent));
       lastSavedSignatureRef.current = getApplicationChoiceSignature(preparedContent);

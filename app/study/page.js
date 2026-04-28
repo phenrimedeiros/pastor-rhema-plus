@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth, loadFullState, sermonContent } from "@/lib/supabase_client";
+import { auth, loadFullState, sermonContent, invalidateStateCache } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { Btn, Card, Pill, Notice, Loader } from "@/components/ui";
 import AppLayout from "@/components/AppLayout";
@@ -100,6 +100,7 @@ export default function StudyPage() {
         seriesContext: activeSerie.series_name,
       });
       const normalizedContent = normalizeStudyContent(data.content);
+      invalidateStateCache();
       setStudy(normalizedContent);
       setEstado((prev) => upsertCurrentWeekStep(prev, "study", normalizedContent));
       await loadVersions(week.id);
