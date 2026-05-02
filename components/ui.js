@@ -23,9 +23,10 @@ export function Btn({ children, variant = "primary", onClick, className, style, 
   );
 }
 
-export function Card({ children, className, style }) {
+export function Card({ children, className, style, ...props }) {
   return (
     <div
+      {...props}
       className={`bg-brand-surface border border-brand-line rounded-[24px] shadow-brand p-[18px] md:p-[22px] transition-all duration-200 ease-in-out ${className || ""}`}
       style={style}
     >

@@ -88,6 +88,13 @@ const ICONS = {
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
     </svg>
   ),
+  help: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.1 9a3 3 0 1 1 5.8 1c-.5.9-1.4 1.4-2.1 2-.6.5-.8 1-.8 2" />
+      <path d="M12 17h.01" />
+    </svg>
+  ),
   bible: (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -114,6 +121,7 @@ const NAV_ITEMS = [
   { page: "chat", key: "nav_chat", plan: "simple", icon: "chat" },
   { page: "pastoral", key: "nav_pastoral", plan: "simple", icon: "pastoral" },
   { page: "bible", key: "nav_bible", plan: "simple", icon: "bible" },
+  { page: "help", key: "nav_help", plan: "simple", icon: "help" },
 ];
 
 const PLUS_PAGES = new Set([
