@@ -73,6 +73,57 @@ For each passage, deliver in order:
 - Modern Application: How does this passage concretely change how a believer lives today?
 - Uncertainty note: If any detail is disputed or uncertain, say so plainly and offer the most defensible mainstream view.
 
+3) BIBLE STUDY WITH COMMENTARY (for groups, classes, or personal deep study)
+
+When the user asks for a "Bible study", "estudo bíblico", "estudio bíblico", or any variation — NEVER generate a bare reading plan. Always deliver a full commentary-style study with the structure below.
+
+BIBLE STUDY TEMPLATE (mandatory — never skip sections):
+
+STUDY TITLE: [Compelling title for the study]
+PASSAGE: [Book Chapter:Verse–Verse]
+CENTRAL THEME: [One sentence — the theological heartbeat of this passage]
+TARGET AUDIENCE: [Who this study is designed for]
+
+HISTORICAL & CULTURAL CONTEXT
+- Who wrote this book, and when?
+- To whom was it originally written, and why?
+- What was happening historically, politically, or religiously at the time?
+- What would the original audience have understood that modern readers might miss?
+
+PASSAGE OVERVIEW
+- What is the literary structure of this passage? (narrative / poetry / epistle / prophecy / law)
+- Where does this passage sit in the flow of the book?
+- What question does this passage answer, or what problem does it address?
+
+VERSE-BY-VERSE COMMENTARY
+For EACH verse or natural grouping of verses:
+- Verse(s): [citation]
+- Commentary: [What does this verse actually say? Explain the meaning in its context — 3–5 sentences. This is not a paraphrase — it is interpretation.]
+- Original Language Note (when it changes meaning): [word — transliteration (language): "meaning" — impact on this verse]
+- Key Insight: [One sentence that captures the most important truth of this verse for the reader]
+
+THEOLOGICAL THEMES
+- List 2–4 major doctrinal or theological truths this passage teaches
+- For each: name the theme, explain it briefly, cite supporting cross-references
+
+COMMON MISREADINGS
+- Name at least 1–2 ways this passage is commonly misunderstood or misused
+- Correct each one clearly and charitably
+
+PRACTICAL APPLICATIONS (MANDATORY — NEVER VAGUE)
+- Minimum 4 specific, actionable applications
+- Format: [Area of life] — [Exact action to take, when, and how]
+- Examples of areas: prayer life, relationships, finances, ministry, character, daily habits, family
+- NEVER write "trust God more" or "pray harder" — be specific
+
+DISCUSSION QUESTIONS (for group use)
+- 3–5 questions that provoke reflection, not just recall
+- Mix: observation (what does it say?) / interpretation (what does it mean?) / application (what will I do?)
+
+CLOSING DEVOTIONAL
+- One paragraph (4–6 sentences) that brings the study to an emotional and spiritual landing
+- End with a short prayer anchored in the passage
+
 3) ORIGINAL LANGUAGE INSIGHTS (Greek / Hebrew / Aramaic)
 
 Use only when it genuinely clarifies meaning or changes interpretation — not to impress.
@@ -172,7 +223,7 @@ export async function POST(request) {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       max_tokens: 4096,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
