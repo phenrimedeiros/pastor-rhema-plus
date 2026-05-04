@@ -12,6 +12,11 @@ const PRODUCT_PLAN_MAP = {
   "7535521": "plus",
 };
 
+const NESTED_PLAN_CONTAINER_KEY =
+  /(product|products|prod|offer|offers|plan|plans|subscription|bump|order_bump|orderbump|upsell|upsells|item|items|line_items|lineitems|addon|add_on|additional|checkout|funnel)/i;
+const DIRECT_PLAN_VALUE_KEY =
+  /^(prod|off|product_id|productId|product_name|productName|offer_id|offerId|offer_code|offerCode|offer_name|offerName|plan_id|planId|plan_code|planCode|plan_name|planName)$/i;
+
 function createServiceRoleSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -50,6 +55,93 @@ function resolvePlanFromText(value) {
   return null;
 }
 
+function hasCandidateValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function uniqueCandidates(values) {
+  const seen = new Set();
+  const result = [];
+
+  for (const value of values) {
+    if (!hasCandidateValue(value)) continue;
+
+    const key = `${typeof value}:${String(value)}`;
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    result.push(value);
+  }
+
+  return result;
+}
+
+function collectNestedPlanCandidates(value, { depth = 0, parentRelevant = false } = {}, output = []) {
+  if (!value || depth > 8) return output;
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectNestedPlanCandidates(item, { depth: depth + 1, parentRelevant }, output);
+    }
+    return output;
+  }
+
+  if (typeof value !== "object") return output;
+
+  for (const [key, child] of Object.entries(value)) {
+    if (!hasCandidateValue(child)) continue;
+
+    const isRelevantContainer = NESTED_PLAN_CONTAINER_KEY.test(key);
+    const isRelevantValue = parentRelevant || DIRECT_PLAN_VALUE_KEY.test(key);
+
+    if (typeof child === "object") {
+      collectNestedPlanCandidates(child, {
+        depth: depth + 1,
+        parentRelevant: parentRelevant || isRelevantContainer,
+      }, output);
+    } else if (isRelevantValue) {
+      output.push(child);
+    }
+  }
+
+  return output;
+}
+
+function selectHighestPriorityPlan(plans) {
+  let selectedPlan = null;
+  let selectedPriority = 0;
+
+  for (const plan of plans) {
+    const priority = PLAN_PRIORITY[plan] || 0;
+    if (priority > selectedPriority) {
+      selectedPlan = plan;
+      selectedPriority = priority;
+    }
+  }
+
+  return selectedPlan;
+}
+
+function resolvePlanFromCandidates(candidates, { useHighestPriority = false } = {}) {
+  const mappedPlans = candidates
+    .map((candidate) => PRODUCT_PLAN_MAP[String(candidate)])
+    .filter(Boolean);
+
+  if (mappedPlans.length > 0) {
+    return useHighestPriority ? selectHighestPriorityPlan(mappedPlans) : mappedPlans[0];
+  }
+
+  const textPlans = candidates
+    .map((candidate) => resolvePlanFromText(candidate))
+    .filter(Boolean);
+
+  if (textPlans.length > 0) {
+    return useHighestPriority ? selectHighestPriorityPlan(textPlans) : textPlans[0];
+  }
+
+  return null;
+}
+
 function collectPlanCandidates(body, event) {
   const data = body?.data || {};
   const purchase = data.purchase || {};
@@ -81,10 +173,10 @@ function collectPlanCandidates(body, event) {
   ];
 
   if (PLAN_CHANGE_EVENTS.includes(event)) {
-    return planCandidates.filter((value) => value !== undefined && value !== null && value !== "");
+    return uniqueCandidates(planCandidates);
   }
 
-  return [
+  return uniqueCandidates([
     ...planCandidates,
     product.id,
     product.ucode,
@@ -101,23 +193,16 @@ function collectPlanCandidates(body, event) {
     body?.product_name,
     body?.offer_code,
     body?.offer_name,
-  ].filter((value) => value !== undefined && value !== null && value !== "");
+    ...collectNestedPlanCandidates(body),
+  ]);
 }
 
 function resolvePlan(body, event) {
   const candidates = collectPlanCandidates(body, event);
 
-  for (const candidate of candidates) {
-    const mappedPlan = PRODUCT_PLAN_MAP[String(candidate)];
-    if (mappedPlan) return mappedPlan;
-  }
-
-  for (const candidate of candidates) {
-    const textPlan = resolvePlanFromText(candidate);
-    if (textPlan) return textPlan;
-  }
-
-  return null;
+  return resolvePlanFromCandidates(candidates, {
+    useHighestPriority: !PLAN_CHANGE_EVENTS.includes(event),
+  });
 }
 
 function resolveBuyerEmail(body) {
