@@ -1,8 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Eventos da Hotmart que indicam compra aprovada/concluída
-const PURCHASE_EVENTS = ["PURCHASE_COMPLETE", "PURCHASE_APPROVED"];
-const PLAN_CHANGE_EVENTS = ["SWITCH_PLAN", "SUBSCRIPTION_PLAN_CHANGED", "SUBSCRIPTION_PLAN_CHANGE"];
+const PURCHASE_EVENTS = [
+  "PURCHASE_COMPLETE", "PURCHASE_APPROVED",
+  "SUBSCRIPTION_CREATED", "SUBSCRIPTION_ACTIVATED",
+  "SUBSCRIPTION_CHARGED", "SUBSCRIPTION_RENEWED",
+  "PURCHASE_ORDER_BUMP", "ORDER_BUMP_PURCHASED",
+];
+const PLAN_CHANGE_EVENTS = [
+  "SWITCH_PLAN", "SUBSCRIPTION_PLAN_CHANGED", "SUBSCRIPTION_PLAN_CHANGE",
+  "SUBSCRIPTION_UPGRADE",
+];
 const ACCESS_EVENTS = [...PURCHASE_EVENTS, ...PLAN_CHANGE_EVENTS];
 const PLAN_PRIORITY = { simple: 1, plus: 2 };
 
@@ -394,6 +402,19 @@ export async function POST(request) {
     if (error.message?.includes("already") || error.message?.includes("registered")) {
       const raceUser = await findAuthUserByEmail(supabase, email);
       if (!raceUser) {
+        await new Promise((r) => setTimeout(r, 2000));
+        const retryUser = await findAuthUserByEmail(supabase, email);
+        if (retryUser) {
+          const retryResult = await setProfilePlan(supabase, retryUser, { buyerName, plan, event });
+          return Response.json({
+            ok: true,
+            existing: true,
+            raceHandled: true,
+            plan: retryResult.profile.plan,
+            incomingPlan: plan,
+            applied: retryResult.applied,
+          });
+        }
         return Response.json({ ok: true, existing: true, pendingProfileSync: true, plan });
       }
 
