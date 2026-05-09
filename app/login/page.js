@@ -35,6 +35,14 @@ export default function LoginPage() {
       } else {
         const result = await auth.signIn(email, password);
         clearSurveySessionDismissal(result?.user?.id);
+        
+        // Primeiro login? Redireciona para trocar senha temporária
+        if (result?.user?.user_metadata?.password_is_temporary) {
+          setSuccess(t("set_password_success"));
+          setTimeout(() => router.push("/set-password"), 800);
+          return;
+        }
+        
         setSuccess(t("login_redirecting"));
         setTimeout(() => router.push("/dashboard"), 1200);
       }

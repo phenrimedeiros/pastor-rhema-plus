@@ -33,22 +33,72 @@ function createServiceRoleSupabase() {
   );
 }
 
-async function findAuthUserByEmail(supabase, email) {
-  let page = 1;
+// ── Lookup O(1) via tabela hotmart_user_emails ──────────────────────
+async function lookupUserIdByEmail(supabase, email) {
+  const { data } = await supabase
+    .from("hotmart_user_emails")
+    .select("user_id")
+    .eq("email", email)
+    .maybeSingle();
 
+  if (data?.user_id) return data.user_id;
+  return null;
+}
+
+async function registerEmailLookup(supabase, email, userId) {
+  await supabase
+    .from("hotmart_user_emails")
+    .upsert({ email, user_id: userId }, { onConflict: "email", ignoreDuplicates: true });
+}
+
+async function findAuthUserByEmail(supabase, email) {
+  // Tenta lookup direto primeiro
+  const userId = await lookupUserIdByEmail(supabase, email);
+  if (userId) {
+    const { data } = await supabase.auth.admin.getUserById(userId);
+    if (data?.user) return data.user;
+  }
+
+  // Fallback: varre paginada (para usuários criados antes da tabela existir)
+  let page = 1;
   while (true) {
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
     if (error) throw error;
 
     const users = data?.users || [];
     const found = users.find((user) => user.email?.toLowerCase() === email);
-    if (found) return found;
+    if (found) {
+      // Backfill na tabela de lookup para próximas consultas
+      await registerEmailLookup(supabase, email, found.id);
+      return found;
+    }
 
     if (users.length < 1000) return null;
     page += 1;
   }
 }
 
+// ── Webhook Logs ────────────────────────────────────────────────────
+async function logWebhook(supabase, entry) {
+  try {
+    await supabase.from("webhook_logs").insert([{
+      event: entry.event,
+      email: entry.email,
+      plan: entry.plan,
+      action: entry.action,
+      reason: entry.reason || null,
+      payload_event: entry.payloadEvent || null,
+      incoming_plan: entry.incomingPlan || null,
+      applied: entry.applied,
+      error_message: entry.errorMessage || null,
+      duration_ms: entry.durationMs || null,
+    }]);
+  } catch {
+    // Log failure must never break the webhook
+  }
+}
+
+// ── Plan Resolution ─────────────────────────────────────────────────
 function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -300,6 +350,7 @@ async function setProfilePlan(supabase, authUser, { buyerName, plan, event }) {
 }
 
 export async function POST(request) {
+  const startTime = Date.now();
   const expectedToken = process.env.HOTMART_WEBHOOK_TOKEN;
 
   if (!expectedToken) {
@@ -307,7 +358,6 @@ export async function POST(request) {
     return Response.json({ error: "Server misconfiguration" }, { status: 500 });
   }
 
-  // Aceita token via query string (?token=...) ou header (x-hotmart-hottok)
   const { searchParams } = new URL(request.url);
   const tokenFromUrl = searchParams.get("token");
   const tokenFromHeader = request.headers.get("x-hotmart-hottok");
@@ -329,8 +379,17 @@ export async function POST(request) {
   const buyerName = resolveBuyerName(body);
   const plan = resolvePlan(body, event);
 
+  const client = createServiceRoleSupabase();
+
   // Ignora eventos que não liberam ou alteram acesso
   if (!ACCESS_EVENTS.includes(event)) {
+    await logWebhook(client, {
+      event: "webhook_received", email, plan, action: "skipped",
+      reason: "event_not_in_access_events",
+      payloadEvent: event,
+      incomingPlan: plan,
+      durationMs: Date.now() - startTime,
+    });
     return Response.json({ ok: true, skipped: true, event });
   }
 
@@ -346,22 +405,35 @@ export async function POST(request) {
       offer: body?.data?.purchase?.offer || body?.data?.offer,
       subscription: body?.data?.subscription,
     }));
+    await logWebhook(client, {
+      event: "webhook_received", email, plan, action: "skipped",
+      reason: "unknown_plan",
+      payloadEvent: event,
+      incomingPlan: plan,
+      durationMs: Date.now() - startTime,
+    });
     return Response.json({ ok: true, skipped: true, reason: "unknown_plan", event });
   }
 
-  // Client com Service Role para operações admin
-  const supabase = createServiceRoleSupabase();
-
   // Verifica se usuário já existe — pode ser um upgrade de plano
-  const existingUser = await findAuthUserByEmail(supabase, email);
+  const existingUser = await findAuthUserByEmail(client, email);
   if (existingUser) {
     try {
-      const result = await setProfilePlan(supabase, existingUser, { buyerName, plan, event });
+      const result = await setProfilePlan(client, existingUser, { buyerName, plan, event });
+      await registerEmailLookup(client, email, existingUser.id);
       console.log(`[Hotmart Webhook] Plano '${result.profile.plan}' processado para ${email}`, {
         event,
         incomingPlan: plan,
         applied: result.applied,
         skippedDowngrade: result.skippedDowngrade || false,
+      });
+      await logWebhook(client, {
+        event: "webhook_received", email, plan: result.profile.plan, action: "updated",
+        reason: result.skippedDowngrade ? "downgrade_blocked" : null,
+        payloadEvent: event,
+        incomingPlan: plan,
+        applied: result.applied,
+        durationMs: Date.now() - startTime,
       });
       return Response.json({
         ok: true,
@@ -373,24 +445,29 @@ export async function POST(request) {
       });
     } catch (updateError) {
       console.error(`[Hotmart Webhook] Erro ao atualizar plano de ${email}:`, updateError.message);
+      await logWebhook(client, {
+        event: "webhook_received", email, plan, action: "error",
+        reason: "update_error",
+        payloadEvent: event,
+        incomingPlan: plan,
+        errorMessage: updateError.message,
+        durationMs: Date.now() - startTime,
+      });
       return Response.json({ error: updateError.message }, { status: 500 });
     }
   }
 
   // Usuário não existe ainda. Pode ser order bump onde o webhook do Plus chegou antes
-  // do webhook do Rhema base. Criamos com a senha padrão e o plano correto.
-  // Se o webhook do Rhema chegar depois, ele não fará downgrade (shouldApplyPlan protege).
   if (plan === "plus") {
     console.log(`[Hotmart Webhook] Compra Plus sem usuário base para ${email} — possível order bump, criando com plano plus`);
   }
 
-  const userMetadata = { hotmart_purchase: true };
+  const userMetadata = { hotmart_purchase: true, password_is_temporary: true };
   if (buyerName) userMetadata.full_name = buyerName;
 
-  // Senha padrão informada no e-mail de boas-vindas da Hotmart
   const temporaryPassword = "rhema123";
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  const { data, error } = await client.auth.admin.createUser({
     email,
     password: temporaryPassword,
     email_confirm: true,
@@ -398,14 +475,22 @@ export async function POST(request) {
   });
 
   if (error) {
-    // Em caso de corrida, trata usuário já registrado como sucesso idempotente
     if (error.message?.includes("already") || error.message?.includes("registered")) {
-      const raceUser = await findAuthUserByEmail(supabase, email);
+      const raceUser = await findAuthUserByEmail(client, email);
       if (!raceUser) {
         await new Promise((r) => setTimeout(r, 2000));
-        const retryUser = await findAuthUserByEmail(supabase, email);
+        const retryUser = await findAuthUserByEmail(client, email);
         if (retryUser) {
-          const retryResult = await setProfilePlan(supabase, retryUser, { buyerName, plan, event });
+          const retryResult = await setProfilePlan(client, retryUser, { buyerName, plan, event });
+          await registerEmailLookup(client, email, retryUser.id);
+          await logWebhook(client, {
+            event: "webhook_received", email, plan: retryResult.profile.plan, action: "updated",
+            reason: "race_condition_retry",
+            payloadEvent: event,
+            incomingPlan: plan,
+            applied: retryResult.applied,
+            durationMs: Date.now() - startTime,
+          });
           return Response.json({
             ok: true,
             existing: true,
@@ -415,10 +500,27 @@ export async function POST(request) {
             applied: retryResult.applied,
           });
         }
+        await logWebhook(client, {
+          event: "webhook_received", email, plan, action: "error",
+          reason: "race_condition_lost",
+          payloadEvent: event,
+          incomingPlan: plan,
+          errorMessage: "User not found after race condition retry",
+          durationMs: Date.now() - startTime,
+        });
         return Response.json({ ok: true, existing: true, pendingProfileSync: true, plan });
       }
 
-      const result = await setProfilePlan(supabase, raceUser, { buyerName, plan, event });
+      const result = await setProfilePlan(client, raceUser, { buyerName, plan, event });
+      await registerEmailLookup(client, email, raceUser.id);
+      await logWebhook(client, {
+        event: "webhook_received", email, plan: result.profile.plan, action: "updated",
+        reason: "race_condition",
+        payloadEvent: event,
+        incomingPlan: plan,
+        applied: result.applied,
+        durationMs: Date.now() - startTime,
+      });
       return Response.json({
         ok: true,
         existing: true,
@@ -429,18 +531,36 @@ export async function POST(request) {
       });
     }
     console.error("[Hotmart Webhook] Erro ao criar usuário:", error.message);
+    await logWebhook(client, {
+      event: "webhook_received", email, plan, action: "error",
+      reason: "create_user_error",
+      payloadEvent: event,
+      incomingPlan: plan,
+      errorMessage: error.message,
+      durationMs: Date.now() - startTime,
+    });
     return Response.json({ error: error.message }, { status: 500 });
   }
 
+  // Registra no lookup para consultas futuras
+  await registerEmailLookup(client, email, data.user.id);
+
   // O trigger handle_new_user() cria o profile com plan='simple' por padrão.
-  // Atualiza para o plano correto baseado no produto comprado.
   try {
-    await setProfilePlan(supabase, data.user, { buyerName, plan, event });
+    await setProfilePlan(client, data.user, { buyerName, plan, event });
   } catch (planError) {
     console.error(`[Hotmart Webhook] Usuário criado mas erro ao setar plano '${plan}' para ${email}:`, planError.message);
   }
 
   console.log(`[Hotmart Webhook] Usuário criado com plano '${plan}': ${email} (id: ${data.user.id})`);
+  await logWebhook(client, {
+    event: "webhook_received", email, plan, action: "created",
+    reason: null,
+    payloadEvent: event,
+    incomingPlan: plan,
+    applied: true,
+    durationMs: Date.now() - startTime,
+  });
   return Response.json({
     ok: true,
     created: true,

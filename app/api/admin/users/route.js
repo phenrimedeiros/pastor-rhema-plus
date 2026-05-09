@@ -103,6 +103,10 @@ export async function POST(request) {
     const authUser = data?.user;
     if (!authUser) throw new Error("Supabase não retornou o usuário criado.");
 
+    await context.serviceSupabase
+      .from("hotmart_user_emails")
+      .upsert({ email, user_id: authUser.id }, { onConflict: "email", ignoreDuplicates: true });
+
     let currentAuthUser = authUser;
     if (!accessEnabled) {
       const { data: disabledData, error: disabledError } = await context.serviceSupabase.auth.admin.updateUserById(
