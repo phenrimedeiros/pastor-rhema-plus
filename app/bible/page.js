@@ -403,6 +403,7 @@ function BiblePageClient() {
   const [commentaries, setCommentaries] = useState([]);
   const [commentaryLoading, setCommentaryLoading] = useState(false);
   const [sidebarTab, setSidebarTab] = useState("notes");
+  const [toolbarOpen, setToolbarOpen] = useState(false);
   const topRef = useRef(null);
   const desktopEditorRef = useRef(null);
 
@@ -786,87 +787,91 @@ function BiblePageClient() {
           </button>
         </div>
 
-        <form onSubmit={handleSearch} className="flex min-w-[200px] flex-1 items-center gap-[6px]">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(event) => {
-              setSearchQuery(event.target.value);
-              setSearchError("");
-            }}
-            placeholder={t("bible_search_ph")}
-            className="flex-1 rounded-[12px] border border-brand-line bg-white px-[14px] py-[9px] text-[14px] font-sans shadow-sm outline-none transition-colors focus:border-brand-primary"
-          />
+        <button
+          onClick={() => setToolbarOpen((v) => !v)}
+          className="flex cursor-pointer items-center gap-[6px] rounded-[12px] border border-brand-line bg-white px-[12px] py-[9px] text-[14px] font-bold text-brand-muted shadow-sm transition-all hover:border-brand-primary/40 md:hidden"
+        >
+          {toolbarOpen ? "×" : "…"}
+        </button>
+
+        <div className={`flex flex-wrap items-center gap-[10px] md:flex ${toolbarOpen ? "flex" : "hidden"}`}>
+          <form onSubmit={handleSearch} className="flex min-w-[200px] flex-1 items-center gap-[6px]">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                setSearchError("");
+              }}
+              placeholder={t("bible_search_ph")}
+              className="flex-1 rounded-[12px] border border-brand-line bg-white px-[14px] py-[9px] text-[14px] font-sans shadow-sm outline-none transition-colors focus:border-brand-primary"
+            />
+            <button
+              type="submit"
+              className="cursor-pointer rounded-[12px] border-none bg-brand-primary px-[16px] py-[9px] text-[13px] font-bold text-white shadow-sm transition-colors hover:bg-brand-primary-2"
+            >
+              {t("bible_search_btn")}
+            </button>
+          </form>
+
           <button
-            type="submit"
-            className="cursor-pointer rounded-[12px] border-none bg-brand-primary px-[16px] py-[9px] text-[13px] font-bold text-white shadow-sm transition-colors hover:bg-brand-primary-2"
+            onClick={() => {
+              if (sidebarTab === "notes" && notesPanelOpen) {
+                setNotesPanelOpen(false);
+              } else {
+                setSidebarTab("notes");
+                setNotesPanelOpen(true);
+              }
+            }}
+            className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
+              notesPanelOpen && sidebarTab === "notes"
+                ? "border-brand-primary bg-brand-primary text-white"
+                : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
+            }`}
           >
-            {t("bible_search_btn")}
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            <span>{t("bible_notes_button")}</span>
+            {notes.length > 0 && (
+              <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
+                {notes.length}
+              </span>
+            )}
           </button>
-        </form>
 
-        <button
-          onClick={() => {
-            if (sidebarTab === "notes" && notesPanelOpen) {
-              setNotesPanelOpen(false);
-            } else {
-              setSidebarTab("notes");
-              setNotesPanelOpen(true);
-            }
-          }}
-          className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
-            notesPanelOpen && sidebarTab === "notes"
-              ? "border-brand-primary bg-brand-primary text-white"
-              : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
-          }`}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20h9" />
-            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-          </svg>
-          <span>{t("bible_notes_button")}</span>
-          {notes.length > 0 && (
-            <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
-              {notes.length}
-            </span>
-          )}
-          {notes.length === 0 && notesPanelOpen && sidebarTab === "notes" && (
-            <span className="rounded-full bg-white/20 px-[6px] py-[1px] text-[10px] text-white">
-              0
-            </span>
-          )}
-        </button>
+          <button
+            onClick={() => {
+              if (sidebarTab === "commentary" && notesPanelOpen) {
+                setNotesPanelOpen(false);
+              } else {
+                setSidebarTab("commentary");
+                setNotesPanelOpen(true);
+              }
+            }}
+            className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
+              notesPanelOpen && sidebarTab === "commentary"
+                ? "border-brand-primary bg-brand-primary text-white"
+                : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span>{t("commentary_btn")}</span>
+            {commentaries.length > 0 && !commentaryLoading && (
+              <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
+                {commentaries.length}
+              </span>
+            )}
+          </button>
 
-        <button
-          onClick={() => {
-            if (sidebarTab === "commentary" && notesPanelOpen) {
-              setNotesPanelOpen(false);
-            } else {
-              setSidebarTab("commentary");
-              setNotesPanelOpen(true);
-            }
-          }}
-          className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
-            notesPanelOpen && sidebarTab === "commentary"
-              ? "border-brand-primary bg-brand-primary text-white"
-              : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
-          }`}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-          </svg>
-          <span>{t("commentary_btn")}</span>
-          {commentaries.length > 0 && !commentaryLoading && (
-            <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
-              {commentaries.length}
-            </span>
-          )}
-        </button>
-
-        <span className="rounded-[8px] border border-brand-gold/30 bg-brand-amber-soft px-[10px] py-[5px] text-[11px] font-bold text-brand-gold">
-          {t("bible_version")}
-        </span>
+          <span className="rounded-[8px] border border-brand-gold/30 bg-brand-amber-soft px-[10px] py-[5px] text-[11px] font-bold text-brand-gold">
+            {t("bible_version")}
+          </span>
+        </div>
       </div>
 
       {searchError && (
@@ -1028,47 +1033,102 @@ function BiblePageClient() {
       </div>
 
       {notesPanelOpen && (
-        <div className="rounded-[18px] border border-brand-line bg-white shadow-brand lg:sticky lg:top-[18px] lg:max-h-[calc(100vh-36px)] lg:overflow-y-auto">
-          <div className="flex border-b border-brand-line">
-            <button
-              onClick={() => setSidebarTab("notes")}
-              className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
-                sidebarTab === "notes"
-                  ? "bg-brand-primary text-white"
-                  : "bg-white text-brand-muted hover:text-brand-primary"
-              }`}
-            >
-              {t("bible_notes_title")}
-            </button>
-            <button
-              onClick={() => setSidebarTab("commentary")}
-              className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
-                sidebarTab === "commentary"
-                  ? "bg-brand-primary text-white"
-                  : "bg-white text-brand-muted hover:text-brand-primary"
-              }`}
-            >
-              {t("commentary_title")}
-            </button>
+        <>
+          <div className="hidden lg:block rounded-[18px] border border-brand-line bg-white shadow-brand lg:sticky lg:top-[18px] lg:max-h-[calc(100vh-36px)] lg:overflow-y-auto">
+            <div className="flex border-b border-brand-line">
+              <button
+                onClick={() => setSidebarTab("notes")}
+                className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
+                  sidebarTab === "notes"
+                    ? "bg-brand-primary text-white"
+                    : "bg-white text-brand-muted hover:text-brand-primary"
+                }`}
+              >
+                {t("bible_notes_title")}
+              </button>
+              <button
+                onClick={() => setSidebarTab("commentary")}
+                className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
+                  sidebarTab === "commentary"
+                    ? "bg-brand-primary text-white"
+                    : "bg-white text-brand-muted hover:text-brand-primary"
+                }`}
+              >
+                {t("commentary_title")}
+              </button>
+            </div>
+
+            {sidebarTab === "notes" && (
+              <NotesPanel
+                notes={notes}
+                onEdit={openNoteForEditing}
+                onDelete={deleteNote}
+                onDeepen={deepenNote}
+                t={t}
+              />
+            )}
+            {sidebarTab === "commentary" && (
+              <CommentaryPanel
+                commentaries={commentaries}
+                loading={commentaryLoading}
+                t={t}
+              />
+            )}
           </div>
 
-          {sidebarTab === "notes" && (
-            <NotesPanel
-              notes={notes}
-              onEdit={openNoteForEditing}
-              onDelete={deleteNote}
-              onDeepen={deepenNote}
-              t={t}
-            />
+          {notesPanelOpen && (
+            <div className="fixed inset-x-0 bottom-[calc(104px_+_env(safe-area-inset-bottom,0px))] z-40 max-h-[60dvh] overflow-y-auto rounded-t-[20px] border border-brand-line bg-white shadow-[0_-18px_50px_rgba(15,23,42,.2)] lg:hidden">
+              <div className="mx-auto mt-[8px] h-[4px] w-[42px] rounded-full bg-slate-200" />
+              <div className="flex items-center justify-between border-b border-brand-line px-[16px] py-[10px]">
+                <div className="flex gap-[4px] rounded-[8px] bg-slate-100 p-[4px]">
+                  <button
+                    onClick={() => setSidebarTab("notes")}
+                    className={`cursor-pointer rounded-[6px] border-none px-[12px] py-[6px] text-[12px] font-bold transition-colors ${
+                      sidebarTab === "notes"
+                        ? "bg-brand-primary text-white"
+                        : "bg-transparent text-slate-500"
+                    }`}
+                  >
+                    {t("bible_notes_title")}
+                  </button>
+                  <button
+                    onClick={() => setSidebarTab("commentary")}
+                    className={`cursor-pointer rounded-[6px] border-none px-[12px] py-[6px] text-[12px] font-bold transition-colors ${
+                      sidebarTab === "commentary"
+                        ? "bg-brand-primary text-white"
+                        : "bg-transparent text-slate-500"
+                    }`}
+                  >
+                    {t("commentary_title")}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setNotesPanelOpen(false)}
+                  className="grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-full border-none bg-slate-100 text-[14px] font-bold text-slate-500"
+                >
+                  ×
+                </button>
+              </div>
+
+              {sidebarTab === "notes" && (
+                <NotesPanel
+                  notes={notes}
+                  onEdit={openNoteForEditing}
+                  onDelete={deleteNote}
+                  onDeepen={deepenNote}
+                  t={t}
+                />
+              )}
+              {sidebarTab === "commentary" && (
+                <CommentaryPanel
+                  commentaries={commentaries}
+                  loading={commentaryLoading}
+                  t={t}
+                />
+              )}
+            </div>
           )}
-          {sidebarTab === "commentary" && (
-            <CommentaryPanel
-              commentaries={commentaries}
-              loading={commentaryLoading}
-              t={t}
-            />
-          )}
-        </div>
+        </>
       )}
       </div>
 

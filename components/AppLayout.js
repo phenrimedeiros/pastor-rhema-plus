@@ -558,11 +558,11 @@ export default function AppLayout({ children, profile }) {
                     <span className="text-[10px] font-bold">{t("mobile_dock_home")}</span>
                   </button>
                   <button
-                    onClick={() => router.push("/series")}
-                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "series" ? "text-[#2563eb]" : "text-slate-400"}`}
+                    onClick={() => router.push("/library")}
+                    className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "library" ? "text-[#2563eb]" : "text-slate-400"}`}
                   >
-                    {ICONS.series}
-                    <span className="text-[10px] font-bold">{t("mobile_dock_plans")}</span>
+                    {ICONS.library}
+                    <span className="text-[10px] font-bold">{t("mobile_dock_library")}</span>
                   </button>
                 </>
               ) : (
@@ -591,7 +591,7 @@ export default function AppLayout({ children, profile }) {
                     className={`flex w-[20%] flex-col items-center justify-center gap-[4px] border-none bg-transparent p-[6px] transition-colors ${current === "sermons" ? "text-[#2563eb]" : "text-slate-400"}`}
                   >
                     {ICONS.sermons}
-                    <span className="text-[10px] font-bold">{t("mobile_dock_library")}</span>
+                    <span className="text-[10px] font-bold">{t("mobile_dock_sermons")}</span>
                   </button>
                   <button
                     onClick={() => router.push("/profile")}
