@@ -68,6 +68,29 @@ function LibraryPageClient() {
 
   const loadBooks = useCallback(async (tradition) => {
     setLoading(true);
+
+    if (tradition === "commentaries") {
+      const res = await fetch("/api/commentary/books");
+      if (res.ok) {
+        const data = await res.json();
+        const books = (data.books || []).map((b) => ({
+          id: b.title?.en || "",
+          title: b.title,
+          tradition: "commentaries",
+          testament: b.testament,
+          bibleIndex: b.bibleIndex,
+          totalChapters: b.chapterCount,
+          commentaryCount: b.commentaryCount,
+          authorCount: b.authorCount,
+          sectionType: "chapter",
+          source: "bible",
+        }));
+        setBooks(books);
+      }
+      setLoading(false);
+      return;
+    }
+
     const data = await fetchLibraryIndex(tradition);
     setBooks(data.books || []);
     setTraditions(data.traditions || {});
@@ -81,8 +104,11 @@ function LibraryPageClient() {
 
   const handleTraditionChange = (tradition) => {
     setActiveTradition(tradition);
-    const url = tradition === "all" ? "/library" : `/library?t=${tradition}`;
-    router.push(url, { scroll: false });
+    if (tradition === "all") {
+      router.push("/library", { scroll: false });
+    } else {
+      router.push(`/library?t=${tradition}`, { scroll: false });
+    }
   };
 
   const filteredBooks = books.filter((book) => {
@@ -93,6 +119,13 @@ function LibraryPageClient() {
     return title.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
+  const commentaryTradition = {
+    id: "commentaries",
+    label: t("commentary_title"),
+    color: "#caa14a",
+    count: null,
+  };
+
   const traditionList = [
     { id: "all", label: t("library_all"), color: "#64748b" },
     ...Object.entries(traditions).map(([key, meta]) => ({
@@ -101,6 +134,7 @@ function LibraryPageClient() {
       color: meta.color || TRADITION_COLORS[key] || "#64748b",
       count: meta.count,
     })),
+    commentaryTradition,
   ];
 
   if (!profile) return <LibraryFallback />;

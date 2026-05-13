@@ -435,9 +435,14 @@ function BiblePageClient() {
   useEffect(() => {
     const bookParam = searchParams.get("b");
     const chapterParam = searchParams.get("c");
+    const tabParam = searchParams.get("tab");
     startTransition(() => {
       if (bookParam !== null) setSelectedBook(parseInt(bookParam, 10));
       if (chapterParam !== null) setSelectedChapter(parseInt(chapterParam, 10));
+      if (tabParam === "commentary") {
+        setSidebarTab("commentary");
+        setNotesPanelOpen(true);
+      }
     });
   }, [searchParams]);
 
