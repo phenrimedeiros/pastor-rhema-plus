@@ -969,7 +969,9 @@
     {
       "id": "1en",
       "title": {
-        "en": "1 Enoch"
+        "en": "1 Enoch",
+        "pt": "1 Enoque",
+        "es": "1 Enoc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 108,
@@ -979,7 +981,9 @@
     {
       "id": "1esd",
       "title": {
-        "en": "1 Esdras"
+        "en": "1 Esdras",
+        "pt": "1 Esdras",
+        "es": "1 Esdras"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 9,
@@ -989,7 +993,9 @@
     {
       "id": "1macc",
       "title": {
-        "en": "1 Maccabees"
+        "en": "1 Maccabees",
+        "pt": "1 Macabeus",
+        "es": "1 Macabeos"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 16,
@@ -999,7 +1005,9 @@
     {
       "id": "2bar",
       "title": {
-        "en": "2 Baruch"
+        "en": "2 Baruch",
+        "pt": "2 Baruque",
+        "es": "2 Baruc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 87,
@@ -1009,7 +1017,9 @@
     {
       "id": "2en",
       "title": {
-        "en": "2 Enoch"
+        "en": "2 Enoch",
+        "pt": "2 Enoque",
+        "es": "2 Enoc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 68,
@@ -1019,7 +1029,9 @@
     {
       "id": "2esd",
       "title": {
-        "en": "2 Esdras"
+        "en": "2 Esdras",
+        "pt": "2 Esdras",
+        "es": "2 Esdras"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 16,
@@ -1029,7 +1041,9 @@
     {
       "id": "2macc",
       "title": {
-        "en": "2 Maccabees"
+        "en": "2 Maccabees",
+        "pt": "2 Macabeus",
+        "es": "2 Macabeos"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 15,
@@ -1039,7 +1053,9 @@
     {
       "id": "3bar",
       "title": {
-        "en": "3 Baruch"
+        "en": "3 Baruch",
+        "pt": "3 Baruque",
+        "es": "3 Baruc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 17,
@@ -1049,7 +1065,9 @@
     {
       "id": "3en",
       "title": {
-        "en": "3 Enoch"
+        "en": "3 Enoch",
+        "pt": "3 Enoque",
+        "es": "3 Enoc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 48,
@@ -1059,7 +1077,9 @@
     {
       "id": "4bar",
       "title": {
-        "en": "4 Baruch"
+        "en": "4 Baruch",
+        "pt": "4 Baruque",
+        "es": "4 Baruc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 9,
@@ -1069,7 +1089,9 @@
     {
       "id": "apocpet",
       "title": {
-        "en": "Apocalypse of Peter"
+        "en": "Apocalypse of Peter",
+        "pt": "Apocalipse de Pedro",
+        "es": "Apocalipsis de Pedro"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 17,
@@ -1079,7 +1101,9 @@
     {
       "id": "ascisa",
       "title": {
-        "en": "Ascension of Isaiah"
+        "en": "Ascension of Isaiah",
+        "pt": "Ascensão de Isaías",
+        "es": "Ascensión de Isaías"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 11,
@@ -1089,7 +1113,9 @@
     {
       "id": "bar",
       "title": {
-        "en": "Baruch"
+        "en": "Baruch",
+        "pt": "Baruque",
+        "es": "Baruc"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 5,
@@ -1099,7 +1125,9 @@
     {
       "id": "bel",
       "title": {
-        "en": "Bel and the Dragon"
+        "en": "Bel and the Dragon",
+        "pt": "Bel e o Dragão",
+        "es": "Bel y el Dragón"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1109,7 +1137,9 @@
     {
       "id": "gkesth",
       "title": {
-        "en": "Greek Esther"
+        "en": "Greek Esther",
+        "pt": "Ester Grego",
+        "es": "Ester Griego"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 16,
@@ -1119,7 +1149,9 @@
     {
       "id": "hermas",
       "title": {
-        "en": "Shepherd of Hermas"
+        "en": "Shepherd of Hermas",
+        "pt": "Pastor de Hermas",
+        "es": "Pastor de Hermas"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 4,
@@ -1129,7 +1161,9 @@
     {
       "id": "jasher",
       "title": {
-        "en": "Book of Jasher"
+        "en": "Book of Jasher",
+        "pt": "Livro de Jasar",
+        "es": "Libro de Jaser"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 91,
@@ -1139,7 +1173,9 @@
     {
       "id": "jdt",
       "title": {
-        "en": "Judith"
+        "en": "Judith",
+        "pt": "Judite",
+        "es": "Judit"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 16,
@@ -1149,7 +1185,9 @@
     {
       "id": "jub",
       "title": {
-        "en": "Jubilees"
+        "en": "Jubilees",
+        "pt": "Jubileus",
+        "es": "Jubileos"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 50,
@@ -1159,7 +1197,9 @@
     {
       "id": "lae",
       "title": {
-        "en": "Life of Adam and Eve"
+        "en": "Life of Adam and Eve",
+        "pt": "Vida de Adão e Eva",
+        "es": "Vida de Adán y Eva"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 79,
@@ -1169,7 +1209,9 @@
     {
       "id": "prazar",
       "title": {
-        "en": "Prayer of Azariah"
+        "en": "Prayer of Azariah",
+        "pt": "Oração de Azarias",
+        "es": "Oración de Azarías"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1179,7 +1221,9 @@
     {
       "id": "prman",
       "title": {
-        "en": "Prayer of Manasseh"
+        "en": "Prayer of Manasseh",
+        "pt": "Oração de Manassés",
+        "es": "Oración de Manasés"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1189,7 +1233,9 @@
     {
       "id": "sedrach",
       "title": {
-        "en": "Apocalypse of Sedrach"
+        "en": "Apocalypse of Sedrach",
+        "pt": "Apocalipse de Sedraque",
+        "es": "Apocalipsis de Sedrac"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1199,7 +1245,9 @@
     {
       "id": "sir",
       "title": {
-        "en": "Sirach"
+        "en": "Sirach (Ecclesiasticus)",
+        "pt": "Sirácida (Eclesiástico)",
+        "es": "Sirácida (Eclesiástico)"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 51,
@@ -1209,7 +1257,9 @@
     {
       "id": "sus",
       "title": {
-        "en": "Susanna"
+        "en": "Susanna",
+        "pt": "Susana",
+        "es": "Susana"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1219,7 +1269,9 @@
     {
       "id": "t12pat",
       "title": {
-        "en": "Testaments of the Twelve Patriarchs"
+        "en": "Testaments of the Twelve Patriarchs",
+        "pt": "Testamentos dos Doze Patriarcas",
+        "es": "Testamentos de los Doce Patriarcas"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 2,
@@ -1229,7 +1281,9 @@
     {
       "id": "tob",
       "title": {
-        "en": "Tobit"
+        "en": "Tobit",
+        "pt": "Tobias",
+        "es": "Tobías"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 14,
@@ -1239,7 +1293,9 @@
     {
       "id": "tsol",
       "title": {
-        "en": "Testament of Solomon"
+        "en": "Testament of Solomon",
+        "pt": "Testamento de Salomão",
+        "es": "Testamento de Salomón"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 1,
@@ -1249,7 +1305,9 @@
     {
       "id": "wis",
       "title": {
-        "en": "Wisdom of Solomon"
+        "en": "Wisdom of Solomon",
+        "pt": "Sabedoria de Salomão",
+        "es": "Sabiduría de Salomón"
       },
       "tradition": "deuterocanonical",
       "totalChapters": 19,
@@ -1259,7 +1317,9 @@
     {
       "id": "book-of-giants",
       "title": {
-        "en": "The Book of Giants"
+        "en": "Book of Giants",
+        "pt": "Livro dos Gigantes",
+        "es": "Libro de los Gigantes"
       },
       "tradition": "dss",
       "totalChapters": 35,
@@ -1269,7 +1329,9 @@
     {
       "id": "community-rule",
       "title": {
-        "en": "The Community Rule (1QS)"
+        "en": "Community Rule (1QS)",
+        "pt": "Regra da Comunidade (1QS)",
+        "es": "Regla de la Comunidad (1QS)"
       },
       "tradition": "dss",
       "totalChapters": 42,
@@ -1279,7 +1341,9 @@
     {
       "id": "copper-scroll",
       "title": {
-        "en": "The Copper Scroll (3Q15)"
+        "en": "Copper Scroll (3Q15)",
+        "pt": "Pergaminho de Cobre (3Q15)",
+        "es": "Rollo de Cobre (3Q15)"
       },
       "tradition": "dss",
       "totalChapters": 32,
@@ -1289,7 +1353,9 @@
     {
       "id": "damascus-document",
       "title": {
-        "en": "The Damascus Document (CD)"
+        "en": "Damascus Document (CD)",
+        "pt": "Documento de Damasco (CD)",
+        "es": "Documento de Damasco (CD)"
       },
       "tradition": "dss",
       "totalChapters": 32,
@@ -1299,7 +1365,9 @@
     {
       "id": "genesis-apocryphon",
       "title": {
-        "en": "The Genesis Apocryphon (1QapGen)"
+        "en": "Genesis Apocryphon (1QapGen)",
+        "pt": "Apócrifo do Gênesis",
+        "es": "Apócrifo del Génesis"
       },
       "tradition": "dss",
       "totalChapters": 35,
@@ -1309,7 +1377,9 @@
     {
       "id": "pesher-habakkuk",
       "title": {
-        "en": "Pesher Habakkuk (1QpHab)"
+        "en": "Pesher Habakkuk (1QpHab)",
+        "pt": "Pesher Habacuque (1QpHab)",
+        "es": "Pésher Habacuc (1QpHab)"
       },
       "tradition": "dss",
       "totalChapters": 33,
@@ -1319,7 +1389,9 @@
     {
       "id": "songs-sabbath-sacrifice",
       "title": {
-        "en": "Songs of the Sabbath Sacrifice"
+        "en": "Songs of the Sabbath Sacrifice",
+        "pt": "Cânticos do Sacrifício do Sábado",
+        "es": "Cantos del Sacrificio del Sábado"
       },
       "tradition": "dss",
       "totalChapters": 37,
@@ -1329,7 +1401,9 @@
     {
       "id": "temple-scroll",
       "title": {
-        "en": "The Temple Scroll (11QT)"
+        "en": "Temple Scroll (11QT)",
+        "pt": "Pergaminho do Templo (11QT)",
+        "es": "Rollo del Templo (11QT)"
       },
       "tradition": "dss",
       "totalChapters": 31,
@@ -1339,7 +1413,9 @@
     {
       "id": "thanksgiving-hymns",
       "title": {
-        "en": "The Thanksgiving Hymns (1QH)"
+        "en": "Thanksgiving Hymns (1QH)",
+        "pt": "Hinos de Ação de Graças (1QH)",
+        "es": "Himnos de Acción de Gracias (1QH)"
       },
       "tradition": "dss",
       "totalChapters": 31,
@@ -1349,7 +1425,9 @@
     {
       "id": "war-scroll",
       "title": {
-        "en": "The War Scroll (1QM)"
+        "en": "War Scroll (1QM)",
+        "pt": "Pergaminho da Guerra (1QM)",
+        "es": "Rollo de la Guerra (1QM)"
       },
       "tradition": "dss",
       "totalChapters": 33,
@@ -1359,7 +1437,9 @@
     {
       "id": "3-maccabees",
       "title": {
-        "en": "3 maccabees"
+        "en": "3 Maccabees",
+        "pt": "3 Macabeus",
+        "es": "3 Macabeos"
       },
       "tradition": "gnostic",
       "totalChapters": 1,
@@ -1369,7 +1449,9 @@
     {
       "id": "4-ezra",
       "title": {
-        "en": "2 Esdras"
+        "en": "4 Ezra (2 Esdras)",
+        "pt": "4 Esdras (2 Esdras)",
+        "es": "4 Esdras (2 Esdras)"
       },
       "tradition": "gnostic",
       "totalChapters": 0,
@@ -1379,7 +1461,9 @@
     {
       "id": "4-maccabees",
       "title": {
-        "en": "4 maccabees"
+        "en": "4 Maccabees",
+        "pt": "4 Macabeus",
+        "es": "4 Macabeos"
       },
       "tradition": "gnostic",
       "totalChapters": 8,
@@ -1389,7 +1473,9 @@
     {
       "id": "acts-paul-thecla",
       "title": {
-        "en": "About this page"
+        "en": "Acts of Paul and Thecla",
+        "pt": "Atos de Paulo e Tecla",
+        "es": "Hechos de Pablo y Tecla"
       },
       "tradition": "gnostic",
       "totalChapters": 36,
@@ -1399,7 +1485,9 @@
     {
       "id": "apocalypse-abraham",
       "title": {
-        "en": "apocalypse abraham"
+        "en": "Apocalypse of Abraham",
+        "pt": "Apocalipse de Abraão",
+        "es": "Apocalipsis de Abraham"
       },
       "tradition": "gnostic",
       "totalChapters": 0,
@@ -1409,7 +1497,9 @@
     {
       "id": "apocryphon-of-john",
       "title": {
-        "en": "apocryphon of john"
+        "en": "Apocryphon of John",
+        "pt": "Apócrifo de João",
+        "es": "Apócrifo de Juan"
       },
       "tradition": "gnostic",
       "totalChapters": 27,
@@ -1419,7 +1509,9 @@
     {
       "id": "assumption-moses",
       "title": {
-        "en": "assumption moses"
+        "en": "Assumption of Moses",
+        "pt": "Assunção de Moisés",
+        "es": "Asunción de Moisés"
       },
       "tradition": "gnostic",
       "totalChapters": 65,
@@ -1429,7 +1521,9 @@
     {
       "id": "book-thomas-contender",
       "title": {
-        "en": "book thomas contender"
+        "en": "Book of Thomas the Contender",
+        "pt": "Livro de Tomé o Contendor",
+        "es": "Libro de Tomás el Contendiente"
       },
       "tradition": "gnostic",
       "totalChapters": 49,
@@ -1439,7 +1533,9 @@
     {
       "id": "dialogue-savior",
       "title": {
-        "en": "dialogue savior"
+        "en": "Dialogue of the Saviour",
+        "pt": "Diálogo do Salvador",
+        "es": "Diálogo del Salvador"
       },
       "tradition": "gnostic",
       "totalChapters": 2,
@@ -1449,7 +1545,9 @@
     {
       "id": "didache",
       "title": {
-        "en": "didache"
+        "en": "Didache (Teaching of the 12 Apostles)",
+        "pt": "Didaquê (Ensino dos 12 Apóstolos)",
+        "es": "Didaché (Enseñanza de los 12 Apóstoles)"
       },
       "tradition": "gnostic",
       "totalChapters": 9,
@@ -1459,7 +1557,9 @@
     {
       "id": "epistle-barnabas",
       "title": {
-        "en": "Chapter 1. After the salutation, the writer declares that he would communicate to his brethren something of that which he had himself received"
+        "en": "Epistle of Barnabas",
+        "pt": "Epístola de Barnabé",
+        "es": "Epístola de Bernabé"
       },
       "tradition": "gnostic",
       "totalChapters": 26,
@@ -1469,7 +1569,9 @@
     {
       "id": "gospel-of-egyptians",
       "title": {
-        "en": "About This Text"
+        "en": "Gospel of the Egyptians",
+        "pt": "Evangelho dos Egípcios",
+        "es": "Evangelio de los Egipcios"
       },
       "tradition": "gnostic",
       "totalChapters": 15,
@@ -1479,7 +1581,9 @@
     {
       "id": "gospel-of-hebrews",
       "title": {
-        "en": "About This Text"
+        "en": "Gospel of the Hebrews",
+        "pt": "Evangelho dos Hebreus",
+        "es": "Evangelio de los Hebreos"
       },
       "tradition": "gnostic",
       "totalChapters": 14,
@@ -1489,7 +1593,9 @@
     {
       "id": "gospel-of-judas",
       "title": {
-        "en": "The Gospel of Judas"
+        "en": "Gospel of Judas",
+        "pt": "Evangelho de Judas",
+        "es": "Evangelio de Judas"
       },
       "tradition": "gnostic",
       "totalChapters": 73,
@@ -1499,7 +1605,9 @@
     {
       "id": "gospel-of-mary",
       "title": {
-        "en": "The Gospel According to Mary Magdalene"
+        "en": "Gospel of Mary Magdalene",
+        "pt": "Evangelho de Maria Madalena",
+        "es": "Evangelio de María Magdalena"
       },
       "tradition": "gnostic",
       "totalChapters": 54,
@@ -1509,7 +1617,9 @@
     {
       "id": "gospel-of-nicodemus",
       "title": {
-        "en": "gospel of nicodemus"
+        "en": "Gospel of Nicodemus",
+        "pt": "Evangelho de Nicodemos",
+        "es": "Evangelio de Nicodemo"
       },
       "tradition": "gnostic",
       "totalChapters": 3,
@@ -1519,7 +1629,9 @@
     {
       "id": "gospel-of-peter",
       "title": {
-        "en": "gospel of peter"
+        "en": "Gospel of Peter",
+        "pt": "Evangelho de Pedro",
+        "es": "Evangelio de Pedro"
       },
       "tradition": "gnostic",
       "totalChapters": 5,
@@ -1529,7 +1641,9 @@
     {
       "id": "gospel-of-philip",
       "title": {
-        "en": "gospel of philip"
+        "en": "Gospel of Philip",
+        "pt": "Evangelho de Filipe",
+        "es": "Evangelio de Felipe"
       },
       "tradition": "gnostic",
       "totalChapters": 108,
@@ -1539,7 +1653,9 @@
     {
       "id": "gospel-of-thomas",
       "title": {
-        "en": "The Gospel of Thomas"
+        "en": "Gospel of Thomas",
+        "pt": "Evangelho de Tomé",
+        "es": "Evangelio de Tomás"
       },
       "tradition": "gnostic",
       "totalChapters": 114,
@@ -1549,7 +1665,9 @@
     {
       "id": "gospel-of-truth",
       "title": {
-        "en": "gospel of truth"
+        "en": "Gospel of Truth",
+        "pt": "Evangelho da Verdade",
+        "es": "Evangelio de la Verdad"
       },
       "tradition": "gnostic",
       "totalChapters": 36,
@@ -1559,7 +1677,9 @@
     {
       "id": "infancy-gospel-thomas",
       "title": {
-        "en": "infancy gospel thomas"
+        "en": "Infancy Gospel of Thomas",
+        "pt": "Evangelho da Infância de Tomé",
+        "es": "Evangelio de la Infancia de Tomás"
       },
       "tradition": "gnostic",
       "totalChapters": 8,
@@ -1569,7 +1689,9 @@
     {
       "id": "pistis-sophia",
       "title": {
-        "en": "pistis sophia"
+        "en": "Pistis Sophia",
+        "pt": "Pistis Sophia",
+        "es": "Pistis Sophia"
       },
       "tradition": "gnostic",
       "totalChapters": 1027,
@@ -1579,7 +1701,9 @@
     {
       "id": "protoevangelium-james",
       "title": {
-        "en": "protoevangelium james"
+        "en": "Protoevangelium of James",
+        "pt": "Protoevangelho de Tiago",
+        "es": "Protoevangelio de Santiago"
       },
       "tradition": "gnostic",
       "totalChapters": 16,
@@ -1589,7 +1713,9 @@
     {
       "id": "psalms-solomon",
       "title": {
-        "en": "psalms solomon"
+        "en": "Psalms of Solomon",
+        "pt": "Salmos de Salomão",
+        "es": "Salmos de Salomón"
       },
       "tradition": "gnostic",
       "totalChapters": 7,
@@ -1599,7 +1725,9 @@
     {
       "id": "secret-gospel-mark",
       "title": {
-        "en": "secret gospel mark"
+        "en": "Secret Gospel of Mark",
+        "pt": "Evangelho Secreto de Marcos",
+        "es": "Evangelio Secreto de Marcos"
       },
       "tradition": "gnostic",
       "totalChapters": 4,
@@ -1609,7 +1737,9 @@
     {
       "id": "sophia-jesus-christ",
       "title": {
-        "en": "sophia jesus christ"
+        "en": "Sophia of Jesus Christ",
+        "pt": "Sophia de Jesus Cristo",
+        "es": "Sofía de Jesucristo"
       },
       "tradition": "gnostic",
       "totalChapters": 59,
@@ -1619,7 +1749,9 @@
     {
       "id": "testament-abraham",
       "title": {
-        "en": "Version 1"
+        "en": "Testament of Abraham",
+        "pt": "Testamento de Abraão",
+        "es": "Testamento de Abraham"
       },
       "tradition": "gnostic",
       "totalChapters": 35,
@@ -1629,7 +1761,9 @@
     {
       "id": "testament-job",
       "title": {
-        "en": "Testament of Job"
+        "en": "Testament of Job",
+        "pt": "Testamento de Jó",
+        "es": "Testamento de Job"
       },
       "tradition": "gnostic",
       "totalChapters": 84,

@@ -97,6 +97,81 @@ const PROTESTANT_BOOKS = [
   { id: "revelation", idx: 65, name: { pt: "Apocalipse", en: "Revelation", es: "Apocalipsis" }, chapters: 22, testament: "NT" },
 ];
 
+const NAMED_TITLES = {
+  // Deuterocanonical
+  "1en":        { pt: "1 Enoque",         en: "1 Enoch",              es: "1 Enoc" },
+  "1esd":       { pt: "1 Esdras",         en: "1 Esdras",             es: "1 Esdras" },
+  "1macc":      { pt: "1 Macabeus",       en: "1 Maccabees",          es: "1 Macabeos" },
+  "2bar":       { pt: "2 Baruque",        en: "2 Baruch",             es: "2 Baruc" },
+  "2en":        { pt: "2 Enoque",         en: "2 Enoch",              es: "2 Enoc" },
+  "2esd":       { pt: "2 Esdras",         en: "2 Esdras",             es: "2 Esdras" },
+  "2macc":      { pt: "2 Macabeus",       en: "2 Maccabees",          es: "2 Macabeos" },
+  "3bar":       { pt: "3 Baruque",        en: "3 Baruch",             es: "3 Baruc" },
+  "3en":        { pt: "3 Enoque",         en: "3 Enoch",              es: "3 Enoc" },
+  "4bar":       { pt: "4 Baruque",        en: "4 Baruch",             es: "4 Baruc" },
+  "apocpet":    { pt: "Apocalipse de Pedro", en: "Apocalypse of Peter", es: "Apocalipsis de Pedro" },
+  "ascisa":     { pt: "Ascensão de Isaías",  en: "Ascension of Isaiah", es: "Ascensión de Isaías" },
+  "bar":        { pt: "Baruque",          en: "Baruch",               es: "Baruc" },
+  "bel":        { pt: "Bel e o Dragão",   en: "Bel and the Dragon",   es: "Bel y el Dragón" },
+  "gkesth":     { pt: "Ester Grego",      en: "Greek Esther",         es: "Ester Griego" },
+  "hermas":     { pt: "Pastor de Hermas", en: "Shepherd of Hermas",   es: "Pastor de Hermas" },
+  "jasher":     { pt: "Livro de Jasar",   en: "Book of Jasher",       es: "Libro de Jaser" },
+  "jdt":        { pt: "Judite",           en: "Judith",               es: "Judit" },
+  "jub":        { pt: "Jubileus",         en: "Jubilees",             es: "Jubileos" },
+  "lae":        { pt: "Vida de Adão e Eva", en: "Life of Adam and Eve", es: "Vida de Adán y Eva" },
+  "prazar":     { pt: "Oração de Azarias",  en: "Prayer of Azariah",  es: "Oración de Azarías" },
+  "prman":      { pt: "Oração de Manassés", en: "Prayer of Manasseh", es: "Oración de Manasés" },
+  "sedrach":    { pt: "Apocalipse de Sedraque", en: "Apocalypse of Sedrach", es: "Apocalipsis de Sedrac" },
+  "sir":        { pt: "Sirácida (Eclesiástico)", en: "Sirach (Ecclesiasticus)", es: "Sirácida (Eclesiástico)" },
+  "sus":        { pt: "Susana",           en: "Susanna",              es: "Susana" },
+  "t12pat":     { pt: "Testamentos dos Doze Patriarcas", en: "Testaments of the Twelve Patriarchs", es: "Testamentos de los Doce Patriarcas" },
+  "tob":        { pt: "Tobias",           en: "Tobit",                es: "Tobías" },
+  "tsol":       { pt: "Testamento de Salomão", en: "Testament of Solomon", es: "Testamento de Salomón" },
+  "wis":        { pt: "Sabedoria de Salomão",  en: "Wisdom of Solomon", es: "Sabiduría de Salomón" },
+
+  // Dead Sea Scrolls
+  "book-of-giants":          { pt: "Livro dos Gigantes",          en: "Book of Giants",              es: "Libro de los Gigantes" },
+  "community-rule":          { pt: "Regra da Comunidade (1QS)",   en: "Community Rule (1QS)",        es: "Regla de la Comunidad (1QS)" },
+  "copper-scroll":           { pt: "Pergaminho de Cobre (3Q15)",  en: "Copper Scroll (3Q15)",        es: "Rollo de Cobre (3Q15)" },
+  "damascus-document":       { pt: "Documento de Damasco (CD)",   en: "Damascus Document (CD)",      es: "Documento de Damasco (CD)" },
+  "genesis-apocryphon":      { pt: "Apócrifo do Gênesis",         en: "Genesis Apocryphon (1QapGen)", es: "Apócrifo del Génesis" },
+  "pesher-habakkuk":         { pt: "Pesher Habacuque (1QpHab)",   en: "Pesher Habakkuk (1QpHab)",    es: "Pésher Habacuc (1QpHab)" },
+  "songs-sabbath-sacrifice": { pt: "Cânticos do Sacrifício do Sábado", en: "Songs of the Sabbath Sacrifice", es: "Cantos del Sacrificio del Sábado" },
+  "temple-scroll":           { pt: "Pergaminho do Templo (11QT)", en: "Temple Scroll (11QT)",        es: "Rollo del Templo (11QT)" },
+  "thanksgiving-hymns":      { pt: "Hinos de Ação de Graças (1QH)", en: "Thanksgiving Hymns (1QH)",  es: "Himnos de Acción de Gracias (1QH)" },
+  "war-scroll":              { pt: "Pergaminho da Guerra (1QM)",  en: "War Scroll (1QM)",            es: "Rollo de la Guerra (1QM)" },
+
+  // Gnostic & Early Christian
+  "3-maccabees":             { pt: "3 Macabeus",               en: "3 Maccabees",                es: "3 Macabeos" },
+  "4-ezra":                  { pt: "4 Esdras (2 Esdras)",      en: "4 Ezra (2 Esdras)",          es: "4 Esdras (2 Esdras)" },
+  "4-maccabees":             { pt: "4 Macabeus",               en: "4 Maccabees",                es: "4 Macabeos" },
+  "acts-paul-thecla":        { pt: "Atos de Paulo e Tecla",    en: "Acts of Paul and Thecla",    es: "Hechos de Pablo y Tecla" },
+  "apocalypse-abraham":      { pt: "Apocalipse de Abraão",     en: "Apocalypse of Abraham",      es: "Apocalipsis de Abraham" },
+  "apocryphon-of-john":      { pt: "Apócrifo de João",         en: "Apocryphon of John",         es: "Apócrifo de Juan" },
+  "assumption-moses":        { pt: "Assunção de Moisés",       en: "Assumption of Moses",        es: "Asunción de Moisés" },
+  "book-thomas-contender":   { pt: "Livro de Tomé o Contendor", en: "Book of Thomas the Contender", es: "Libro de Tomás el Contendiente" },
+  "dialogue-savior":         { pt: "Diálogo do Salvador",      en: "Dialogue of the Saviour",    es: "Diálogo del Salvador" },
+  "didache":                 { pt: "Didaquê (Ensino dos 12 Apóstolos)", en: "Didache (Teaching of the 12 Apostles)", es: "Didaché (Enseñanza de los 12 Apóstoles)" },
+  "epistle-barnabas":        { pt: "Epístola de Barnabé",      en: "Epistle of Barnabas",        es: "Epístola de Bernabé" },
+  "gospel-of-egyptians":     { pt: "Evangelho dos Egípcios",   en: "Gospel of the Egyptians",    es: "Evangelio de los Egipcios" },
+  "gospel-of-hebrews":       { pt: "Evangelho dos Hebreus",    en: "Gospel of the Hebrews",      es: "Evangelio de los Hebreos" },
+  "gospel-of-judas":         { pt: "Evangelho de Judas",       en: "Gospel of Judas",            es: "Evangelio de Judas" },
+  "gospel-of-mary":          { pt: "Evangelho de Maria Madalena", en: "Gospel of Mary Magdalene", es: "Evangelio de María Magdalena" },
+  "gospel-of-nicodemus":     { pt: "Evangelho de Nicodemos",   en: "Gospel of Nicodemus",        es: "Evangelio de Nicodemo" },
+  "gospel-of-peter":         { pt: "Evangelho de Pedro",       en: "Gospel of Peter",            es: "Evangelio de Pedro" },
+  "gospel-of-philip":        { pt: "Evangelho de Filipe",      en: "Gospel of Philip",           es: "Evangelio de Felipe" },
+  "gospel-of-thomas":        { pt: "Evangelho de Tomé",        en: "Gospel of Thomas",           es: "Evangelio de Tomás" },
+  "gospel-of-truth":         { pt: "Evangelho da Verdade",     en: "Gospel of Truth",            es: "Evangelio de la Verdad" },
+  "infancy-gospel-thomas":   { pt: "Evangelho da Infância de Tomé", en: "Infancy Gospel of Thomas", es: "Evangelio de la Infancia de Tomás" },
+  "pistis-sophia":           { pt: "Pistis Sophia",            en: "Pistis Sophia",              es: "Pistis Sophia" },
+  "protoevangelium-james":   { pt: "Protoevangelho de Tiago",  en: "Protoevangelium of James",   es: "Protoevangelio de Santiago" },
+  "psalms-solomon":          { pt: "Salmos de Salomão",        en: "Psalms of Solomon",          es: "Salmos de Salomón" },
+  "secret-gospel-mark":      { pt: "Evangelho Secreto de Marcos", en: "Secret Gospel of Mark",   es: "Evangelio Secreto de Marcos" },
+  "sophia-jesus-christ":     { pt: "Sophia de Jesus Cristo",   en: "Sophia of Jesus Christ",     es: "Sofía de Jesucristo" },
+  "testament-abraham":       { pt: "Testamento de Abraão",     en: "Testament of Abraham",       es: "Testamento de Abraham" },
+  "testament-job":           { pt: "Testamento de Jó",         en: "Testament of Job",           es: "Testamento de Job" },
+};
+
 function buildIndex() {
   const index = [];
   const traditions = {};
@@ -125,9 +200,17 @@ function buildIndex() {
       const bookPath = path.join(dir, file);
       try {
         const book = JSON.parse(fs.readFileSync(bookPath, "utf-8"));
+        const name = book.title;
+        const translatedTitle = NAMED_TITLES[book.id]
+          || { en: typeof name === "string" ? name : (name?.en || book.id) };
+
         index.push({
           id: book.id,
-          title: { en: book.title },
+          title: {
+            en: translatedTitle.en,
+            pt: translatedTitle.pt || translatedTitle.en,
+            es: translatedTitle.es || translatedTitle.en,
+          },
           tradition: book.tradition,
           totalChapters: book.totalChapters || book.totalSections || 0,
           sectionType: book.chapters ? "chapter" : "section",
