@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 
 function formatYear(year) {
   if (!year || year === 9999) return "";
   return `, AD ${Math.abs(year)}`;
 }
 
-export default function CommentaryPanel({ commentaries, loading, t }) {
+function CommentaryPanel({ commentaries, loading, t }) {
   const [expanded, setExpanded] = useState(new Set());
 
   const toggleExpand = (id) => {
@@ -45,7 +45,7 @@ export default function CommentaryPanel({ commentaries, loading, t }) {
 
           return (
             <article
-              key={i}
+              key={`${c.author}-${c.verseStart}-${i}`}
               className="rounded-[12px] border border-brand-gold/20 bg-brand-amber-soft/40 p-[12px]"
             >
               <div className="mb-[8px] flex items-start justify-between gap-[8px]">
@@ -88,3 +88,5 @@ export default function CommentaryPanel({ commentaries, loading, t }) {
     </div>
   );
 }
+
+export default memo(CommentaryPanel);
