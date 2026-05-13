@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 import { parseAiJsonResponse } from "@/lib/aiJson";
 import { getMissingServerEnv } from "@/lib/serverEnv";
+import { getCommentariesForVerseRange } from "@/lib/commentary";
 
 const LANGUAGE_LABELS = {
   pt: "Portuguese (Brazil)",
@@ -20,6 +21,13 @@ function normalizeVerses(verses) {
 function buildPrompt(input) {
   const language = LANGUAGE_LABELS[input.lang] || LANGUAGE_LABELS.pt;
 
+  const commentaryBlock = input.commentaryContext ? `
+HISTORICAL COMMENTARY CONTEXT
+The following are excerpts from historical Christian commentaries (Church Fathers and theologians) on this passage. Use them to enrich your analysis. Quote or reference them where relevant, but do not fabricate additional quotes:
+
+${input.commentaryContext}
+` : "";
+
   return `You are Pastor Rhema, a careful Bible study assistant for pastors and serious students of Scripture.
 
 Respond in ${language}.
@@ -35,7 +43,7 @@ ${input.selectedText}
 
 NEARBY CHAPTER CONTEXT
 ${normalizeVerses(input.contextVerses)}
-
+${commentaryBlock}
 RESPOND ONLY IN VALID JSON. Do not use markdown fences. Use this exact shape:
 {
   "title": "short study title",
@@ -52,7 +60,8 @@ RULES
 - Do not fabricate historical facts, original-language claims, manuscript claims, or quotes.
 - If a detail is uncertain, state that plainly.
 - Keep the answer practical for sermon preparation and Bible teaching.
-- Ground every point in the selected text and its immediate context.`;
+- Ground every point in the selected text and its immediate context.
+- If historical commentaries are provided, you may reference them by author name to add scholarly weight.`;
 }
 
 export async function POST(request) {
@@ -98,11 +107,29 @@ export async function POST(request) {
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+  // Fetch historical commentaries for this verse range if book/chapter info is provided
+  let commentaryContext = "";
+  if (body.bookIdx !== undefined && body.chapter && body.verseStart) {
+    try {
+      const commentaries = getCommentariesForVerseRange(
+        body.bookIdx, body.chapter, body.verseStart, body.verseEnd || body.verseStart
+      );
+      if (commentaries.length > 0) {
+        const samples = commentaries.slice(0, 4).map(c =>
+          `- ${c.author} (AD ${c.year || "?"}): ${c.quote.slice(0, 400)}${c.quote.length > 400 ? "..." : ""}`
+        ).join("\n\n");
+        commentaryContext = samples;
+      }
+    } catch {
+      // Silently skip — commentaries are a bonus, not critical
+    }
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 2200,
-      messages: [{ role: "user", content: buildPrompt({ ...body, lang, selectedText, reference }) }],
+      messages: [{ role: "user", content: buildPrompt({ ...body, lang, selectedText, reference, commentaryContext }) }],
     });
 
     const content = parseAiJsonResponse(completion.choices[0].message.content || "");

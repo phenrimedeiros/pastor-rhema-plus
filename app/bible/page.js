@@ -14,6 +14,7 @@ import AppLayout from "@/components/AppLayout";
 import { auth, bibleNotes, profiles } from "@/lib/supabase_client";
 import { callApi } from "@/lib/api";
 import { useLanguage } from "@/lib/i18n";
+import CommentaryPanel from "@/components/CommentaryPanel";
 
 async function fetchBooks(lang) {
   const res = await fetch(`/api/bible/books?lang=${lang}`);
@@ -399,6 +400,9 @@ function BiblePageClient() {
   const [deepDive, setDeepDive] = useState(null);
   const [deepDiveLoading, setDeepDiveLoading] = useState(false);
   const [deepDiveError, setDeepDiveError] = useState("");
+  const [commentaries, setCommentaries] = useState([]);
+  const [commentaryLoading, setCommentaryLoading] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState("notes");
   const topRef = useRef(null);
   const desktopEditorRef = useRef(null);
 
@@ -469,6 +473,29 @@ function BiblePageClient() {
     loadNotes();
     return () => { active = false; };
   }, [profile, lang, selectedBook, selectedChapter, t]);
+
+  useEffect(() => {
+    if (!profile) return;
+    let active = true;
+
+    async function loadCommentaries() {
+      setCommentaryLoading(true);
+      try {
+        const res = await fetch(`/api/commentary?book=${selectedBook}&chapter=${selectedChapter}`);
+        if (active && res.ok) {
+          const data = await res.json();
+          setCommentaries(data.commentaries || []);
+        }
+      } catch {
+        if (active) setCommentaries([]);
+      } finally {
+        if (active) setCommentaryLoading(false);
+      }
+    }
+
+    loadCommentaries();
+    return () => { active = false; };
+  }, [profile, selectedBook, selectedChapter]);
 
   const currentBook = books[selectedBook];
   const totalChapters = currentBook?.chapters || 1;
@@ -624,6 +651,10 @@ function BiblePageClient() {
         reference: `${passage.bookName} ${formatVerseRange(passage.chapter, passage.verseStart, passage.verseEnd)}`,
         selectedText: passage.selectedText,
         contextVerses,
+        bookIdx: passage.bookIdx,
+        chapter: passage.chapter,
+        verseStart: passage.verseStart,
+        verseEnd: passage.verseEnd,
       });
       setDeepDive(data.content);
     } catch (err) {
@@ -770,8 +801,19 @@ function BiblePageClient() {
         </form>
 
         <button
-          onClick={() => setNotesPanelOpen((value) => !value)}
-          className="flex cursor-pointer items-center gap-[7px] rounded-[12px] border border-brand-line bg-white px-[13px] py-[9px] text-[13px] font-bold text-brand-primary shadow-sm transition-colors hover:border-brand-primary/40"
+          onClick={() => {
+            if (sidebarTab === "notes" && notesPanelOpen) {
+              setNotesPanelOpen(false);
+            } else {
+              setSidebarTab("notes");
+              setNotesPanelOpen(true);
+            }
+          }}
+          className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
+            notesPanelOpen && sidebarTab === "notes"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
+          }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 20h9" />
@@ -781,6 +823,38 @@ function BiblePageClient() {
           {notes.length > 0 && (
             <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
               {notes.length}
+            </span>
+          )}
+          {notes.length === 0 && notesPanelOpen && sidebarTab === "notes" && (
+            <span className="rounded-full bg-white/20 px-[6px] py-[1px] text-[10px] text-white">
+              0
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => {
+            if (sidebarTab === "commentary" && notesPanelOpen) {
+              setNotesPanelOpen(false);
+            } else {
+              setSidebarTab("commentary");
+              setNotesPanelOpen(true);
+            }
+          }}
+          className={`flex cursor-pointer items-center gap-[7px] rounded-[12px] border px-[13px] py-[9px] text-[13px] font-bold shadow-sm transition-colors ${
+            notesPanelOpen && sidebarTab === "commentary"
+              ? "border-brand-primary bg-brand-primary text-white"
+              : "border-brand-line bg-white text-brand-primary hover:border-brand-primary/40"
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          <span>{t("commentary_btn")}</span>
+          {commentaries.length > 0 && !commentaryLoading && (
+            <span className="rounded-full bg-brand-primary px-[6px] py-[1px] text-[10px] text-white">
+              {commentaries.length}
             </span>
           )}
         </button>
@@ -949,13 +1023,47 @@ function BiblePageClient() {
       </div>
 
       {notesPanelOpen && (
-        <NotesPanel
-          notes={notes}
-          onEdit={openNoteForEditing}
-          onDelete={deleteNote}
-          onDeepen={deepenNote}
-          t={t}
-        />
+        <div className="rounded-[18px] border border-brand-line bg-white shadow-brand lg:sticky lg:top-[18px] lg:max-h-[calc(100vh-36px)] lg:overflow-y-auto">
+          <div className="flex border-b border-brand-line">
+            <button
+              onClick={() => setSidebarTab("notes")}
+              className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
+                sidebarTab === "notes"
+                  ? "bg-brand-primary text-white"
+                  : "bg-white text-brand-muted hover:text-brand-primary"
+              }`}
+            >
+              {t("bible_notes_title")}
+            </button>
+            <button
+              onClick={() => setSidebarTab("commentary")}
+              className={`flex-1 cursor-pointer border-none py-[14px] text-center text-[13px] font-bold transition-colors ${
+                sidebarTab === "commentary"
+                  ? "bg-brand-primary text-white"
+                  : "bg-white text-brand-muted hover:text-brand-primary"
+              }`}
+            >
+              {t("commentary_title")}
+            </button>
+          </div>
+
+          {sidebarTab === "notes" && (
+            <NotesPanel
+              notes={notes}
+              onEdit={openNoteForEditing}
+              onDelete={deleteNote}
+              onDeepen={deepenNote}
+              t={t}
+            />
+          )}
+          {sidebarTab === "commentary" && (
+            <CommentaryPanel
+              commentaries={commentaries}
+              loading={commentaryLoading}
+              t={t}
+            />
+          )}
+        </div>
       )}
       </div>
 
