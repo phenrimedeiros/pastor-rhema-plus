@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "build:library": "node tools/fetch-project159-data.mjs && node tools/convert-deuterocanonical.mjs && node tools/convert-html-to-json.mjs && node tools/generate-library-index.mjs",
     "start": "next start",
     "lint": "eslint"
   },

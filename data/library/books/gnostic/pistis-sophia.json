@@ -1,0 +1,4121 @@
+{
+  "id": "pistis-sophia",
+  "title": "pistis sophia",
+  "tradition": "gnostic",
+  "totalSections": 1027,
+  "sections": [
+    {
+      "heading": null,
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Pistis Sophia\ntranslated by G. S. R. Mead"
+        },
+        {
+          "number": null,
+          "text": "p. v"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "PREFACE"
+        },
+        {
+          "number": null,
+          "text": "xvii"
+        },
+        {
+          "number": null,
+          "text": "INTRODUCTION"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "The Askew Codex"
+        },
+        {
+          "number": null,
+          "text": "xxi"
+        },
+        {
+          "number": null,
+          "text": "The Scripts"
+        },
+        {
+          "number": null,
+          "text": "xxii"
+        },
+        {
+          "number": null,
+          "text": "The Contents"
+        },
+        {
+          "number": null,
+          "text": "xxiii"
+        },
+        {
+          "number": null,
+          "text": "The Title"
+        },
+        {
+          "number": null,
+          "text": "xxiv"
+        },
+        {
+          "number": null,
+          "text": "The Date of the   MS."
+        },
+        {
+          "number": null,
+          "text": "xxv"
+        },
+        {
+          "number": null,
+          "text": "Translated from   the Greek"
+        },
+        {
+          "number": null,
+          "text": "xxvi"
+        },
+        {
+          "number": null,
+          "text": "Originals   composed in Egypt"
+        },
+        {
+          "number": null,
+          "text": "xxviii"
+        },
+        {
+          "number": null,
+          "text": "Date: The   2nd-century Theory"
+        },
+        {
+          "number": null,
+          "text": "xxix"
+        },
+        {
+          "number": null,
+          "text": "The 3rd-century   Theory"
+        },
+        {
+          "number": null,
+          "text": "xxix"
+        },
+        {
+          "number": null,
+          "text": "The 'Ophitic'   Background"
+        },
+        {
+          "number": null,
+          "text": "xxxi"
+        },
+        {
+          "number": null,
+          "text": "Three vague   Pointers"
+        },
+        {
+          "number": null,
+          "text": "xxxii"
+        },
+        {
+          "number": null,
+          "text": "The libertinist   Sects of Epiphanius"
+        },
+        {
+          "number": null,
+          "text": "xxxiii"
+        },
+        {
+          "number": null,
+          "text": "The Severians"
+        },
+        {
+          "number": null,
+          "text": "xxxiv"
+        },
+        {
+          "number": null,
+          "text": "The Bruce Codex"
+        },
+        {
+          "number": null,
+          "text": "xxxv"
+        },
+        {
+          "number": null,
+          "text": "The Berlin   Codex"
+        },
+        {
+          "number": null,
+          "text": "xxxvi"
+        },
+        {
+          "number": null,
+          "text": "The so-called   Barb&#275;l&#333;-Gnostics"
+        },
+        {
+          "number": null,
+          "text": "xxxvii"
+        },
+        {
+          "number": null,
+          "text": "The Sethians"
+        },
+        {
+          "number": null,
+          "text": "xxxviii"
+        },
+        {
+          "number": null,
+          "text": "The present   Position of the Enquiry"
+        },
+        {
+          "number": null,
+          "text": "xxxviii"
+        },
+        {
+          "number": null,
+          "text": "The new and the   old Perspective in Gnostic Studies"
+        },
+        {
+          "number": null,
+          "text": "xxxix"
+        },
+        {
+          "number": null,
+          "text": "The Ministry of   the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "xl"
+        },
+        {
+          "number": null,
+          "text": "The   post-resurrectional Setting"
+        },
+        {
+          "number": null,
+          "text": "xli"
+        },
+        {
+          "number": null,
+          "text": "The higher   Revelation within this Setting"
+        },
+        {
+          "number": null,
+          "text": "xlii"
+        },
+        {
+          "number": null,
+          "text": "The   &AElig;on-lore"
+        },
+        {
+          "number": null,
+          "text": "xlii"
+        },
+        {
+          "number": null,
+          "text": "The Sophia   Episode"
+        },
+        {
+          "number": null,
+          "text": "xliii"
+        },
+        {
+          "number": null,
+          "text": "The ethical   Interest"
+        },
+        {
+          "number": null,
+          "text": "xliii"
+        },
+        {
+          "number": null,
+          "text": "The Mysteries"
+        },
+        {
+          "number": null,
+          "text": "xliv"
+        },
+        {
+          "number": null,
+          "text": "The astral Lore"
+        },
+        {
+          "number": null,
+          "text": "xlv"
+        },
+        {
+          "number": null,
+          "text": "Transcorporation"
+        },
+        {
+          "number": null,
+          "text": "xlv"
+        },
+        {
+          "number": null,
+          "text": "The magical   Element"
+        },
+        {
+          "number": null,
+          "text": "xlvi"
+        },
+        {
+          "number": null,
+          "text": "History and   psychic Story"
+        },
+        {
+          "number": null,
+          "text": "xlvii"
+        },
+        {
+          "number": null,
+          "text": "The P.S. a   reserved Document"
+        },
+        {
+          "number": null,
+          "text": "xlviii"
+        },
+        {
+          "number": null,
+          "text": "Its general   Value"
+        },
+        {
+          "number": null,
+          "text": "xlix"
+        },
+        {
+          "number": null,
+          "text": "A Skeleton of   the Scheme of the System"
+        },
+        {
+          "number": null,
+          "text": "l"
+        },
+        {
+          "number": null,
+          "text": "ANNOTATED   BIBLIOGRAPHY"
+        },
+        {
+          "number": null,
+          "text": "lii"
+        },
+        {
+          "number": null,
+          "text": "p. vi"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "TRANSLATION"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "DIVISION I."
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "THE FIRST BOOK OF PISTIS SOPHIA"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Jesus hitherto   instructeth his disciples only up to the regions of the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "1"
+        },
+        {
+          "number": null,
+          "text": "What the First   Mystery surroundeth"
+        },
+        {
+          "number": null,
+          "text": "1"
+        },
+        {
+          "number": null,
+          "text": "The regions of   the great Invisible"
+        },
+        {
+          "number": null,
+          "text": "2"
+        },
+        {
+          "number": null,
+          "text": "The Treasury of   the Light"
+        },
+        {
+          "number": null,
+          "text": "2"
+        },
+        {
+          "number": null,
+          "text": "The Light-world"
+        },
+        {
+          "number": null,
+          "text": "2"
+        },
+        {
+          "number": null,
+          "text": "Jesus and his   disciples are seated on the Mount of Olives"
+        },
+        {
+          "number": null,
+          "text": "3"
+        },
+        {
+          "number": null,
+          "text": "A great   light-power descendeth on Jesus"
+        },
+        {
+          "number": null,
+          "text": "3"
+        },
+        {
+          "number": null,
+          "text": "It surroundeth   him entirely"
+        },
+        {
+          "number": null,
+          "text": "4"
+        },
+        {
+          "number": null,
+          "text": "Jesus ascendeth   into heaven"
+        },
+        {
+          "number": null,
+          "text": "4"
+        },
+        {
+          "number": null,
+          "text": "The confusion of   the powers and the great earthquake"
+        },
+        {
+          "number": null,
+          "text": "4"
+        },
+        {
+          "number": null,
+          "text": "Jesus   descendeth again"
+        },
+        {
+          "number": null,
+          "text": "5"
+        },
+        {
+          "number": null,
+          "text": "The nature of   his glory"
+        },
+        {
+          "number": null,
+          "text": "6"
+        },
+        {
+          "number": null,
+          "text": "Jesus   addresseth them"
+        },
+        {
+          "number": null,
+          "text": "6"
+        },
+        {
+          "number": null,
+          "text": "He draweth his   light unto himself"
+        },
+        {
+          "number": null,
+          "text": "6"
+        },
+        {
+          "number": null,
+          "text": "He promiseth to   tell them all things"
+        },
+        {
+          "number": null,
+          "text": "7"
+        },
+        {
+          "number": null,
+          "text": "How the Vesture   of Light was sent unto him"
+        },
+        {
+          "number": null,
+          "text": "8"
+        },
+        {
+          "number": null,
+          "text": "Of the souls of   the disciples and their incarnation"
+        },
+        {
+          "number": null,
+          "text": "8"
+        },
+        {
+          "number": null,
+          "text": "Of the   incarnation of John the Baptizer"
+        },
+        {
+          "number": null,
+          "text": "9"
+        },
+        {
+          "number": null,
+          "text": "That John was   Elias in a former birth"
+        },
+        {
+          "number": null,
+          "text": "9"
+        },
+        {
+          "number": null,
+          "text": "Of his own incarnation   through Mary"
+        },
+        {
+          "number": null,
+          "text": "10"
+        },
+        {
+          "number": null,
+          "text": "More concerning   the light-powers in the disciples"
+        },
+        {
+          "number": null,
+          "text": "11"
+        },
+        {
+          "number": null,
+          "text": "Why they should   rejoice that the time of his investiture had come"
+        },
+        {
+          "number": null,
+          "text": "11"
+        },
+        {
+          "number": null,
+          "text": "The mystery of   the five words on the vesture"
+        },
+        {
+          "number": null,
+          "text": "12"
+        },
+        {
+          "number": null,
+          "text": "The solution   thereof"
+        },
+        {
+          "number": null,
+          "text": "12"
+        },
+        {
+          "number": null,
+          "text": "The three robes   of light"
+        },
+        {
+          "number": null,
+          "text": "13"
+        },
+        {
+          "number": null,
+          "text": "The first   vesture"
+        },
+        {
+          "number": null,
+          "text": "13"
+        },
+        {
+          "number": null,
+          "text": "The second   vesture"
+        },
+        {
+          "number": null,
+          "text": "13"
+        },
+        {
+          "number": null,
+          "text": "The third   vesture"
+        },
+        {
+          "number": null,
+          "text": "14"
+        },
+        {
+          "number": null,
+          "text": "The day of   'Come unto us'"
+        },
+        {
+          "number": null,
+          "text": "15"
+        },
+        {
+          "number": null,
+          "text": "Jesus putteth   on his vesture"
+        },
+        {
+          "number": null,
+          "text": "15"
+        },
+        {
+          "number": null,
+          "text": "He entereth the   firmament"
+        },
+        {
+          "number": null,
+          "text": "15"
+        },
+        {
+          "number": null,
+          "text": "The powers of   the firmament are amazed and fall down and adore him"
+        },
+        {
+          "number": null,
+          "text": "15"
+        },
+        {
+          "number": null,
+          "text": "He entereth the   first sphere"
+        },
+        {
+          "number": null,
+          "text": "16"
+        },
+        {
+          "number": null,
+          "text": "The powers of   the first sphere are amazed and fall down and adore him"
+        },
+        {
+          "number": null,
+          "text": "16"
+        },
+        {
+          "number": null,
+          "text": "He entereth the   second sphere"
+        },
+        {
+          "number": null,
+          "text": "17"
+        },
+        {
+          "number": null,
+          "text": "The powers of   the second sphere are amazed and fall down and adore him"
+        },
+        {
+          "number": null,
+          "text": "17"
+        },
+        {
+          "number": null,
+          "text": "He entereth the   &aelig;ons"
+        },
+        {
+          "number": null,
+          "text": "17"
+        },
+        {
+          "number": null,
+          "text": "The powers of   the &aelig;ons are amazed and fall down and adore him"
+        },
+        {
+          "number": null,
+          "text": "18"
+        },
+        {
+          "number": null,
+          "text": "Adamas and the   tyrants fight against the light"
+        },
+        {
+          "number": null,
+          "text": "19"
+        },
+        {
+          "number": null,
+          "text": "He taketh from   them a third of their power"
+        },
+        {
+          "number": null,
+          "text": "19"
+        },
+        {
+          "number": null,
+          "text": "He changeth the   motion of their spheres"
+        },
+        {
+          "number": null,
+          "text": "19"
+        },
+        {
+          "number": null,
+          "text": "p. vii"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Mary Magdalene asketh   and receiveth permission to speak"
+        },
+        {
+          "number": null,
+          "text": "20"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the discourse from the words of Isaiah"
+        },
+        {
+          "number": null,
+          "text": "21"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Mary. She further questioneth him on the changing of the spheres"
+        },
+        {
+          "number": null,
+          "text": "22"
+        },
+        {
+          "number": null,
+          "text": "Jesus explaineth   further the conversion of the spheres"
+        },
+        {
+          "number": null,
+          "text": "23"
+        },
+        {
+          "number": null,
+          "text": "Philip   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "25"
+        },
+        {
+          "number": null,
+          "text": "Why the path of   the &aelig;ons was changed"
+        },
+        {
+          "number": null,
+          "text": "25"
+        },
+        {
+          "number": null,
+          "text": "Mary   questioneth him again"
+        },
+        {
+          "number": null,
+          "text": "26"
+        },
+        {
+          "number": null,
+          "text": "The coming of   Melchisedec"
+        },
+        {
+          "number": null,
+          "text": "27"
+        },
+        {
+          "number": null,
+          "text": "Of the fashioning   of the souls of men"
+        },
+        {
+          "number": null,
+          "text": "27"
+        },
+        {
+          "number": null,
+          "text": "The rulers   devour their matter so that souls may not be fashioned"
+        },
+        {
+          "number": null,
+          "text": "29"
+        },
+        {
+          "number": null,
+          "text": "Adamas and the   tyrants fight against the light-vesture"
+        },
+        {
+          "number": null,
+          "text": "30"
+        },
+        {
+          "number": null,
+          "text": "Jesus taketh from   them a third of their power and changeth their course"
+        },
+        {
+          "number": null,
+          "text": "30"
+        },
+        {
+          "number": null,
+          "text": "They no more   have the power of devouring their matter"
+        },
+        {
+          "number": null,
+          "text": "31"
+        },
+        {
+          "number": null,
+          "text": "The powers   adore the light-vesture"
+        },
+        {
+          "number": null,
+          "text": "32"
+        },
+        {
+          "number": null,
+          "text": "The tyrants   become as the dead"
+        },
+        {
+          "number": null,
+          "text": "32"
+        },
+        {
+          "number": null,
+          "text": "Jesus entereth the   thirteenth &aelig;on and findeth Pistis Sophia"
+        },
+        {
+          "number": null,
+          "text": "33"
+        },
+        {
+          "number": null,
+          "text": "Sophia and her   fellow-powers behold the light"
+        },
+        {
+          "number": null,
+          "text": "33"
+        },
+        {
+          "number": null,
+          "text": "Mary desireth   to hear the story of Sophia"
+        },
+        {
+          "number": null,
+          "text": "34"
+        },
+        {
+          "number": null,
+          "text": "THE STORY OF PISTIS SOPHIA"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "Sophia desireth   to enter the Light-world"
+        },
+        {
+          "number": null,
+          "text": "34"
+        },
+        {
+          "number": null,
+          "text": "The rulers hate   her for ceasing in their mystery"
+        },
+        {
+          "number": null,
+          "text": "35"
+        },
+        {
+          "number": null,
+          "text": "Self-willed   uniteth himself with the rulers of the twelve &aelig;ons and emanateth a   lion-faced power to plague Sophia"
+        },
+        {
+          "number": null,
+          "text": "35"
+        },
+        {
+          "number": null,
+          "text": "Sophia taketh the   lion-faced power of Sell-willed for the true Light"
+        },
+        {
+          "number": null,
+          "text": "36"
+        },
+        {
+          "number": null,
+          "text": "She descendeth   to the twelve &aelig;ons and thence into the chaos"
+        },
+        {
+          "number": null,
+          "text": "36"
+        },
+        {
+          "number": null,
+          "text": "The emanations   of Self-willed squeeze the light-powers out of Sophia"
+        },
+        {
+          "number": null,
+          "text": "37"
+        },
+        {
+          "number": null,
+          "text": "The first repentance   of Sophia"
+        },
+        {
+          "number": null,
+          "text": "37"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the first repentance from Psalm lxviii."
+        },
+        {
+          "number": null,
+          "text": "42"
+        },
+        {
+          "number": null,
+          "text": "The second   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "45"
+        },
+        {
+          "number": null,
+          "text": "Peter   complaineth of Mary"
+        },
+        {
+          "number": null,
+          "text": "47"
+        },
+        {
+          "number": null,
+          "text": "Peter   interpreteth the second repentance from Psalm lxx."
+        },
+        {
+          "number": null,
+          "text": "47"
+        },
+        {
+          "number": null,
+          "text": "Jesus promiseth   to perfect the disciples in all things"
+        },
+        {
+          "number": null,
+          "text": "48"
+        },
+        {
+          "number": null,
+          "text": "The third   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "49"
+        },
+        {
+          "number": null,
+          "text": "Martha asketh   and receiveth permission to speak"
+        },
+        {
+          "number": null,
+          "text": "49"
+        },
+        {
+          "number": null,
+          "text": "Martha   interpreteth the third repentance from Psalm lxix."
+        },
+        {
+          "number": null,
+          "text": "50"
+        },
+        {
+          "number": null,
+          "text": "The fourth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "51"
+        },
+        {
+          "number": null,
+          "text": "John asketh and   receiveth permission to speak"
+        },
+        {
+          "number": null,
+          "text": "53"
+        },
+        {
+          "number": null,
+          "text": "John   interpreteth the repentance from Psalm ci."
+        },
+        {
+          "number": null,
+          "text": "53"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth John"
+        },
+        {
+          "number": null,
+          "text": "55"
+        },
+        {
+          "number": null,
+          "text": "The emanations of   Self-willed again squeeze the light out of Sophia"
+        },
+        {
+          "number": null,
+          "text": "55"
+        },
+        {
+          "number": null,
+          "text": "The fifth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "55"
+        },
+        {
+          "number": null,
+          "text": "Philip the   scribe complaineth"
+        },
+        {
+          "number": null,
+          "text": "57"
+        },
+        {
+          "number": null,
+          "text": "Jesus   explaineth that the appointed scribes are Philip and Thomas and Matthew"
+        },
+        {
+          "number": null,
+          "text": "58"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the words of Jesus concerning the three witnesses"
+        },
+        {
+          "number": null,
+          "text": "58"
+        },
+        {
+          "number": null,
+          "text": "Philip is now   given permission to speak"
+        },
+        {
+          "number": null,
+          "text": "59"
+        },
+        {
+          "number": null,
+          "text": "Philip   interpreteth the fifth repentance from Psalm lxxxvii."
+        },
+        {
+          "number": null,
+          "text": "59"
+        },
+        {
+          "number": null,
+          "text": "p. viii"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Philip is commended   and continueth writing"
+        },
+        {
+          "number": null,
+          "text": "61"
+        },
+        {
+          "number": null,
+          "text": "The sixth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "61"
+        },
+        {
+          "number": null,
+          "text": "Andrew   interpreteth the sixth repentance from Psalm cxxix."
+        },
+        {
+          "number": null,
+          "text": "62"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Andrew. He promiseth that the tyrants shall be judged and consumed   by the wise fire"
+        },
+        {
+          "number": null,
+          "text": "63"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the words of Jesus"
+        },
+        {
+          "number": null,
+          "text": "63"
+        },
+        {
+          "number": null,
+          "text": "The repentance   of Sophia is not yet accepted. She is mocked by the &aelig;ons"
+        },
+        {
+          "number": null,
+          "text": "64"
+        },
+        {
+          "number": null,
+          "text": "The seventh   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "64"
+        },
+        {
+          "number": null,
+          "text": "Thomas interpreteth   the seventh repentance from Psalm xxiv"
+        },
+        {
+          "number": null,
+          "text": "67"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Thomas"
+        },
+        {
+          "number": null,
+          "text": "68"
+        },
+        {
+          "number": null,
+          "text": "Jesus leadeth   Sophia to a less confined region, but without the commandment of the First   Mystery"
+        },
+        {
+          "number": null,
+          "text": "69"
+        },
+        {
+          "number": null,
+          "text": "The emanations of   Self-willed cease for a time to oppress Sophia"
+        },
+        {
+          "number": null,
+          "text": "70"
+        },
+        {
+          "number": null,
+          "text": "The eighth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "70"
+        },
+        {
+          "number": null,
+          "text": "The emanations   of Self-willed oppress her again"
+        },
+        {
+          "number": null,
+          "text": "71"
+        },
+        {
+          "number": null,
+          "text": "She continueth   her repentance"
+        },
+        {
+          "number": null,
+          "text": "71"
+        },
+        {
+          "number": null,
+          "text": "Matthew interpreteth   the eighth repentance from Psalm xxx."
+        },
+        {
+          "number": null,
+          "text": "73"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Matthew and promiseth his disciples that they shall sit on thrones   with him"
+        },
+        {
+          "number": null,
+          "text": "74"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the words of Jesus"
+        },
+        {
+          "number": null,
+          "text": "74"
+        },
+        {
+          "number": null,
+          "text": "The ninth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "75"
+        },
+        {
+          "number": null,
+          "text": "James   interpreteth the ninth repentance from Psalm xxxiv."
+        },
+        {
+          "number": null,
+          "text": "78"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth James and promiseth the first place unto the disciples"
+        },
+        {
+          "number": null,
+          "text": "81"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the words of Jesus"
+        },
+        {
+          "number": null,
+          "text": "81"
+        },
+        {
+          "number": null,
+          "text": "The repentance of   Sophia is accepted. Jesus is sent to help her"
+        },
+        {
+          "number": null,
+          "text": "81"
+        },
+        {
+          "number": null,
+          "text": "The tenth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "83"
+        },
+        {
+          "number": null,
+          "text": "Peter   interpreteth the tenth repentance from Psalm cxix."
+        },
+        {
+          "number": null,
+          "text": "83"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Peter"
+        },
+        {
+          "number": null,
+          "text": "84"
+        },
+        {
+          "number": null,
+          "text": "The eleventh   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "84"
+        },
+        {
+          "number": null,
+          "text": "Salome   interpreteth the eleventh repentance from Psalm li."
+        },
+        {
+          "number": null,
+          "text": "85"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth Salome"
+        },
+        {
+          "number": null,
+          "text": "86"
+        },
+        {
+          "number": null,
+          "text": "Self-willed   aideth his emanations and they again oppress Sophia"
+        },
+        {
+          "number": null,
+          "text": "86"
+        },
+        {
+          "number": null,
+          "text": "The twelfth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "87"
+        },
+        {
+          "number": null,
+          "text": "Andrew   interpreteth the twelfth repentance from Psalm cviii."
+        },
+        {
+          "number": null,
+          "text": "90"
+        },
+        {
+          "number": null,
+          "text": "The thirteenth   repentance of Sophia"
+        },
+        {
+          "number": null,
+          "text": "92"
+        },
+        {
+          "number": null,
+          "text": "Martha   interpreteth the thirteenth repentance from Psalm l."
+        },
+        {
+          "number": null,
+          "text": "93"
+        },
+        {
+          "number": null,
+          "text": "Jesus sendeth   forth a light-power to help Sophia"
+        },
+        {
+          "number": null,
+          "text": "93"
+        },
+        {
+          "number": null,
+          "text": "Sophia uttereth   a song of praise"
+        },
+        {
+          "number": null,
+          "text": "94"
+        },
+        {
+          "number": null,
+          "text": "Salome   interpreteth the song of Sophia from the Odes of Solomon"
+        },
+        {
+          "number": null,
+          "text": "95"
+        },
+        {
+          "number": null,
+          "text": "The power sent   by Jesus formeth a light-wreath on Sophia's head"
+        },
+        {
+          "number": null,
+          "text": "96"
+        },
+        {
+          "number": null,
+          "text": "Sophia uttereth   another song of praise"
+        },
+        {
+          "number": null,
+          "text": "97"
+        },
+        {
+          "number": null,
+          "text": "Mary, his   mother, asketh and receiveth permission to speak"
+        },
+        {
+          "number": null,
+          "text": "97"
+        },
+        {
+          "number": null,
+          "text": "Mary, his   mother, interpreteth the song of Sophia from the xixth Ode of Solomon"
+        },
+        {
+          "number": null,
+          "text": "98"
+        },
+        {
+          "number": null,
+          "text": "Jesus   commendeth his mother"
+        },
+        {
+          "number": null,
+          "text": "98"
+        },
+        {
+          "number": null,
+          "text": "The commandment   of the First Mystery is fulfilled for taking Sophia entirely out of the chaos"
+        },
+        {
+          "number": null,
+          "text": "98"
+        },
+        {
+          "number": null,
+          "text": "The First   Mystery and Jesus send forth two light-powers to help Sophia"
+        },
+        {
+          "number": null,
+          "text": "98"
+        },
+        {
+          "number": null,
+          "text": "Mary Magdalene   interpreteth the mystery from Psalm lxxxiv"
+        },
+        {
+          "number": null,
+          "text": "99"
+        },
+        {
+          "number": null,
+          "text": "Mary, the   mother, further interpreteth the scripture"
+        },
+        {
+          "number": null,
+          "text": "100"
+        },
+        {
+          "number": null,
+          "text": "p. ix"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "The story of   the phantom spirit"
+        },
+        {
+          "number": null,
+          "text": "101"
+        },
+        {
+          "number": null,
+          "text": "Of the   spiritual and material bodies of Jesus"
+        },
+        {
+          "number": null,
+          "text": "102"
+        },
+        {
+          "number": null,
+          "text": "The other Mary further   interpreteth the same scripture from the baptism of Jesus"
+        },
+        {
+          "number": null,
+          "text": "103"
+        },
+        {
+          "number": null,
+          "text": "Mary, the   mother, again further interpreteth the same scripture from the meeting of   herself with Elizabeth, mother of John the Baptizer"
+        },
+        {
+          "number": null,
+          "text": "104"
+        },
+        {
+          "number": null,
+          "text": "Of the incarnation   of Jesus"
+        },
+        {
+          "number": null,
+          "text": "104"
+        },
+        {
+          "number": null,
+          "text": "THE NOTE OF A SCRIBE"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "A note by a   later hand, copied from another scripture"
+        },
+        {
+          "number": null,
+          "text": "105"
+        },
+        {
+          "number": null,
+          "text": "DIVISION II."
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "SUPERSCRIPTION:"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "THE SECOND BOOK OF PISTIS SOPHIA"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "John further interpreteth   the same scripture"
+        },
+        {
+          "number": null,
+          "text": "106"
+        },
+        {
+          "number": null,
+          "text": "Of   Saba&#333;th, Barb&#275;l&#333;, Yabra&#333;th and the light-vesture"
+        },
+        {
+          "number": null,
+          "text": "107"
+        },
+        {
+          "number": null,
+          "text": "Gabri&#275;l   and Micha&#275;l are summoned to help Pistis Sophia"
+        },
+        {
+          "number": null,
+          "text": "108"
+        },
+        {
+          "number": null,
+          "text": "The   light-stream restoreth the light-powers to Sophia"
+        },
+        {
+          "number": null,
+          "text": "109"
+        },
+        {
+          "number": null,
+          "text": "The   light-stream, having accomplished its purpose, departeth from Sophia"
+        },
+        {
+          "number": null,
+          "text": "110"
+        },
+        {
+          "number": null,
+          "text": "Peter   interpreteth the narrative from the Odes of Solomon"
+        },
+        {
+          "number": null,
+          "text": "110"
+        },
+        {
+          "number": null,
+          "text": "The emanations   of Self-willed cry aloud to him for help"
+        },
+        {
+          "number": null,
+          "text": "114"
+        },
+        {
+          "number": null,
+          "text": "He sendeth forth   another more violent power like unto a flying arrow"
+        },
+        {
+          "number": null,
+          "text": "114"
+        },
+        {
+          "number": null,
+          "text": "The fashioning   of the serpent-, basilisk- and dragon-powers"
+        },
+        {
+          "number": null,
+          "text": "115"
+        },
+        {
+          "number": null,
+          "text": "The demon power   of Adamas dasheth Sophia down"
+        },
+        {
+          "number": null,
+          "text": "115"
+        },
+        {
+          "number": null,
+          "text": "Sophia again   crieth to the Light"
+        },
+        {
+          "number": null,
+          "text": "116"
+        },
+        {
+          "number": null,
+          "text": "Gabri&#275;l   and Micha&#275;l and the light-stream again go to her aid"
+        },
+        {
+          "number": null,
+          "text": "116"
+        },
+        {
+          "number": null,
+          "text": "The   transfiguration of Sophia"
+        },
+        {
+          "number": null,
+          "text": "117"
+        },
+        {
+          "number": null,
+          "text": "Jesus, the   First Mystery looking without, causeth Sophia to triumph"
+        },
+        {
+          "number": null,
+          "text": "117"
+        },
+        {
+          "number": null,
+          "text": "James interpreteth   the narrative from Psalm xc"
+        },
+        {
+          "number": null,
+          "text": "118"
+        },
+        {
+          "number": null,
+          "text": "Sophia singeth   a song of praise"
+        },
+        {
+          "number": null,
+          "text": "124"
+        },
+        {
+          "number": null,
+          "text": "Thomas   interpreteth the song of Sophia from the Odes of Solomon"
+        },
+        {
+          "number": null,
+          "text": "125"
+        },
+        {
+          "number": null,
+          "text": "Sophia singeth   another song of praise"
+        },
+        {
+          "number": null,
+          "text": "129"
+        },
+        {
+          "number": null,
+          "text": "Matthew interpreteth   the song of Sophia from the Odes of Solomon"
+        },
+        {
+          "number": null,
+          "text": "131"
+        },
+        {
+          "number": null,
+          "text": "Sophia   continueth to sing"
+        },
+        {
+          "number": null,
+          "text": "135"
+        },
+        {
+          "number": null,
+          "text": "Mary is afraid   of Peter"
+        },
+        {
+          "number": null,
+          "text": "135"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the song of Sophia from Psalm xxix"
+        },
+        {
+          "number": null,
+          "text": "136"
+        },
+        {
+          "number": null,
+          "text": "Sophia   continueth her song"
+        },
+        {
+          "number": null,
+          "text": "136"
+        },
+        {
+          "number": null,
+          "text": "Martha   interpreteth from Psalm xxix"
+        },
+        {
+          "number": null,
+          "text": "136"
+        },
+        {
+          "number": null,
+          "text": "Sophia   continueth her song"
+        },
+        {
+          "number": null,
+          "text": "137"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth from Psalm cii"
+        },
+        {
+          "number": null,
+          "text": "137"
+        },
+        {
+          "number": null,
+          "text": "Sophia is led   to a region below the thirteenth &aelig;on and given a new mystery"
+        },
+        {
+          "number": null,
+          "text": "138"
+        },
+        {
+          "number": null,
+          "text": "She continueth   to sing"
+        },
+        {
+          "number": null,
+          "text": "138"
+        },
+        {
+          "number": null,
+          "text": "p. x"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Andrew   interpreteth from Psalm xxxix"
+        },
+        {
+          "number": null,
+          "text": "139"
+        },
+        {
+          "number": null,
+          "text": "The   conversation of Sophia and the Light"
+        },
+        {
+          "number": null,
+          "text": "140"
+        },
+        {
+          "number": null,
+          "text": "The Light   promiseth to seal the regions of Self-willed"
+        },
+        {
+          "number": null,
+          "text": "140"
+        },
+        {
+          "number": null,
+          "text": "How Sophia will   know that the time of her final deliverance hath come"
+        },
+        {
+          "number": null,
+          "text": "141"
+        },
+        {
+          "number": null,
+          "text": "What will come   to pass at that time"
+        },
+        {
+          "number": null,
+          "text": "141"
+        },
+        {
+          "number": null,
+          "text": "The time for   the final deliverance of Sophia is completed"
+        },
+        {
+          "number": null,
+          "text": "142"
+        },
+        {
+          "number": null,
+          "text": "Adamas sendeth forth   two emanations of darkness to plague Sophia"
+        },
+        {
+          "number": null,
+          "text": "143"
+        },
+        {
+          "number": null,
+          "text": "Sophia again   singeth a song to the Light"
+        },
+        {
+          "number": null,
+          "text": "144"
+        },
+        {
+          "number": null,
+          "text": "James   interpreteth the song from Psalm vii"
+        },
+        {
+          "number": null,
+          "text": "145"
+        },
+        {
+          "number": null,
+          "text": "Sophia   addresseth Adamas and his rulers"
+        },
+        {
+          "number": null,
+          "text": "146"
+        },
+        {
+          "number": null,
+          "text": "Sophia again singeth   to the Light"
+        },
+        {
+          "number": null,
+          "text": "147"
+        },
+        {
+          "number": null,
+          "text": "Martha   interpreteth the words of Sophia from Psalm vii"
+        },
+        {
+          "number": null,
+          "text": "148"
+        },
+        {
+          "number": null,
+          "text": "Jesus bringeth   Sophia again to the thirteenth &aelig;on"
+        },
+        {
+          "number": null,
+          "text": "148"
+        },
+        {
+          "number": null,
+          "text": "Sophia singeth   the praises of the Light to her fellow-invisibles"
+        },
+        {
+          "number": null,
+          "text": "149"
+        },
+        {
+          "number": null,
+          "text": "Philip   interpreteth the song from Psalm cvi."
+        },
+        {
+          "number": null,
+          "text": "151"
+        },
+        {
+          "number": null,
+          "text": "END OF THE STORY OF PISTIS SOPHIA"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "Mary   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "153"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the four-and-twenty invisibles"
+        },
+        {
+          "number": null,
+          "text": "155"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the Fate"
+        },
+        {
+          "number": null,
+          "text": "156"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the twelve &aelig;ons"
+        },
+        {
+          "number": null,
+          "text": "156"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the thirteenth Hon"
+        },
+        {
+          "number": null,
+          "text": "157"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the Midst"
+        },
+        {
+          "number": null,
+          "text": "157"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the Right"
+        },
+        {
+          "number": null,
+          "text": "157"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the Treasury"
+        },
+        {
+          "number": null,
+          "text": "158"
+        },
+        {
+          "number": null,
+          "text": "Of the glory of   the Inheritance"
+        },
+        {
+          "number": null,
+          "text": "158"
+        },
+        {
+          "number": null,
+          "text": "Mary again   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "159"
+        },
+        {
+          "number": null,
+          "text": "Of the twelve   saviours and their regions in the Inheritance"
+        },
+        {
+          "number": null,
+          "text": "160"
+        },
+        {
+          "number": null,
+          "text": "Of the   ascension of those of the Treasury into the Inheritance"
+        },
+        {
+          "number": null,
+          "text": "162"
+        },
+        {
+          "number": null,
+          "text": "Of their respective   ranks in the kingdom"
+        },
+        {
+          "number": null,
+          "text": "162"
+        },
+        {
+          "number": null,
+          "text": "Of the powers   of the Right and their emanation and ascension"
+        },
+        {
+          "number": null,
+          "text": "162"
+        },
+        {
+          "number": null,
+          "text": "Of the powers   of the Midst and their ascension"
+        },
+        {
+          "number": null,
+          "text": "163"
+        },
+        {
+          "number": null,
+          "text": "But this shall   not take place till the consummation of the &aelig;on"
+        },
+        {
+          "number": null,
+          "text": "164"
+        },
+        {
+          "number": null,
+          "text": "Of the   ascension of the souls of the perfect"
+        },
+        {
+          "number": null,
+          "text": "164"
+        },
+        {
+          "number": null,
+          "text": "Of the rank of   the souls of the perfect"
+        },
+        {
+          "number": null,
+          "text": "165"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the discourse from the scriptures"
+        },
+        {
+          "number": null,
+          "text": "166"
+        },
+        {
+          "number": null,
+          "text": "Of the last   Helper"
+        },
+        {
+          "number": null,
+          "text": "167"
+        },
+        {
+          "number": null,
+          "text": "That the regions   beyond the Helpers are indescribable"
+        },
+        {
+          "number": null,
+          "text": "167"
+        },
+        {
+          "number": null,
+          "text": "Mary further   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "168"
+        },
+        {
+          "number": null,
+          "text": "Of the second   Helper"
+        },
+        {
+          "number": null,
+          "text": "169"
+        },
+        {
+          "number": null,
+          "text": "Of the third,   fourth and fifth Helpers"
+        },
+        {
+          "number": null,
+          "text": "169"
+        },
+        {
+          "number": null,
+          "text": "Mary again   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "169"
+        },
+        {
+          "number": null,
+          "text": "Of those who   receive the mystery in the last Helper"
+        },
+        {
+          "number": null,
+          "text": "170"
+        },
+        {
+          "number": null,
+          "text": "John   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "171"
+        },
+        {
+          "number": null,
+          "text": "Of the first   Commandment"
+        },
+        {
+          "number": null,
+          "text": "171"
+        },
+        {
+          "number": null,
+          "text": "Of the first   space"
+        },
+        {
+          "number": null,
+          "text": "171"
+        },
+        {
+          "number": null,
+          "text": "Of the second   space"
+        },
+        {
+          "number": null,
+          "text": "171"
+        },
+        {
+          "number": null,
+          "text": "Of the third   space"
+        },
+        {
+          "number": null,
+          "text": "172"
+        },
+        {
+          "number": null,
+          "text": "Of the   Thrice-spirituals in the third space, i.e. the first space of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "172"
+        },
+        {
+          "number": null,
+          "text": "Of the   master-mystery"
+        },
+        {
+          "number": null,
+          "text": "173"
+        },
+        {
+          "number": null,
+          "text": "p. xi"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Of the gnosis   of the master-mystery"
+        },
+        {
+          "number": null,
+          "text": "173"
+        },
+        {
+          "number": null,
+          "text": "Of the gnosis of   the mystery of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "176"
+        },
+        {
+          "number": null,
+          "text": "The disciples   lose courage"
+        },
+        {
+          "number": null,
+          "text": "181"
+        },
+        {
+          "number": null,
+          "text": "Jesus   explaineth that that mystery is really simpler than all mysteries"
+        },
+        {
+          "number": null,
+          "text": "182"
+        },
+        {
+          "number": null,
+          "text": "Of the rending   asunder and emanation of the powers of the universe"
+        },
+        {
+          "number": null,
+          "text": "183"
+        },
+        {
+          "number": null,
+          "text": "Of those of the   second space of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "183"
+        },
+        {
+          "number": null,
+          "text": "Of those of the   first space of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "186"
+        },
+        {
+          "number": null,
+          "text": "Jesus promiseth   to explain further all in detail"
+        },
+        {
+          "number": null,
+          "text": "188"
+        },
+        {
+          "number": null,
+          "text": "Of the mystery   succinctly"
+        },
+        {
+          "number": null,
+          "text": "188"
+        },
+        {
+          "number": null,
+          "text": "Of the one and   only word of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "189"
+        },
+        {
+          "number": null,
+          "text": "Of the   ascension of the soul of him who shall receive the one and only mystery"
+        },
+        {
+          "number": null,
+          "text": "189"
+        },
+        {
+          "number": null,
+          "text": "Of the rank of   such a soul"
+        },
+        {
+          "number": null,
+          "text": "191"
+        },
+        {
+          "number": null,
+          "text": "Such souls are   one with the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "192"
+        },
+        {
+          "number": null,
+          "text": "Of the dignity   of the thrones in the kingdom"
+        },
+        {
+          "number": null,
+          "text": "193"
+        },
+        {
+          "number": null,
+          "text": "Of the gnosis   of the word of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "194"
+        },
+        {
+          "number": null,
+          "text": "Of the   distinction between the gnosis of the universe and the mysteries of the Light"
+        },
+        {
+          "number": null,
+          "text": "194"
+        },
+        {
+          "number": null,
+          "text": "Of the ascension   of the souls of those who receive the twelve mysteries of the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "196"
+        },
+        {
+          "number": null,
+          "text": "Mary again   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "197"
+        },
+        {
+          "number": null,
+          "text": "Of the three   mysteries and five mysteries"
+        },
+        {
+          "number": null,
+          "text": "197"
+        },
+        {
+          "number": null,
+          "text": "Of the first   mystery"
+        },
+        {
+          "number": null,
+          "text": "198"
+        },
+        {
+          "number": null,
+          "text": "Of the second mystery"
+        },
+        {
+          "number": null,
+          "text": "198"
+        },
+        {
+          "number": null,
+          "text": "Of its efficacy"
+        },
+        {
+          "number": null,
+          "text": "199"
+        },
+        {
+          "number": null,
+          "text": "Of the third   mystery"
+        },
+        {
+          "number": null,
+          "text": "200"
+        },
+        {
+          "number": null,
+          "text": "Of its efficacy   for the uninitiated"
+        },
+        {
+          "number": null,
+          "text": "200"
+        },
+        {
+          "number": null,
+          "text": "Of the three   and five mysteries"
+        },
+        {
+          "number": null,
+          "text": "201"
+        },
+        {
+          "number": null,
+          "text": "Of the   mysteries of the three spaces"
+        },
+        {
+          "number": null,
+          "text": "201"
+        },
+        {
+          "number": null,
+          "text": "Of the reign of   a thousand years of the Light"
+        },
+        {
+          "number": null,
+          "text": "202"
+        },
+        {
+          "number": null,
+          "text": "What is a year   of the Light"
+        },
+        {
+          "number": null,
+          "text": "203"
+        },
+        {
+          "number": null,
+          "text": "Of those of the   first space in the kingdom of the thousand years"
+        },
+        {
+          "number": null,
+          "text": "203"
+        },
+        {
+          "number": null,
+          "text": "Of those of the   second space"
+        },
+        {
+          "number": null,
+          "text": "204"
+        },
+        {
+          "number": null,
+          "text": "Of those of the   third space, the first from without"
+        },
+        {
+          "number": null,
+          "text": "204"
+        },
+        {
+          "number": null,
+          "text": "Of the Books of   Yew"
+        },
+        {
+          "number": null,
+          "text": "205"
+        },
+        {
+          "number": null,
+          "text": "Andrew   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "206"
+        },
+        {
+          "number": null,
+          "text": "That the   disciples and the powers are from the same Mixture"
+        },
+        {
+          "number": null,
+          "text": "206"
+        },
+        {
+          "number": null,
+          "text": "Of   transcorporation and purification"
+        },
+        {
+          "number": null,
+          "text": "207"
+        },
+        {
+          "number": null,
+          "text": "Of the   purifying mysteries"
+        },
+        {
+          "number": null,
+          "text": "208"
+        },
+        {
+          "number": null,
+          "text": "That all who   are purified will be saved"
+        },
+        {
+          "number": null,
+          "text": "209"
+        },
+        {
+          "number": null,
+          "text": "That finally   they will be higher than all powers"
+        },
+        {
+          "number": null,
+          "text": "209"
+        },
+        {
+          "number": null,
+          "text": "Jesus pardoneth   the ignorance of Andrew"
+        },
+        {
+          "number": null,
+          "text": "210"
+        },
+        {
+          "number": null,
+          "text": "SUB-SCRIPTION:"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "A PORTION OF THE BOOKS OF THE SAVIOUR"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "p. xii"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "DIVISION III."
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "THE CONCLUSION OF ANOTHER BOOK"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Of the Limbs of   the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "210"
+        },
+        {
+          "number": null,
+          "text": "The Saviour is   their treasury"
+        },
+        {
+          "number": null,
+          "text": "211"
+        },
+        {
+          "number": null,
+          "text": "Of the dignity   of those who have received the mysteries"
+        },
+        {
+          "number": null,
+          "text": "211"
+        },
+        {
+          "number": null,
+          "text": "A THIRD BOOK"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "Of the   proclamation of the disciples"
+        },
+        {
+          "number": null,
+          "text": "213"
+        },
+        {
+          "number": null,
+          "text": "What men should   renounce"
+        },
+        {
+          "number": null,
+          "text": "213"
+        },
+        {
+          "number": null,
+          "text": "The boundaries   of the ways of the worthy"
+        },
+        {
+          "number": null,
+          "text": "217"
+        },
+        {
+          "number": null,
+          "text": "Unto whom are the   mysteries of the Light to be given"
+        },
+        {
+          "number": null,
+          "text": "218"
+        },
+        {
+          "number": null,
+          "text": "The mysteries   are for the forgiveness of sins"
+        },
+        {
+          "number": null,
+          "text": "218"
+        },
+        {
+          "number": null,
+          "text": "Mary   questioneth the Saviour"
+        },
+        {
+          "number": null,
+          "text": "219"
+        },
+        {
+          "number": null,
+          "text": "Of the soul of   the righteous man who hath not received the mysteries at death"
+        },
+        {
+          "number": null,
+          "text": "219"
+        },
+        {
+          "number": null,
+          "text": "John   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "221"
+        },
+        {
+          "number": null,
+          "text": "The disciples   are to forgive many times seven times"
+        },
+        {
+          "number": null,
+          "text": "222"
+        },
+        {
+          "number": null,
+          "text": "Of the reward   of the savers of souls"
+        },
+        {
+          "number": null,
+          "text": "222"
+        },
+        {
+          "number": null,
+          "text": "John continueth   his questioning"
+        },
+        {
+          "number": null,
+          "text": "222"
+        },
+        {
+          "number": null,
+          "text": "That the mysteries   shall be given again unto a repentant brother even up to the three of the   second space"
+        },
+        {
+          "number": null,
+          "text": "223"
+        },
+        {
+          "number": null,
+          "text": "The limit of   the power of the disciples to forgive sins"
+        },
+        {
+          "number": null,
+          "text": "224"
+        },
+        {
+          "number": null,
+          "text": "A former saying   explained"
+        },
+        {
+          "number": null,
+          "text": "224"
+        },
+        {
+          "number": null,
+          "text": "Of the master-mystery   of the forgiveness of sins"
+        },
+        {
+          "number": null,
+          "text": "225"
+        },
+        {
+          "number": null,
+          "text": "John continueth   his questioning"
+        },
+        {
+          "number": null,
+          "text": "225"
+        },
+        {
+          "number": null,
+          "text": "Further of the   forgiveness of sins"
+        },
+        {
+          "number": null,
+          "text": "225"
+        },
+        {
+          "number": null,
+          "text": "John continueth   his questioning"
+        },
+        {
+          "number": null,
+          "text": "227"
+        },
+        {
+          "number": null,
+          "text": "Of pretenders   who receive the mysteries"
+        },
+        {
+          "number": null,
+          "text": "228"
+        },
+        {
+          "number": null,
+          "text": "A former saying   explained"
+        },
+        {
+          "number": null,
+          "text": "228"
+        },
+        {
+          "number": null,
+          "text": "Mary again   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "229"
+        },
+        {
+          "number": null,
+          "text": "How the souls   of those who have come out of the body may be helped by those on earth"
+        },
+        {
+          "number": null,
+          "text": "230"
+        },
+        {
+          "number": null,
+          "text": "Mary continueth   her questioning"
+        },
+        {
+          "number": null,
+          "text": "231"
+        },
+        {
+          "number": null,
+          "text": "How he who possesseth   the mysteries can come forth out of the body without suffering"
+        },
+        {
+          "number": null,
+          "text": "231"
+        },
+        {
+          "number": null,
+          "text": "Mary continueth   her questioning"
+        },
+        {
+          "number": null,
+          "text": "232"
+        },
+        {
+          "number": null,
+          "text": "The mystery of   the raising of the dead"
+        },
+        {
+          "number": null,
+          "text": "233"
+        },
+        {
+          "number": null,
+          "text": "The disciples   became frenzied at the sublimity of the prospect"
+        },
+        {
+          "number": null,
+          "text": "233"
+        },
+        {
+          "number": null,
+          "text": "How the   disciples shall make proclamation"
+        },
+        {
+          "number": null,
+          "text": "233"
+        },
+        {
+          "number": null,
+          "text": "What mysteries   they shall give"
+        },
+        {
+          "number": null,
+          "text": "234"
+        },
+        {
+          "number": null,
+          "text": "The mystery of   the raising of the dead not to be given to any"
+        },
+        {
+          "number": null,
+          "text": "234"
+        },
+        {
+          "number": null,
+          "text": "Of the   constitution of man"
+        },
+        {
+          "number": null,
+          "text": "236"
+        },
+        {
+          "number": null,
+          "text": "Of the counterfeiting   spirit"
+        },
+        {
+          "number": null,
+          "text": "236"
+        },
+        {
+          "number": null,
+          "text": "The state of   the sinful soul after death"
+        },
+        {
+          "number": null,
+          "text": "236"
+        },
+        {
+          "number": null,
+          "text": "How a sinful   soul is brought back to birth"
+        },
+        {
+          "number": null,
+          "text": "238"
+        },
+        {
+          "number": null,
+          "text": "Of the   ascension after death of the good soul that hath received the mysteries"
+        },
+        {
+          "number": null,
+          "text": "238"
+        },
+        {
+          "number": null,
+          "text": "Of the state   after death of one who hath received the mysteries and yet hath transgressed"
+        },
+        {
+          "number": null,
+          "text": "240"
+        },
+        {
+          "number": null,
+          "text": "p. xiii"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "The apology of   the rulers of the ways of the midst"
+        },
+        {
+          "number": null,
+          "text": "241"
+        },
+        {
+          "number": null,
+          "text": "The apology of   the rulers of the Fate"
+        },
+        {
+          "number": null,
+          "text": "241"
+        },
+        {
+          "number": null,
+          "text": "Of the   ascension of that soul into the Inheritance"
+        },
+        {
+          "number": null,
+          "text": "242"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth from former sayings"
+        },
+        {
+          "number": null,
+          "text": "243"
+        },
+        {
+          "number": null,
+          "text": "The piece of   money which was brought unto Jesus"
+        },
+        {
+          "number": null,
+          "text": "243"
+        },
+        {
+          "number": null,
+          "text": "A saying of   Paul"
+        },
+        {
+          "number": null,
+          "text": "244"
+        },
+        {
+          "number": null,
+          "text": "The foes of   one's own house"
+        },
+        {
+          "number": null,
+          "text": "245"
+        },
+        {
+          "number": null,
+          "text": "A former saying   concerning rebirth"
+        },
+        {
+          "number": null,
+          "text": "245"
+        },
+        {
+          "number": null,
+          "text": "Mary continueth   to question Jesus"
+        },
+        {
+          "number": null,
+          "text": "246"
+        },
+        {
+          "number": null,
+          "text": "Of the   retributive servitors"
+        },
+        {
+          "number": null,
+          "text": "247"
+        },
+        {
+          "number": null,
+          "text": "How the soul of   the sinner is stamped with his sins"
+        },
+        {
+          "number": null,
+          "text": "248"
+        },
+        {
+          "number": null,
+          "text": "How the baptisms   purify sins"
+        },
+        {
+          "number": null,
+          "text": "249"
+        },
+        {
+          "number": null,
+          "text": "The separation   of the portions by the mystery of baptism"
+        },
+        {
+          "number": null,
+          "text": "249"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the same from a former saying"
+        },
+        {
+          "number": null,
+          "text": "249"
+        },
+        {
+          "number": null,
+          "text": "Mary further   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "251"
+        },
+        {
+          "number": null,
+          "text": "Of the forgiveness   of sins according to the higher mysteries"
+        },
+        {
+          "number": null,
+          "text": "251"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the same from the Psalm xxxi."
+        },
+        {
+          "number": null,
+          "text": "252"
+        },
+        {
+          "number": null,
+          "text": "Of forgiveness   even unto twelve times of those who have received the mysteries of the First   Mystery"
+        },
+        {
+          "number": null,
+          "text": "253"
+        },
+        {
+          "number": null,
+          "text": "Of such   initiated who sin and die without repentance"
+        },
+        {
+          "number": null,
+          "text": "253"
+        },
+        {
+          "number": null,
+          "text": "Of the unending   forgiveness of those who have received the mystery of the Ineffable"
+        },
+        {
+          "number": null,
+          "text": "253"
+        },
+        {
+          "number": null,
+          "text": "Of such   initiated who sin and die without repentance"
+        },
+        {
+          "number": null,
+          "text": "254"
+        },
+        {
+          "number": null,
+          "text": "Mary interpreteth   the same from a former saying"
+        },
+        {
+          "number": null,
+          "text": "255"
+        },
+        {
+          "number": null,
+          "text": "Of the unending   compassion of the great mysteries for the repentant"
+        },
+        {
+          "number": null,
+          "text": "256"
+        },
+        {
+          "number": null,
+          "text": "Of the   unrepentant"
+        },
+        {
+          "number": null,
+          "text": "256"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth from a former saying"
+        },
+        {
+          "number": null,
+          "text": "257"
+        },
+        {
+          "number": null,
+          "text": "If even men on earth   are compassionate, how much more then the highest mysteries?"
+        },
+        {
+          "number": null,
+          "text": "257"
+        },
+        {
+          "number": null,
+          "text": "Jesus trieth   Peter"
+        },
+        {
+          "number": null,
+          "text": "258"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the incident from a former saying"
+        },
+        {
+          "number": null,
+          "text": "259"
+        },
+        {
+          "number": null,
+          "text": "In the case of repentance   only higher mysteries than those previously received can remit sins"
+        },
+        {
+          "number": null,
+          "text": "260"
+        },
+        {
+          "number": null,
+          "text": "There is no   limit to the number of mysteries the faithful may receive"
+        },
+        {
+          "number": null,
+          "text": "261"
+        },
+        {
+          "number": null,
+          "text": "The fate of the   gnostic who sinneth is more terrible than that of the ignorant sinner"
+        },
+        {
+          "number": null,
+          "text": "261"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the same from a former saying"
+        },
+        {
+          "number": null,
+          "text": "261"
+        },
+        {
+          "number": null,
+          "text": "Of those who   procrastinate, saying they have many births before them"
+        },
+        {
+          "number": null,
+          "text": "262"
+        },
+        {
+          "number": null,
+          "text": "Of the time of the   completion"
+        },
+        {
+          "number": null,
+          "text": "263"
+        },
+        {
+          "number": null,
+          "text": "Those who   procrastinate are excluded from the Light"
+        },
+        {
+          "number": null,
+          "text": "263"
+        },
+        {
+          "number": null,
+          "text": "Their   entreaties at the gates of the Light"
+        },
+        {
+          "number": null,
+          "text": "263"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the same"
+        },
+        {
+          "number": null,
+          "text": "264"
+        },
+        {
+          "number": null,
+          "text": "A FOURTH BOOK"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "Of the dragon   of the outer darkness"
+        },
+        {
+          "number": null,
+          "text": "265"
+        },
+        {
+          "number": null,
+          "text": "Of the rulers   of the twelve dungeons and their names"
+        },
+        {
+          "number": null,
+          "text": "265"
+        },
+        {
+          "number": null,
+          "text": "Of the doors of   the dungeons"
+        },
+        {
+          "number": null,
+          "text": "267"
+        },
+        {
+          "number": null,
+          "text": "The angels who   watch the doors"
+        },
+        {
+          "number": null,
+          "text": "267"
+        },
+        {
+          "number": null,
+          "text": "p. xiv"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "What souls pass   into the dragon, and how"
+        },
+        {
+          "number": null,
+          "text": "267"
+        },
+        {
+          "number": null,
+          "text": "The nature of   the names of the dragon"
+        },
+        {
+          "number": null,
+          "text": "268"
+        },
+        {
+          "number": null,
+          "text": "Of the severity   of the chastisements of the dragon"
+        },
+        {
+          "number": null,
+          "text": "268"
+        },
+        {
+          "number": null,
+          "text": "Of the degrees   of the fires of the chastisements"
+        },
+        {
+          "number": null,
+          "text": "268"
+        },
+        {
+          "number": null,
+          "text": "The disciples   bewail the fate of sinners"
+        },
+        {
+          "number": null,
+          "text": "269"
+        },
+        {
+          "number": null,
+          "text": "Mary further   questioneth Jesus"
+        },
+        {
+          "number": null,
+          "text": "269"
+        },
+        {
+          "number": null,
+          "text": "How to save the   souls of the sinners"
+        },
+        {
+          "number": null,
+          "text": "270"
+        },
+        {
+          "number": null,
+          "text": "A summary of   the formul&aelig;"
+        },
+        {
+          "number": null,
+          "text": "270"
+        },
+        {
+          "number": null,
+          "text": "Of the   light-beams and light-streams"
+        },
+        {
+          "number": null,
+          "text": "272"
+        },
+        {
+          "number": null,
+          "text": "Mary pleadeth   for those who have neglected the mysteries"
+        },
+        {
+          "number": null,
+          "text": "273"
+        },
+        {
+          "number": null,
+          "text": "Of the efficacy   of the names of the twelve angels"
+        },
+        {
+          "number": null,
+          "text": "275"
+        },
+        {
+          "number": null,
+          "text": "The souls who   know the names escape and are taken to Yew"
+        },
+        {
+          "number": null,
+          "text": "275"
+        },
+        {
+          "number": null,
+          "text": "Of their   subsequent fate"
+        },
+        {
+          "number": null,
+          "text": "276"
+        },
+        {
+          "number": null,
+          "text": "Mary   interpreteth the same from a former saying"
+        },
+        {
+          "number": null,
+          "text": "277"
+        },
+        {
+          "number": null,
+          "text": "Of the light of   the sun and the darkness of the dragon"
+        },
+        {
+          "number": null,
+          "text": "277"
+        },
+        {
+          "number": null,
+          "text": "Of the cup of   forgetfulness"
+        },
+        {
+          "number": null,
+          "text": "278"
+        },
+        {
+          "number": null,
+          "text": "Of the   counterfeiting spirit"
+        },
+        {
+          "number": null,
+          "text": "278"
+        },
+        {
+          "number": null,
+          "text": "Of the   fashioning of a new soul"
+        },
+        {
+          "number": null,
+          "text": "278"
+        },
+        {
+          "number": null,
+          "text": "Of the   inbreathing of the power"
+        },
+        {
+          "number": null,
+          "text": "279"
+        },
+        {
+          "number": null,
+          "text": "Jesus promiseth   to reveal all in detail"
+        },
+        {
+          "number": null,
+          "text": "280"
+        },
+        {
+          "number": null,
+          "text": "Of the   light-power and the counterfeiting spirit"
+        },
+        {
+          "number": null,
+          "text": "281"
+        },
+        {
+          "number": null,
+          "text": "The parents we   are to abandon"
+        },
+        {
+          "number": null,
+          "text": "281"
+        },
+        {
+          "number": null,
+          "text": "Salome is in   doubt"
+        },
+        {
+          "number": null,
+          "text": "282"
+        },
+        {
+          "number": null,
+          "text": "Mary removeth   the doubt of Salome"
+        },
+        {
+          "number": null,
+          "text": "282"
+        },
+        {
+          "number": null,
+          "text": "Of the charge   given to the counterfeiting spirit"
+        },
+        {
+          "number": null,
+          "text": "283"
+        },
+        {
+          "number": null,
+          "text": "Of the charge   given to the servitors"
+        },
+        {
+          "number": null,
+          "text": "284"
+        },
+        {
+          "number": null,
+          "text": "Of conception"
+        },
+        {
+          "number": null,
+          "text": "285"
+        },
+        {
+          "number": null,
+          "text": "Of the   compulsion of the parents"
+        },
+        {
+          "number": null,
+          "text": "286"
+        },
+        {
+          "number": null,
+          "text": "Of the process   of gestation"
+        },
+        {
+          "number": null,
+          "text": "286"
+        },
+        {
+          "number": null,
+          "text": "Of the incarnation   of the soul"
+        },
+        {
+          "number": null,
+          "text": "286"
+        },
+        {
+          "number": null,
+          "text": "Of the sealing   of the plasm"
+        },
+        {
+          "number": null,
+          "text": "287"
+        },
+        {
+          "number": null,
+          "text": "Of the destiny"
+        },
+        {
+          "number": null,
+          "text": "288"
+        },
+        {
+          "number": null,
+          "text": "Of how a man   cometh by his death"
+        },
+        {
+          "number": null,
+          "text": "288"
+        },
+        {
+          "number": null,
+          "text": "There is no   escape from the destiny"
+        },
+        {
+          "number": null,
+          "text": "289"
+        },
+        {
+          "number": null,
+          "text": "Of the keys of   the mysteries"
+        },
+        {
+          "number": null,
+          "text": "289"
+        },
+        {
+          "number": null,
+          "text": "The mysteries   are all for men"
+        },
+        {
+          "number": null,
+          "text": "290"
+        },
+        {
+          "number": null,
+          "text": "A prophecy of   John the Baptizer"
+        },
+        {
+          "number": null,
+          "text": "290"
+        },
+        {
+          "number": null,
+          "text": "The criterion   of orthodoxy"
+        },
+        {
+          "number": null,
+          "text": "291"
+        },
+        {
+          "number": null,
+          "text": "The Books of   Yew"
+        },
+        {
+          "number": null,
+          "text": "292"
+        },
+        {
+          "number": null,
+          "text": "Few only will   accomplish the mystery of the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "292"
+        },
+        {
+          "number": null,
+          "text": "No soul had   entered into the Light before the coming of the First Mystery"
+        },
+        {
+          "number": null,
+          "text": "293"
+        },
+        {
+          "number": null,
+          "text": "Of the prophets"
+        },
+        {
+          "number": null,
+          "text": "293"
+        },
+        {
+          "number": null,
+          "text": "Of the   patriarchs"
+        },
+        {
+          "number": null,
+          "text": "293"
+        },
+        {
+          "number": null,
+          "text": "Of the souls of   the righteous from Adam to Jesus"
+        },
+        {
+          "number": null,
+          "text": "294"
+        },
+        {
+          "number": null,
+          "text": "The disciples know   of a surety that Jesus is the Great Initiator"
+        },
+        {
+          "number": null,
+          "text": "294"
+        },
+        {
+          "number": null,
+          "text": "SUB-SCRIPTION:"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "A PORTION OF THE BOOKS OF THE SAVIOUR"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "p. xv"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "DIVISION IV."
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "A FIFTH BOOK"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "The disciples   gather round Jesus"
+        },
+        {
+          "number": null,
+          "text": "295"
+        },
+        {
+          "number": null,
+          "text": "The invocation   of Jesus"
+        },
+        {
+          "number": null,
+          "text": "295"
+        },
+        {
+          "number": null,
+          "text": "The grouping of   the disciples"
+        },
+        {
+          "number": null,
+          "text": "295"
+        },
+        {
+          "number": null,
+          "text": "The   interpretation of ia&#333;"
+        },
+        {
+          "number": null,
+          "text": "295"
+        },
+        {
+          "number": null,
+          "text": "He continueth   to make invocation"
+        },
+        {
+          "number": null,
+          "text": "296"
+        },
+        {
+          "number": null,
+          "text": "The apocalypse   of the heavens"
+        },
+        {
+          "number": null,
+          "text": "296"
+        },
+        {
+          "number": null,
+          "text": "The figures of the   disk of the sun and of the moon"
+        },
+        {
+          "number": null,
+          "text": "296"
+        },
+        {
+          "number": null,
+          "text": "Jesus and the   disciples are transported to the ways of the midst"
+        },
+        {
+          "number": null,
+          "text": "297"
+        },
+        {
+          "number": null,
+          "text": "Of the   repentant and unrepentant rulers"
+        },
+        {
+          "number": null,
+          "text": "297"
+        },
+        {
+          "number": null,
+          "text": "Of the hierarchies   of the unrepentant rulers and the names of their five regents"
+        },
+        {
+          "number": null,
+          "text": "298"
+        },
+        {
+          "number": null,
+          "text": "Of the powers   which Yew bound into the five regents"
+        },
+        {
+          "number": null,
+          "text": "298"
+        },
+        {
+          "number": null,
+          "text": "Of the   functions of Zeus, the chief regent"
+        },
+        {
+          "number": null,
+          "text": "298"
+        },
+        {
+          "number": null,
+          "text": "The   incorruptible names of the regents"
+        },
+        {
+          "number": null,
+          "text": "299"
+        },
+        {
+          "number": null,
+          "text": "Mary   questioneth Jesus on the ways of the midst"
+        },
+        {
+          "number": null,
+          "text": "299"
+        },
+        {
+          "number": null,
+          "text": "Of the   mysteries which Jesus will give unto his disciples"
+        },
+        {
+          "number": null,
+          "text": "300"
+        },
+        {
+          "number": null,
+          "text": "Of the   constitution of the ways of the midst"
+        },
+        {
+          "number": null,
+          "text": "301"
+        },
+        {
+          "number": null,
+          "text": "Of   Parapl&#275;x"
+        },
+        {
+          "number": null,
+          "text": "301"
+        },
+        {
+          "number": null,
+          "text": "Of Yew and Melchisedec"
+        },
+        {
+          "number": null,
+          "text": "301"
+        },
+        {
+          "number": null,
+          "text": "How the demon   rulers carry off souls"
+        },
+        {
+          "number": null,
+          "text": "302"
+        },
+        {
+          "number": null,
+          "text": "The   chastisements of Parapl&#275;x"
+        },
+        {
+          "number": null,
+          "text": "302"
+        },
+        {
+          "number": null,
+          "text": "Of Ariouth the   &AElig;thiopian"
+        },
+        {
+          "number": null,
+          "text": "303"
+        },
+        {
+          "number": null,
+          "text": "Of triple-faced   Hekat&#275;"
+        },
+        {
+          "number": null,
+          "text": "304"
+        },
+        {
+          "number": null,
+          "text": "Of   Parhedr&#333;n Typhon"
+        },
+        {
+          "number": null,
+          "text": "305"
+        },
+        {
+          "number": null,
+          "text": "Of Yachthanabas"
+        },
+        {
+          "number": null,
+          "text": "306"
+        },
+        {
+          "number": null,
+          "text": "The disciples   beseech Jesus to have mercy upon sinners"
+        },
+        {
+          "number": null,
+          "text": "307"
+        },
+        {
+          "number": null,
+          "text": "Jesus   encourageth his disciples"
+        },
+        {
+          "number": null,
+          "text": "307"
+        },
+        {
+          "number": null,
+          "text": "Jesus and his   disciples ascend higher"
+        },
+        {
+          "number": null,
+          "text": "308"
+        },
+        {
+          "number": null,
+          "text": "He breatheth   into their eyes"
+        },
+        {
+          "number": null,
+          "text": "308"
+        },
+        {
+          "number": null,
+          "text": "Their eyes are   opened"
+        },
+        {
+          "number": null,
+          "text": "308"
+        },
+        {
+          "number": null,
+          "text": "Jesus   explaineth the vision of fire and water, and wine and blood"
+        },
+        {
+          "number": null,
+          "text": "308"
+        },
+        {
+          "number": null,
+          "text": "The same   explained from former sayings"
+        },
+        {
+          "number": null,
+          "text": "309"
+        },
+        {
+          "number": null,
+          "text": "Jesus and his   disciples descend to earth"
+        },
+        {
+          "number": null,
+          "text": "309"
+        },
+        {
+          "number": null,
+          "text": "Jesus promiseth   to give them the mystery of the forgiveness of sins"
+        },
+        {
+          "number": null,
+          "text": "310"
+        },
+        {
+          "number": null,
+          "text": "The mystic   offering"
+        },
+        {
+          "number": null,
+          "text": "310"
+        },
+        {
+          "number": null,
+          "text": "The invocation"
+        },
+        {
+          "number": null,
+          "text": "310"
+        },
+        {
+          "number": null,
+          "text": "The rite is   consummated"
+        },
+        {
+          "number": null,
+          "text": "312"
+        },
+        {
+          "number": null,
+          "text": "Directions as   to the future use of the rite"
+        },
+        {
+          "number": null,
+          "text": "312"
+        },
+        {
+          "number": null,
+          "text": "Of three other mystic   rites"
+        },
+        {
+          "number": null,
+          "text": "312"
+        },
+        {
+          "number": null,
+          "text": "Of the highest   mysteries and of the great name"
+        },
+        {
+          "number": null,
+          "text": "313"
+        },
+        {
+          "number": null,
+          "text": "Of the efficacy   of that name"
+        },
+        {
+          "number": null,
+          "text": "313"
+        },
+        {
+          "number": null,
+          "text": "A SIXTH BOOK"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of the curser"
+        },
+        {
+          "number": null,
+          "text": "315"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of the slanderer"
+        },
+        {
+          "number": null,
+          "text": "316"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of the murderer"
+        },
+        {
+          "number": null,
+          "text": "317"
+        },
+        {
+          "number": null,
+          "text": "Peter   protesteth against the women"
+        },
+        {
+          "number": null,
+          "text": "318"
+        },
+        {
+          "number": null,
+          "text": "p. xvi"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "PAGE"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of the thief"
+        },
+        {
+          "number": null,
+          "text": "318"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of the arrogant"
+        },
+        {
+          "number": null,
+          "text": "319"
+        },
+        {
+          "number": null,
+          "text": "Of the chastisement   of the blasphemer"
+        },
+        {
+          "number": null,
+          "text": "320"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of him who hath intercourse with males"
+        },
+        {
+          "number": null,
+          "text": "321"
+        },
+        {
+          "number": null,
+          "text": "Of the   chastisement of a foul act of sorcery"
+        },
+        {
+          "number": null,
+          "text": "322"
+        },
+        {
+          "number": null,
+          "text": "Of the   after-death state of the righteous man who hath not been initiated"
+        },
+        {
+          "number": null,
+          "text": "322"
+        },
+        {
+          "number": null,
+          "text": "Of the cup of   wisdom"
+        },
+        {
+          "number": null,
+          "text": "323"
+        },
+        {
+          "number": null,
+          "text": "A sinner   suffereth for each separate sin"
+        },
+        {
+          "number": null,
+          "text": "323"
+        },
+        {
+          "number": null,
+          "text": "Even the   greatest of sinners, if he repent, shall inherit the kingdom"
+        },
+        {
+          "number": null,
+          "text": "324"
+        },
+        {
+          "number": null,
+          "text": "Of the time favourable   for the birth of those who shall find the mysteries"
+        },
+        {
+          "number": null,
+          "text": "324"
+        },
+        {
+          "number": null,
+          "text": "The disciples   beseech Jesus to have mercy upon them"
+        },
+        {
+          "number": null,
+          "text": "324"
+        },
+        {
+          "number": null,
+          "text": "A LATER POSTSCRIPT"
+        },
+        {
+          "number": null,
+          "text": " "
+        },
+        {
+          "number": null,
+          "text": "The   proclamation of the disciples"
+        },
+        {
+          "number": null,
+          "text": "325"
+        },
+        {
+          "number": null,
+          "text": " "
+        }
+      ]
+    }
+  ]
+}

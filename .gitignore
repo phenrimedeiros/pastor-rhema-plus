@@ -20,6 +20,9 @@
 # production
 /build
 
+# library pipeline temporary data
+/data/library/raw/
+
 # misc
 .DS_Store
 *.pem

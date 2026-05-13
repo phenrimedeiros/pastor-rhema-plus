@@ -1,0 +1,104 @@
+{
+  "id": "gospel-of-hebrews",
+  "title": "About This Text",
+  "tradition": "gnostic",
+  "totalSections": 14,
+  "sections": [
+    {
+      "heading": null,
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "A lost Jewish-Christian gospel preserved only in fragments"
+        },
+        {
+          "number": null,
+          "text": "The Gospel of the Hebrews was a Jewish-Christian gospel written in Greek, likely in Egypt during the first half of the 2nd century. The complete text is lost - only about 7-8 fragments survive as quotations by early Church Fathers."
+        },
+        {
+          "number": null,
+          "text": "According to the church historian Nicephorus (9th century), the Gospel of the Hebrews contained 2,200 lines - only 300 fewer than the Gospel of Matthew."
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 1 - The Holy Spirit as Mother",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Origen, Commentary on John 2.12.87"
+        },
+        {
+          "number": null,
+          "text": "Note: This portrays the Holy Spirit as Jesus' divine Mother, a distinctive feature of this gospel."
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 2 - Baptism of Jesus",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Jerome, Commentary on Isaiah 4"
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 3 - First Appearance to James",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Jerome, De viris illustribus 2"
+        },
+        {
+          "number": null,
+          "text": "Note: This places James as the first witness to the resurrection, showing the high esteem this community held for James the brother of Jesus."
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 4 - On Forgiveness",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Jerome, Against Pelagius 3.2"
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 5 - The Sin Against the Holy Spirit",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Origen, Homily on Jeremiah 15.4"
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 6 - Pre-existence of Christ",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Cyril of Jerusalem, Discourse on Mary Theotokos 12a"
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 7 - The Rich Man",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Origen, Commentary on Matthew 15.14"
+        },
+        {
+          "number": null,
+          "text": "The Gospel of the Hebrews is mentioned by several early Church Fathers:"
+        },
+        {
+          "number": null,
+          "text": "Jerome believed it was the original Hebrew version of Matthew's Gospel, though modern scholars recognize it as a distinct work. It was used by Jewish Christians in Egypt and possibly by the Ebionites."
+        }
+      ]
+    }
+  ]
+}

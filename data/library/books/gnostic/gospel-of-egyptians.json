@@ -1,0 +1,93 @@
+{
+  "id": "gospel-of-egyptians",
+  "title": "About This Text",
+  "tradition": "gnostic",
+  "totalSections": 15,
+  "sections": [
+    {
+      "heading": null,
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "An early Christian text surviving only in fragments"
+        },
+        {
+          "number": null,
+          "text": "The Gospel of the Egyptians was an early Christian gospel likely written in the 2nd century, probably in Egypt. It is known only from a handful of quotations by Clement of Alexandria and other church fathers. The full text has been lost."
+        },
+        {
+          "number": null,
+          "text": "This gospel should not be confused with the Coptic \"Holy Book of the Great Invisible Spirit\" (also called \"Gospel of the Egyptians\") found in the Nag Hammadi library, which is a completely different Sethian Gnostic text."
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 1 - Dialogue with Salome",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Clement of Alexandria, Stromateis 3.9.63-64"
+        },
+        {
+          "number": null,
+          "text": "Salome said: \"Then I have done well in not bearing children.\""
+        },
+        {
+          "number": null,
+          "text": "The Lord answered: \"Eat every plant, but do not eat that which has bitterness.\""
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 2 - On Male and Female",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Clement of Alexandria, Stromateis 3.13.92"
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 3 - The Kingdom",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: Clement of Alexandria, Stromateis 3.9.64"
+        },
+        {
+          "number": null,
+          "text": "Note: Clement interprets \"female\" as referring to desire/passion, not women."
+        }
+      ]
+    },
+    {
+      "heading": "Fragment 4 - Another Version",
+      "paragraphs": [
+        {
+          "number": null,
+          "text": "Source: 2 Clement 12:2 (possibly quoting this gospel)"
+        },
+        {
+          "number": null,
+          "text": "Clement of Alexandria quotes this gospel but interprets it spiritually rather than literally:"
+        },
+        {
+          "number": null,
+          "text": "However, the Encratites (a celibate Christian sect) interpreted these sayings literally to support their rejection of marriage and procreation."
+        },
+        {
+          "number": null,
+          "text": "Church fathers who mention this gospel:"
+        },
+        {
+          "number": null,
+          "text": "The themes in the Gospel of the Egyptians have parallels in:"
+        },
+        {
+          "number": null,
+          "text": "These parallels suggest a common tradition about the overcoming of gender division in salvation."
+        }
+      ]
+    }
+  ]
+}

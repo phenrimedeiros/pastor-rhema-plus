@@ -1,0 +1,1640 @@
+{
+  "traditions": {
+    "protestant": {
+      "label": {
+        "pt": "Cânon Protestante",
+        "en": "Protestant Canon",
+        "es": "Canon Protestante"
+      },
+      "color": "#2ecc71",
+      "icon": "book-open",
+      "count": 66
+    },
+    "deuterocanonical": {
+      "label": {
+        "pt": "Deuterocanônico",
+        "en": "Deuterocanonical",
+        "es": "Deuterocanónico"
+      },
+      "color": "#9370DB",
+      "icon": "scroll",
+      "count": 29
+    },
+    "dss": {
+      "label": {
+        "pt": "Manuscritos do Mar Morto",
+        "en": "Dead Sea Scrolls",
+        "es": "Manuscritos del Mar Muerto"
+      },
+      "color": "#00BFFF",
+      "icon": "scroll-text",
+      "count": 10
+    },
+    "gnostic": {
+      "label": {
+        "pt": "Gnósticos e Cristãos Primitivos",
+        "en": "Gnostic & Early Christian",
+        "es": "Gnósticos y Cristianos Primitivos"
+      },
+      "color": "#ff4444",
+      "icon": "book-marked",
+      "count": 28
+    }
+  },
+  "books": [
+    {
+      "id": "genesis",
+      "title": {
+        "pt": "Gênesis",
+        "en": "Genesis",
+        "es": "Génesis"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 0,
+      "totalChapters": 50,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "exodus",
+      "title": {
+        "pt": "Êxodo",
+        "en": "Exodus",
+        "es": "Éxodo"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 1,
+      "totalChapters": 40,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "leviticus",
+      "title": {
+        "pt": "Levítico",
+        "en": "Leviticus",
+        "es": "Levítico"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 2,
+      "totalChapters": 27,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "numbers",
+      "title": {
+        "pt": "Números",
+        "en": "Numbers",
+        "es": "Números"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 3,
+      "totalChapters": 36,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "deuteronomy",
+      "title": {
+        "pt": "Deuteronômio",
+        "en": "Deuteronomy",
+        "es": "Deuteronomio"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 4,
+      "totalChapters": 34,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "joshua",
+      "title": {
+        "pt": "Josué",
+        "en": "Joshua",
+        "es": "Josué"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 5,
+      "totalChapters": 24,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "judges",
+      "title": {
+        "pt": "Juízes",
+        "en": "Judges",
+        "es": "Jueces"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 6,
+      "totalChapters": 21,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "ruth",
+      "title": {
+        "pt": "Rute",
+        "en": "Ruth",
+        "es": "Rut"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 7,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1samuel",
+      "title": {
+        "pt": "1 Samuel",
+        "en": "1 Samuel",
+        "es": "1 Samuel"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 8,
+      "totalChapters": 31,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2samuel",
+      "title": {
+        "pt": "2 Samuel",
+        "en": "2 Samuel",
+        "es": "2 Samuel"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 9,
+      "totalChapters": 24,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1kings",
+      "title": {
+        "pt": "1 Reis",
+        "en": "1 Kings",
+        "es": "1 Reyes"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 10,
+      "totalChapters": 22,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2kings",
+      "title": {
+        "pt": "2 Reis",
+        "en": "2 Kings",
+        "es": "2 Reyes"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 11,
+      "totalChapters": 25,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1chronicles",
+      "title": {
+        "pt": "1 Crônicas",
+        "en": "1 Chronicles",
+        "es": "1 Crónicas"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 12,
+      "totalChapters": 29,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2chronicles",
+      "title": {
+        "pt": "2 Crônicas",
+        "en": "2 Chronicles",
+        "es": "2 Crónicas"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 13,
+      "totalChapters": 36,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "ezra",
+      "title": {
+        "pt": "Esdras",
+        "en": "Ezra",
+        "es": "Esdras"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 14,
+      "totalChapters": 10,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "nehemiah",
+      "title": {
+        "pt": "Neemias",
+        "en": "Nehemiah",
+        "es": "Nehemías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 15,
+      "totalChapters": 13,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "esther",
+      "title": {
+        "pt": "Ester",
+        "en": "Esther",
+        "es": "Ester"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 16,
+      "totalChapters": 10,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "job",
+      "title": {
+        "pt": "Jó",
+        "en": "Job",
+        "es": "Job"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 17,
+      "totalChapters": 42,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "psalms",
+      "title": {
+        "pt": "Salmos",
+        "en": "Psalms",
+        "es": "Salmos"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 18,
+      "totalChapters": 150,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "proverbs",
+      "title": {
+        "pt": "Provérbios",
+        "en": "Proverbs",
+        "es": "Proverbios"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 19,
+      "totalChapters": 31,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "ecclesiastes",
+      "title": {
+        "pt": "Eclesiastes",
+        "en": "Ecclesiastes",
+        "es": "Eclesiastés"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 20,
+      "totalChapters": 12,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "song-of-solomon",
+      "title": {
+        "pt": "Cânticos",
+        "en": "Song of Solomon",
+        "es": "Cantares"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 21,
+      "totalChapters": 8,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "isaiah",
+      "title": {
+        "pt": "Isaías",
+        "en": "Isaiah",
+        "es": "Isaías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 22,
+      "totalChapters": 66,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "jeremiah",
+      "title": {
+        "pt": "Jeremias",
+        "en": "Jeremiah",
+        "es": "Jeremías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 23,
+      "totalChapters": 52,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "lamentations",
+      "title": {
+        "pt": "Lamentações",
+        "en": "Lamentations",
+        "es": "Lamentaciones"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 24,
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "ezekiel",
+      "title": {
+        "pt": "Ezequiel",
+        "en": "Ezekiel",
+        "es": "Ezequiel"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 25,
+      "totalChapters": 48,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "daniel",
+      "title": {
+        "pt": "Daniel",
+        "en": "Daniel",
+        "es": "Daniel"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 26,
+      "totalChapters": 12,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "hosea",
+      "title": {
+        "pt": "Oséias",
+        "en": "Hosea",
+        "es": "Oseas"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 27,
+      "totalChapters": 14,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "joel",
+      "title": {
+        "pt": "Joel",
+        "en": "Joel",
+        "es": "Joel"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 28,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "amos",
+      "title": {
+        "pt": "Amós",
+        "en": "Amos",
+        "es": "Amós"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 29,
+      "totalChapters": 9,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "obadiah",
+      "title": {
+        "pt": "Obadias",
+        "en": "Obadiah",
+        "es": "Abdías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 30,
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "jonah",
+      "title": {
+        "pt": "Jonas",
+        "en": "Jonah",
+        "es": "Jonás"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 31,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "micah",
+      "title": {
+        "pt": "Miquéias",
+        "en": "Micah",
+        "es": "Miqueas"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 32,
+      "totalChapters": 7,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "nahum",
+      "title": {
+        "pt": "Naum",
+        "en": "Nahum",
+        "es": "Nahúm"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 33,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "habakkuk",
+      "title": {
+        "pt": "Habacuque",
+        "en": "Habakkuk",
+        "es": "Habacuc"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 34,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "zephaniah",
+      "title": {
+        "pt": "Sofonias",
+        "en": "Zephaniah",
+        "es": "Sofonías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 35,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "haggai",
+      "title": {
+        "pt": "Ageu",
+        "en": "Haggai",
+        "es": "Ageo"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 36,
+      "totalChapters": 2,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "zechariah",
+      "title": {
+        "pt": "Zacarias",
+        "en": "Zechariah",
+        "es": "Zacarías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 37,
+      "totalChapters": 14,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "malachi",
+      "title": {
+        "pt": "Malaquias",
+        "en": "Malachi",
+        "es": "Malaquías"
+      },
+      "tradition": "protestant",
+      "testament": "OT",
+      "bibleIndex": 38,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "matthew",
+      "title": {
+        "pt": "Mateus",
+        "en": "Matthew",
+        "es": "Mateo"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 39,
+      "totalChapters": 28,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "mark",
+      "title": {
+        "pt": "Marcos",
+        "en": "Mark",
+        "es": "Marcos"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 40,
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "luke",
+      "title": {
+        "pt": "Lucas",
+        "en": "Luke",
+        "es": "Lucas"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 41,
+      "totalChapters": 24,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "john",
+      "title": {
+        "pt": "João",
+        "en": "John",
+        "es": "Juan"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 42,
+      "totalChapters": 21,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "acts",
+      "title": {
+        "pt": "Atos",
+        "en": "Acts",
+        "es": "Hechos"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 43,
+      "totalChapters": 28,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "romans",
+      "title": {
+        "pt": "Romanos",
+        "en": "Romans",
+        "es": "Romanos"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 44,
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1corinthians",
+      "title": {
+        "pt": "1 Coríntios",
+        "en": "1 Corinthians",
+        "es": "1 Corintios"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 45,
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2corinthians",
+      "title": {
+        "pt": "2 Coríntios",
+        "en": "2 Corinthians",
+        "es": "2 Corintios"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 46,
+      "totalChapters": 13,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "galatians",
+      "title": {
+        "pt": "Gálatas",
+        "en": "Galatians",
+        "es": "Gálatas"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 47,
+      "totalChapters": 6,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "ephesians",
+      "title": {
+        "pt": "Efésios",
+        "en": "Ephesians",
+        "es": "Efesios"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 48,
+      "totalChapters": 6,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "philippians",
+      "title": {
+        "pt": "Filipenses",
+        "en": "Philippians",
+        "es": "Filipenses"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 49,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "colossians",
+      "title": {
+        "pt": "Colossenses",
+        "en": "Colossians",
+        "es": "Colosenses"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 50,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1thessalonians",
+      "title": {
+        "pt": "1 Tessalonicenses",
+        "en": "1 Thessalonians",
+        "es": "1 Tesalonicenses"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 51,
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2thessalonians",
+      "title": {
+        "pt": "2 Tessalonicenses",
+        "en": "2 Thessalonians",
+        "es": "2 Tesalonicenses"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 52,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1timothy",
+      "title": {
+        "pt": "1 Timóteo",
+        "en": "1 Timothy",
+        "es": "1 Timoteo"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 53,
+      "totalChapters": 6,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2timothy",
+      "title": {
+        "pt": "2 Timóteo",
+        "en": "2 Timothy",
+        "es": "2 Timoteo"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 54,
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "titus",
+      "title": {
+        "pt": "Tito",
+        "en": "Titus",
+        "es": "Tito"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 55,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "philemon",
+      "title": {
+        "pt": "Filemom",
+        "en": "Philemon",
+        "es": "Filemón"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 56,
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "hebrews",
+      "title": {
+        "pt": "Hebreus",
+        "en": "Hebrews",
+        "es": "Hebreos"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 57,
+      "totalChapters": 13,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "james",
+      "title": {
+        "pt": "Tiago",
+        "en": "James",
+        "es": "Santiago"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 58,
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1peter",
+      "title": {
+        "pt": "1 Pedro",
+        "en": "1 Peter",
+        "es": "1 Pedro"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 59,
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2peter",
+      "title": {
+        "pt": "2 Pedro",
+        "en": "2 Peter",
+        "es": "2 Pedro"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 60,
+      "totalChapters": 3,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1john",
+      "title": {
+        "pt": "1 João",
+        "en": "1 John",
+        "es": "1 Juan"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 61,
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "2john",
+      "title": {
+        "pt": "2 João",
+        "en": "2 John",
+        "es": "2 Juan"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 62,
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "3john",
+      "title": {
+        "pt": "3 João",
+        "en": "3 John",
+        "es": "3 Juan"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 63,
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "jude",
+      "title": {
+        "pt": "Judas",
+        "en": "Jude",
+        "es": "Judas"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 64,
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "revelation",
+      "title": {
+        "pt": "Apocalipse",
+        "en": "Revelation",
+        "es": "Apocalipsis"
+      },
+      "tradition": "protestant",
+      "testament": "NT",
+      "bibleIndex": 65,
+      "totalChapters": 22,
+      "sectionType": "chapter",
+      "source": "bible"
+    },
+    {
+      "id": "1en",
+      "title": {
+        "en": "1 Enoch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 108,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "1esd",
+      "title": {
+        "en": "1 Esdras"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 9,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "1macc",
+      "title": {
+        "en": "1 Maccabees"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "2bar",
+      "title": {
+        "en": "2 Baruch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 87,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "2en",
+      "title": {
+        "en": "2 Enoch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 68,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "2esd",
+      "title": {
+        "en": "2 Esdras"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "2macc",
+      "title": {
+        "en": "2 Maccabees"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 15,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "3bar",
+      "title": {
+        "en": "3 Baruch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 17,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "3en",
+      "title": {
+        "en": "3 Enoch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 48,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "4bar",
+      "title": {
+        "en": "4 Baruch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 9,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "apocpet",
+      "title": {
+        "en": "Apocalypse of Peter"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 17,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "ascisa",
+      "title": {
+        "en": "Ascension of Isaiah"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 11,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "bar",
+      "title": {
+        "en": "Baruch"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 5,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "bel",
+      "title": {
+        "en": "Bel and the Dragon"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "gkesth",
+      "title": {
+        "en": "Greek Esther"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "hermas",
+      "title": {
+        "en": "Shepherd of Hermas"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 4,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "jasher",
+      "title": {
+        "en": "Book of Jasher"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 91,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "jdt",
+      "title": {
+        "en": "Judith"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 16,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "jub",
+      "title": {
+        "en": "Jubilees"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 50,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "lae",
+      "title": {
+        "en": "Life of Adam and Eve"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 79,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "prazar",
+      "title": {
+        "en": "Prayer of Azariah"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "prman",
+      "title": {
+        "en": "Prayer of Manasseh"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "sedrach",
+      "title": {
+        "en": "Apocalypse of Sedrach"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "sir",
+      "title": {
+        "en": "Sirach"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 51,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "sus",
+      "title": {
+        "en": "Susanna"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "t12pat",
+      "title": {
+        "en": "Testaments of the Twelve Patriarchs"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 2,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "tob",
+      "title": {
+        "en": "Tobit"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 14,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "tsol",
+      "title": {
+        "en": "Testament of Solomon"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 1,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "wis",
+      "title": {
+        "en": "Wisdom of Solomon"
+      },
+      "tradition": "deuterocanonical",
+      "totalChapters": 19,
+      "sectionType": "chapter",
+      "source": "library"
+    },
+    {
+      "id": "book-of-giants",
+      "title": {
+        "en": "The Book of Giants"
+      },
+      "tradition": "dss",
+      "totalChapters": 35,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "community-rule",
+      "title": {
+        "en": "The Community Rule (1QS)"
+      },
+      "tradition": "dss",
+      "totalChapters": 42,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "copper-scroll",
+      "title": {
+        "en": "The Copper Scroll (3Q15)"
+      },
+      "tradition": "dss",
+      "totalChapters": 32,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "damascus-document",
+      "title": {
+        "en": "The Damascus Document (CD)"
+      },
+      "tradition": "dss",
+      "totalChapters": 32,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "genesis-apocryphon",
+      "title": {
+        "en": "The Genesis Apocryphon (1QapGen)"
+      },
+      "tradition": "dss",
+      "totalChapters": 35,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "pesher-habakkuk",
+      "title": {
+        "en": "Pesher Habakkuk (1QpHab)"
+      },
+      "tradition": "dss",
+      "totalChapters": 33,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "songs-sabbath-sacrifice",
+      "title": {
+        "en": "Songs of the Sabbath Sacrifice"
+      },
+      "tradition": "dss",
+      "totalChapters": 37,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "temple-scroll",
+      "title": {
+        "en": "The Temple Scroll (11QT)"
+      },
+      "tradition": "dss",
+      "totalChapters": 31,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "thanksgiving-hymns",
+      "title": {
+        "en": "The Thanksgiving Hymns (1QH)"
+      },
+      "tradition": "dss",
+      "totalChapters": 31,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "war-scroll",
+      "title": {
+        "en": "The War Scroll (1QM)"
+      },
+      "tradition": "dss",
+      "totalChapters": 33,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "3-maccabees",
+      "title": {
+        "en": "3 maccabees"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 1,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "4-ezra",
+      "title": {
+        "en": "2 Esdras"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 0,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "4-maccabees",
+      "title": {
+        "en": "4 maccabees"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 8,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "acts-paul-thecla",
+      "title": {
+        "en": "About this page"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 36,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "apocalypse-abraham",
+      "title": {
+        "en": "apocalypse abraham"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 0,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "apocryphon-of-john",
+      "title": {
+        "en": "apocryphon of john"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 27,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "assumption-moses",
+      "title": {
+        "en": "assumption moses"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 65,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "book-thomas-contender",
+      "title": {
+        "en": "book thomas contender"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 49,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "dialogue-savior",
+      "title": {
+        "en": "dialogue savior"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 2,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "didache",
+      "title": {
+        "en": "didache"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 9,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "epistle-barnabas",
+      "title": {
+        "en": "Chapter 1. After the salutation, the writer declares that he would communicate to his brethren something of that which he had himself received"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 26,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-egyptians",
+      "title": {
+        "en": "About This Text"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 15,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-hebrews",
+      "title": {
+        "en": "About This Text"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 14,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-judas",
+      "title": {
+        "en": "The Gospel of Judas"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 73,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-mary",
+      "title": {
+        "en": "The Gospel According to Mary Magdalene"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 54,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-nicodemus",
+      "title": {
+        "en": "gospel of nicodemus"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 3,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-peter",
+      "title": {
+        "en": "gospel of peter"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 5,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-philip",
+      "title": {
+        "en": "gospel of philip"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 108,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-thomas",
+      "title": {
+        "en": "The Gospel of Thomas"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 114,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "gospel-of-truth",
+      "title": {
+        "en": "gospel of truth"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 36,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "infancy-gospel-thomas",
+      "title": {
+        "en": "infancy gospel thomas"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 8,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "pistis-sophia",
+      "title": {
+        "en": "pistis sophia"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 1027,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "protoevangelium-james",
+      "title": {
+        "en": "protoevangelium james"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 16,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "psalms-solomon",
+      "title": {
+        "en": "psalms solomon"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 7,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "secret-gospel-mark",
+      "title": {
+        "en": "secret gospel mark"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 4,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "sophia-jesus-christ",
+      "title": {
+        "en": "sophia jesus christ"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 59,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "testament-abraham",
+      "title": {
+        "en": "Version 1"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 35,
+      "sectionType": "section",
+      "source": "library"
+    },
+    {
+      "id": "testament-job",
+      "title": {
+        "en": "Testament of Job"
+      },
+      "tradition": "gnostic",
+      "totalChapters": 84,
+      "sectionType": "section",
+      "source": "library"
+    }
+  ]
+}

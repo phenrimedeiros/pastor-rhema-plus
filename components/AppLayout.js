@@ -101,6 +101,12 @@ const ICONS = {
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
   ),
+  library: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  ),
   admin: (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z" />
@@ -111,6 +117,7 @@ const ICONS = {
 
 const NAV_ITEMS = [
   { page: "dashboard", key: "nav_dashboard", plan: "plus", icon: "dashboard" },
+  { page: "library", key: "nav_library", plan: "plus", icon: "library" },
   { page: "series", key: "nav_series", plan: "plus", icon: "series", step: 1 },
   { page: "study", key: "nav_study", plan: "plus", icon: "study", step: 2 },
   { page: "builder", key: "nav_builder", plan: "plus", icon: "builder", step: 3 },
@@ -126,6 +133,7 @@ const NAV_ITEMS = [
 
 const PLUS_PAGES = new Set([
   "dashboard",
+  "library",
   "series",
   "study",
   "builder",
