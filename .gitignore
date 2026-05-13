@@ -22,7 +22,7 @@
 
 # library pipeline temporary data
 /data/library/raw/
-/data/commentary/raw/
+/data/commentary/
 
 # misc
 .DS_Store
