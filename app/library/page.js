@@ -23,10 +23,14 @@ function LibraryFallback() {
 }
 
 async function fetchLibraryIndex(tradition) {
+  const session = await auth.getSession();
+  if (!session) return { traditions: {}, books: [] };
   const url = tradition && tradition !== "all"
     ? `/api/library?tradition=${tradition}`
     : "/api/library";
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
   if (!res.ok) return { traditions: {}, books: [] };
   return res.json();
 }
@@ -70,7 +74,11 @@ function LibraryPageClient() {
     setLoading(true);
 
     if (tradition === "commentaries") {
-      const res = await fetch("/api/commentary/books");
+      const session = await auth.getSession();
+      if (!session) { setLoading(false); return; }
+      const res = await fetch("/api/commentary/books", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
       if (res.ok) {
         const data = await res.json();
         const books = (data.books || []).map((b) => ({

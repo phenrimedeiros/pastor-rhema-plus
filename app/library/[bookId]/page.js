@@ -16,19 +16,31 @@ function BookPageFallback() {
 }
 
 async function fetchBookMeta(bookId) {
-  const res = await fetch(`/api/library/books/${bookId}`);
+  const session = await auth.getSession();
+  if (!session) return null;
+  const res = await fetch(`/api/library/books/${bookId}`, {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
   if (!res.ok) return null;
   return res.json();
 }
 
 async function fetchBookChapter(bookId, chapter) {
-  const res = await fetch(`/api/library/books/${bookId}?chapter=${chapter}`);
+  const session = await auth.getSession();
+  if (!session) return null;
+  const res = await fetch(`/api/library/books/${bookId}?chapter=${chapter}`, {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
   if (!res.ok) return null;
   return res.json();
 }
 
 async function fetchBookSection(bookId, section) {
-  const res = await fetch(`/api/library/books/${bookId}?section=${section}`);
+  const session = await auth.getSession();
+  if (!session) return null;
+  const res = await fetch(`/api/library/books/${bookId}?section=${section}`, {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
   if (!res.ok) return null;
   return res.json();
 }

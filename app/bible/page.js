@@ -487,7 +487,11 @@ function BiblePageClient() {
     async function loadCommentaries() {
       setCommentaryLoading(true);
       try {
-        const res = await fetch(`/api/commentary?book=${selectedBook}&chapter=${selectedChapter}`);
+        const session = await auth.getSession();
+        if (!session) return;
+        const res = await fetch(`/api/commentary?book=${selectedBook}&chapter=${selectedChapter}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
         if (active && res.ok) {
           const data = await res.json();
           setCommentaries(data.commentaries || []);
