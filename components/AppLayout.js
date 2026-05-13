@@ -7,6 +7,7 @@ import { useLanguage, LANGUAGES } from "@/lib/i18n";
 import { auth } from "@/lib/supabase_client";
 import VerseOfDay from "@/components/VerseOfDay";
 import SatisfactionSurvey from "@/components/SatisfactionSurvey";
+import NotificationBell from "@/components/NotificationBell";
 
 const ICONS = {
   dashboard: (
@@ -401,6 +402,7 @@ export default function AppLayout({ children, profile }) {
                 </button>
               ))}
             </div>
+            <NotificationBell t={t} />
             <a
               href="mailto:support@pastorrhema.com"
               className="grid h-[36px] w-[36px] place-items-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200"
@@ -419,12 +421,15 @@ export default function AppLayout({ children, profile }) {
               {currentLabel}
             </p>
           </div>
-          <button
-            onClick={() => router.push("/profile")}
-            className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#1d4ed8] text-[14px] font-bold text-white"
-          >
-            {(profile?.full_name || "P").slice(0, 1).toUpperCase()}
-          </button>
+          <div className="flex items-center gap-[10px]">
+            <NotificationBell t={t} />
+            <button
+              onClick={() => router.push("/profile")}
+              className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#1d4ed8] text-[14px] font-bold text-white"
+            >
+              {(profile?.full_name || "P").slice(0, 1).toUpperCase()}
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
