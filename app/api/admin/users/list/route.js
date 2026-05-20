@@ -1,6 +1,4 @@
 import {
-  getProfilesByUserIds,
-  listAllAuthUsers,
   mapAdminUser,
   requireAdminRequest,
 } from "@/lib/server/admin";
@@ -20,61 +18,19 @@ function normalizeQuery(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-function toTimestamp(value) {
-  if (!value) return 0;
-
-  const timestamp = Date.parse(value);
-  return Number.isNaN(timestamp) ? 0 : timestamp;
-}
-
-function compareUsersByActivity(a, b) {
-  const lastSignInDiff = toTimestamp(b.lastSignInAt) - toTimestamp(a.lastSignInAt);
-  if (lastSignInDiff !== 0) return lastSignInDiff;
-
-  const createdAtDiff = toTimestamp(b.createdAt) - toTimestamp(a.createdAt);
-  if (createdAtDiff !== 0) return createdAtDiff;
-
-  return a.email.localeCompare(b.email, "pt-BR");
-}
-
-function matchesQuery(user, query) {
-  if (!query) return true;
-
-  const searchable = [
-    user.email,
-    user.fullName,
-    user.plan,
-    user.isAdmin ? "admin" : "",
-    user.accessEnabled
-      ? "habilitado enabled ativo active"
-      : "desabilitado disabled bloqueado blocked inativo inactive",
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  return searchable.includes(query);
-}
-
-function isWithinDays(value, days) {
-  if (!value) return false;
-
-  const timestamp = toTimestamp(value);
-  if (!timestamp) return false;
-
-  const diff = Date.now() - timestamp;
-  return diff >= 0 && diff <= days * 24 * 60 * 60 * 1000;
-}
-
-function buildStats(users) {
-  return {
-    totalUsers: users.length,
-    activeToday: users.filter((user) => isWithinDays(user.lastSignInAt, 1)).length,
-    activeThisWeek: users.filter((user) => isWithinDays(user.lastSignInAt, 7)).length,
-    neverLoggedIn: users.filter((user) => !user.lastSignInAt).length,
-    disabledUsers: users.filter((user) => !user.accessEnabled).length,
-  };
-}
+const runCountQuery = async (queryPromise) => {
+  try {
+    const { count, error } = await queryPromise;
+    if (error) {
+      console.error("Erro na query de contagem:", error);
+      return 0;
+    }
+    return count || 0;
+  } catch (err) {
+    console.error("Exception na query de contagem:", err);
+    return 0;
+  }
+};
 
 export async function GET(request) {
   const context = await requireAdminRequest(request);
@@ -86,26 +42,112 @@ export async function GET(request) {
     const perPage = normalizePerPage(searchParams.get("perPage"));
     const query = normalizeQuery(searchParams.get("q"));
 
-    const authUsers = await listAllAuthUsers(context.serviceSupabase);
-    const profilesById = await getProfilesByUserIds(
-      context.serviceSupabase,
-      authUsers.map((user) => user.id)
-    );
+    // 1. Paginar e buscar na tabela profiles
+    let queryBuilder = context.serviceSupabase
+      .from("profiles")
+      .select("id, full_name, email, plan, created_at, updated_at", { count: "exact" });
 
-    const mappedUsers = authUsers
-      .map((authUser) => mapAdminUser(authUser, profilesById.get(authUser.id)))
-      .sort(compareUsersByActivity);
+    if (query) {
+      queryBuilder = queryBuilder.or(`email.ilike.%${query}%,full_name.ilike.%${query}%`);
+    }
 
-    const stats = buildStats(mappedUsers);
-    const filteredUsers = query
-      ? mappedUsers.filter((user) => matchesQuery(user, query))
-      : mappedUsers;
+    queryBuilder = queryBuilder.order("created_at", { ascending: false });
 
-    const total = filteredUsers.length;
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage - 1;
+    queryBuilder = queryBuilder.range(startIndex, endIndex);
+
+    const { data: profilesList, count: totalProfiles, error: queryError } = await queryBuilder;
+    if (queryError) throw queryError;
+
+    const total = totalProfiles || 0;
     const totalPages = total > 0 ? Math.ceil(total / perPage) : 1;
     const currentPage = Math.min(page, totalPages);
-    const startIndex = (currentPage - 1) * perPage;
-    const users = filteredUsers.slice(startIndex, startIndex + perPage);
+
+    let users = [];
+    if (profilesList && profilesList.length > 0) {
+      const userIds = profilesList.map((p) => p.id);
+
+      // Buscar os dados de auth do Supabase em lote
+      const { data: authRecords, error: authError } = await context.serviceSupabase
+        .schema("auth")
+        .from("users")
+        .select("id, email, email_confirmed_at, last_sign_in_at, banned_until, created_at, raw_user_meta_data")
+        .in("id", userIds);
+
+      if (authError) throw authError;
+
+      const authMap = new Map(
+        (authRecords || []).map((r) => [
+          r.id,
+          {
+            id: r.id,
+            email: r.email,
+            email_confirmed_at: r.email_confirmed_at,
+            last_sign_in_at: r.last_sign_in_at,
+            banned_until: r.banned_until,
+            created_at: r.created_at,
+            user_metadata: r.raw_user_meta_data || {},
+          },
+        ])
+      );
+
+      users = profilesList.map((profile) => {
+        const authUser = authMap.get(profile.id) || {
+          id: profile.id,
+          email: profile.email || "",
+          user_metadata: { full_name: profile.full_name },
+        };
+        return mapAdminUser(authUser, profile);
+      });
+    }
+
+    // 2. Executar contagens de estatísticas em paralelo
+    const [
+      totalUsers,
+      activeToday,
+      activeThisWeek,
+      disabledUsers,
+      neverLoggedIn
+    ] = await Promise.all([
+      runCountQuery(context.serviceSupabase.from("profiles").select("id", { count: "exact", head: true })),
+      runCountQuery(
+        context.serviceSupabase
+          .schema("auth")
+          .from("users")
+          .select("id", { count: "exact", head: true })
+          .gt("last_sign_in_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      ),
+      runCountQuery(
+        context.serviceSupabase
+          .schema("auth")
+          .from("users")
+          .select("id", { count: "exact", head: true })
+          .gt("last_sign_in_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      ),
+      runCountQuery(
+        context.serviceSupabase
+          .schema("auth")
+          .from("users")
+          .select("id", { count: "exact", head: true })
+          .gt("banned_until", new Date().toISOString())
+      ),
+      runCountQuery(
+        context.serviceSupabase
+          .schema("auth")
+          .from("users")
+          .select("id", { count: "exact", head: true })
+          .is("last_sign_in_at", null)
+      ),
+    ]);
+
+    const stats = {
+      totalUsers,
+      activeToday,
+      activeThisWeek,
+      disabledUsers,
+      neverLoggedIn,
+    };
 
     return Response.json({
       users,
