@@ -40,8 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <LanguageProvider>{children}</LanguageProvider>
-        <InstallPrompt />
+        <LanguageProvider>
+          {children}
+          <InstallPrompt />
+        </LanguageProvider>
 
       </body>
     </html>

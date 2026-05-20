@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { auth } from "@/lib/supabase_client";
+import { useLanguage } from "@/lib/i18n";
 
 export default function InstallPrompt() {
+  const { t } = useLanguage();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [show, setShow] = useState(false);
   const [isIOS] = useState(() => {
@@ -15,7 +19,30 @@ export default function InstallPrompt() {
     );
   });
 
+  // Monitora o estado do login
   useEffect(() => {
+    auth.getSession().then((session) => {
+      setIsLoggedIn(!!session);
+    }).catch(() => {
+      setIsLoggedIn(false);
+    });
+
+    const { data: listener } = auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      listener?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Se não estiver logado, não ativa o prompt
+    if (!isLoggedIn) {
+      setShow(false);
+      return;
+    }
+
     // Registra service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
@@ -41,7 +68,7 @@ export default function InstallPrompt() {
     };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, [isIOS]);
+  }, [isIOS, isLoggedIn]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -56,7 +83,7 @@ export default function InstallPrompt() {
     setShow(false);
   };
 
-  if (!show) return null;
+  if (!show || !isLoggedIn) return null;
 
   return (
     <div className="fixed left-1/2 z-[70] w-[calc(100%-24px)] max-w-[420px] -translate-x-1/2 install-prompt-offset">
@@ -73,16 +100,15 @@ export default function InstallPrompt() {
 
         <div className="min-w-0 flex-1">
           <p className="m-0 mb-[2px] text-[14px] font-bold text-brand-primary font-sans">
-            Adicionar a tela inicial
+            {t("pwa_title")}
           </p>
           {isIOS ? (
             <p className="m-0 text-[12px] leading-[1.5] text-brand-muted font-sans">
-              Toque em <strong>Compartilhar</strong> e depois em{" "}
-              <strong>Adicionar a Tela de Inicio</strong>.
+              {t("pwa_ios_desc")}
             </p>
           ) : (
             <p className="m-0 text-[12px] leading-[1.5] text-brand-muted font-sans">
-              Abra o Pastor Rhema como app e volte mais rapido ao seu fluxo.
+              {t("pwa_android_desc")}
             </p>
           )}
         </div>
@@ -94,7 +120,7 @@ export default function InstallPrompt() {
               onClick={handleInstall}
               className="min-h-[36px] rounded-[10px] border-none bg-brand-primary px-[14px] py-[8px] text-[12px] font-extrabold text-white font-sans transition-opacity hover:opacity-90"
             >
-              Instalar
+              {t("pwa_install_btn")}
             </button>
           )}
           <button
@@ -102,7 +128,7 @@ export default function InstallPrompt() {
             onClick={handleDismiss}
             className="min-h-[36px] rounded-[10px] border-none bg-transparent px-[10px] py-[8px] text-[12px] text-brand-muted font-sans transition-colors hover:text-brand-primary"
           >
-            Agora nao
+            {t("pwa_dismiss_btn")}
           </button>
         </div>
       </div>
