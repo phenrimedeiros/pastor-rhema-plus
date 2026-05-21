@@ -271,10 +271,98 @@ function NotesPanel({ notes, onEdit, onDelete, onDeepen, t }) {
   );
 }
 
+function ExegesisResult({ content, t }) {
+  if (!content) return null;
+
+  return (
+    <div className="mt-[12px] space-y-[12px]">
+      {content.exegesisSynthesis && (
+        <div className="rounded-[12px] border border-amber-300 bg-amber-50/40 p-[12px]">
+          <h5 className="m-0 mb-[6px] text-[11px] font-bold uppercase tracking-wide text-brand-gold">
+            {t("bible_exegesis_synthesis")}
+          </h5>
+          <p className="m-0 text-[13px] leading-[1.6] text-brand-text">
+            {content.exegesisSynthesis}
+          </p>
+        </div>
+      )}
+
+      {Array.isArray(content.words) && content.words.length > 0 && (
+        <div className="space-y-[10px]">
+          {content.words.map((word, idx) => (
+            <div
+              key={idx}
+              className="rounded-[12px] border border-brand-line bg-white p-[14px] shadow-sm transition-shadow hover:shadow"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-[8px] border-b border-slate-100 pb-[8px]">
+                <div className="flex items-baseline gap-[10px]">
+                  <span className="font-serif text-[24px] font-bold text-brand-primary">
+                    {word.original}
+                  </span>
+                  <span className="text-[14px] font-semibold italic text-slate-700">
+                    {word.transliteration}
+                  </span>
+                  {word.phonetics && (
+                    <span className="text-[11px] text-slate-400">
+                      /{word.phonetics}/
+                    </span>
+                  )}
+                </div>
+                
+                <div className="flex flex-wrap gap-[6px]">
+                  {word.strongs && (
+                    <span className="rounded-full bg-brand-primary/10 px-[8px] py-[2px] text-[10px] font-bold text-brand-primary">
+                      {word.strongs}
+                    </span>
+                  )}
+                  {word.parsing && (
+                    <span className="rounded-full bg-slate-100 px-[8px] py-[2px] text-[10px] font-medium text-slate-600">
+                      {word.parsing}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-[10px] space-y-[8px]">
+                {word.meaning && (
+                  <div>
+                    <h6 className="m-0 text-[10px] font-bold uppercase tracking-wider text-brand-gold">
+                      {t("bible_exegesis_meaning")}
+                    </h6>
+                    <p className="m-0 mt-[2px] text-[12px] leading-[1.5] text-brand-text">
+                      {word.meaning}
+                    </p>
+                  </div>
+                )}
+                
+                {word.theologicalImpact && (
+                  <div>
+                    <h6 className="m-0 text-[10px] font-bold uppercase tracking-wider text-brand-gold">
+                      {t("bible_exegesis_theology")}
+                    </h6>
+                    <p className="m-0 mt-[2px] text-[12px] leading-[1.5] text-brand-text">
+                      {word.theologicalImpact}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PassageEditor({
   deepDive,
   deepDiveError,
   deepDiveLoading,
+  exegesis,
+  exegesisError,
+  exegesisLoading,
+  activeStudyTab,
+  setActiveStudyTab,
   editorRef,
   editingNoteId,
   layout = "mobile",
@@ -282,6 +370,7 @@ function PassageEditor({
   noteDraft,
   onClear,
   onDeepen,
+  onExegesis,
   onSave,
   onUpdateColor,
   onUpdateNote,
@@ -361,15 +450,82 @@ function PassageEditor({
         >
           {deepDiveLoading ? t("bible_deepening") : t("bible_deepen")}
         </button>
+
+        <button
+          onClick={onExegesis}
+          disabled={exegesisLoading}
+          className="min-h-[34px] cursor-pointer rounded-[9px] border border-brand-primary/25 bg-white px-[12px] py-[7px] text-[12px] font-bold text-brand-primary transition-colors hover:bg-brand-surface-3 disabled:cursor-default disabled:opacity-60 md:text-[13px]"
+        >
+          {exegesisLoading ? t("bible_exegesis_loading") : t("bible_exegesis")}
+        </button>
       </div>
 
-      {deepDiveError && (
-        <p className="m-0 mt-[8px] rounded-[10px] bg-red-50 px-[10px] py-[8px] text-[12px] text-red-500 md:text-[13px]">
-          {deepDiveError}
-        </p>
-      )}
+      {(deepDive || deepDiveLoading || deepDiveError || exegesis || exegesisLoading || exegesisError) && (
+        <div className="mt-[16px] border-t border-brand-line pt-[12px]">
+          {/* Tab Bar */}
+          <div className="mb-[12px] flex border-b border-slate-100">
+            <button
+              onClick={() => setActiveStudyTab("deepen")}
+              className={`cursor-pointer border-none bg-transparent pb-[8px] pr-[16px] text-[13px] font-bold transition-all ${
+                activeStudyTab === "deepen"
+                  ? "border-b-2 border-brand-primary text-brand-primary"
+                  : "text-slate-400 hover:text-brand-primary"
+              }`}
+            >
+              {t("bible_exegesis_tab_deep")}
+            </button>
+            <button
+              onClick={() => setActiveStudyTab("exegesis")}
+              className={`cursor-pointer border-none bg-transparent pb-[8px] px-[16px] text-[13px] font-bold transition-all ${
+                activeStudyTab === "exegesis"
+                  ? "border-b-2 border-brand-primary text-brand-primary"
+                  : "text-slate-400 hover:text-brand-primary"
+              }`}
+            >
+              {t("bible_exegesis_tab_orig")}
+            </button>
+          </div>
 
-      <DeepDiveResult content={deepDive} t={t} />
+          {/* Tab Content */}
+          {activeStudyTab === "deepen" && (
+            <div>
+              {deepDiveError && (
+                <p className="m-0 rounded-[10px] bg-red-50 px-[10px] py-[8px] text-[12px] text-red-500 md:text-[13px]">
+                  {deepDiveError}
+                </p>
+              )}
+              {deepDiveLoading && (
+                <div className="flex items-center gap-[8px] py-[12px] text-[12px] text-slate-500">
+                  <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                  <span>{t("bible_deepening")}</span>
+                </div>
+              )}
+              <DeepDiveResult content={deepDive} t={t} />
+            </div>
+          )}
+
+          {activeStudyTab === "exegesis" && (
+            <div>
+              {exegesisError && (
+                <p className="m-0 rounded-[10px] bg-red-50 px-[10px] py-[8px] text-[12px] text-red-500 md:text-[13px]">
+                  {exegesisError}
+                </p>
+              )}
+              {exegesisLoading && (
+                <div className="flex items-center gap-[8px] py-[12px] text-[12px] text-slate-500">
+                  <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                  <span>{t("bible_exegesis_loading")}</span>
+                </div>
+              )}
+              <ExegesisResult content={exegesis} t={t} />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -400,6 +556,10 @@ function BiblePageClient() {
   const [deepDive, setDeepDive] = useState(null);
   const [deepDiveLoading, setDeepDiveLoading] = useState(false);
   const [deepDiveError, setDeepDiveError] = useState("");
+  const [exegesis, setExegesis] = useState(null);
+  const [exegesisLoading, setExegesisLoading] = useState(false);
+  const [exegesisError, setExegesisError] = useState("");
+  const [activeStudyTab, setActiveStudyTab] = useState("deepen");
   const [commentaries, setCommentaries] = useState([]);
   const [commentaryLoading, setCommentaryLoading] = useState(false);
   const [sidebarTab, setSidebarTab] = useState("notes");
@@ -531,6 +691,9 @@ function BiblePageClient() {
     setNoteColor("gold");
     setDeepDive(null);
     setDeepDiveError("");
+    setExegesis(null);
+    setExegesisError("");
+    setActiveStudyTab("deepen");
   };
 
   const buildSelectionFromRange = useCallback((start, end, customText = "") => {
@@ -566,6 +729,9 @@ function BiblePageClient() {
     setNoteColor("gold");
     setDeepDive(null);
     setDeepDiveError("");
+    setExegesis(null);
+    setExegesisError("");
+    setActiveStudyTab("deepen");
     setNoteMessage("");
   };
 
@@ -585,6 +751,9 @@ function BiblePageClient() {
     setNoteColor(note.highlight_color || "gold");
     setDeepDive(note.ai_context || null);
     setDeepDiveError("");
+    setExegesis(null);
+    setExegesisError("");
+    setActiveStudyTab("deepen");
     setNotesPanelOpen(true);
   };
 
@@ -645,6 +814,7 @@ function BiblePageClient() {
 
   const deepenSelection = async (passage = selectedPassage) => {
     if (!passage) return;
+    setActiveStudyTab("deepen");
     setDeepDiveLoading(true);
     setDeepDiveError("");
     setDeepDive(null);
@@ -672,6 +842,31 @@ function BiblePageClient() {
       setDeepDiveError(err.message || t("bible_deepen_error"));
     } finally {
       setDeepDiveLoading(false);
+    }
+  };
+
+  const fetchExegesisSelection = async (passage = selectedPassage) => {
+    if (!passage) return;
+    setExegesisLoading(true);
+    setExegesisError("");
+    setExegesis(null);
+    setActiveStudyTab("exegesis");
+    try {
+      const data = await callApi("/api/bible/exegesis", {
+        lang,
+        reference: `${passage.bookName} ${formatVerseRange(passage.chapter, passage.verseStart, passage.verseEnd)}`,
+        selectedText: passage.selectedText,
+        bookIdx: passage.bookIdx,
+        chapter: passage.chapter,
+        verseStart: passage.verseStart,
+        verseEnd: passage.verseEnd,
+      });
+      setExegesis(data.content);
+    } catch (err) {
+      console.error("Erro ao realizar exegese:", err);
+      setExegesisError(err.message || t("bible_exegesis_error"));
+    } finally {
+      setExegesisLoading(false);
     }
   };
 
@@ -731,11 +926,17 @@ function BiblePageClient() {
     deepDive,
     deepDiveError,
     deepDiveLoading,
+    exegesis,
+    exegesisError,
+    exegesisLoading,
+    activeStudyTab,
+    setActiveStudyTab,
     editingNoteId,
     noteColor,
     noteDraft,
     onClear: clearPassageEditor,
     onDeepen: () => deepenSelection(),
+    onExegesis: () => fetchExegesisSelection(),
     onSave: saveSelectedNote,
     onUpdateColor: setNoteColor,
     onUpdateNote: setNoteDraft,
