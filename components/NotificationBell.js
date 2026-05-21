@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const CURRENT_VERSION = "2026.05-v3";
+const CURRENT_VERSION = "2026.05-v4";
 const STORAGE_KEY = "rhema_changelog_seen";
 
 export function useNotification() {
@@ -72,6 +72,14 @@ export default function NotificationBell({ t }) {
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto px-[22px] py-[18px] space-y-[20px]">
+              <div className="rounded-[14px] border border-brand-primary/20 bg-brand-primary/5 p-[16px]">
+                <div className="flex items-center gap-[8px] mb-[8px]">
+                  <span className="rounded-[6px] bg-brand-primary px-[6px] py-[2px] text-[10px] font-bold text-white">NOVO</span>
+                  <h4 className="m-0 font-serif text-[15px] text-brand-primary">{t("notif_exegesis")}</h4>
+                </div>
+                <p className="m-0 text-[13px] leading-[1.6] text-brand-text">{t("notif_exegesis_desc")}</p>
+              </div>
+
               <div className="rounded-[14px] border border-brand-green-soft bg-brand-green-soft/40 p-[16px]">
                 <div className="flex items-center gap-[8px] mb-[8px]">
                   <span className="rounded-[6px] bg-brand-green px-[6px] py-[2px] text-[10px] font-bold text-white">NOVO</span>
