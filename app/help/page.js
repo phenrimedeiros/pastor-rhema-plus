@@ -45,6 +45,7 @@ const HELP_CONTENT = {
       { title: "Quero uma orientação pastoral", text: "Use o Gabinete Pastoral para conforto ou aconselhamento.", href: "/pastoral", plan: "all" },
       { title: "Quero consultar livros históricos", text: "Acesse a Biblioteca Digital com 133 livros da tradição judaico-cristã.", href: "/library", plan: "plus" },
       { title: "Quero ver comentários dos Pais da Igreja", text: "Abra a Bíblia e use a aba Comentários para ler citações históricas.", href: "/bible", plan: "all" },
+      { title: "Quero analisar as línguas originais", text: "Abra a Bíblia Interativa, selecione um versículo e clique em Línguas Originais para exegese em Grego ou Hebraico.", href: "/bible", plan: "all" },
     ],
     guides: [
       {
@@ -123,6 +124,7 @@ const HELP_CONTENT = {
           "Clique em um versículo para selecionar; use Shift + clique para selecionar um intervalo.",
           "Escreva sua nota, escolha uma cor e salve.",
           "Use Aprofundar para receber contexto, ideias-chave, referências e aplicações da passagem.",
+          "Clique em Línguas Originais para realizar uma exegese do texto selecionado no idioma bíblico original (Grego ou Hebraico/Aramaico), revelando pronúncia, código Strong, análise gramatical e impacto teológico de cada palavra.",
         ],
       },
       {
@@ -208,6 +210,7 @@ const HELP_CONTENT = {
       { title: "Prepare pastoral guidance", text: "Use the Pastoral Office for comfort or counsel.", href: "/pastoral", plan: "all" },
       { title: "Browse historical books", text: "Access the Digital Library with 133 books from Judeo-Christian tradition.", href: "/library", plan: "plus" },
       { title: "Read Church Fathers' commentaries", text: "Open the Bible and use the Commentaries tab to read historical quotes.", href: "/bible", plan: "all" },
+      { title: "Analyze original languages", text: "Open the Interactive Bible, select a verse, and click Original Languages for exegesis in Greek or Hebrew.", href: "/bible", plan: "all" },
     ],
     guides: [
       { id: "access", title: "Access, password, and profile", steps: ["Sign in with your email and password.", "Use Forgot password if you need a reset link.", "Open My Profile to change your display name or password.", "Your email is locked for security and cannot be changed there."] },
@@ -216,7 +219,7 @@ const HELP_CONTENT = {
       { id: "dashboard", title: "Track progress on the Dashboard", plan: "plus", steps: ["Use the Dashboard to see the active week.", "Follow the progress bar and next suggested step.", "Mark the week complete when all steps are ready.", "The sermon is saved in My Sermons and the series advances."] },
       { id: "sermons", title: "Find saved sermons", plan: "plus", steps: ["Open My Sermons.", "Search by title, passage, series, or content.", "Filter by all, preached, or planned.", "Preview or copy preached sermons."] },
       { id: "chat", title: "Use Pastor Rhema Chat", steps: ["Open Pastor Rhema Chat.", "Ask about sermons, passages, series, studies, or applications.", "Press Enter to send or Shift + Enter for a line break.", "Open older conversations from the history panel.", "Use New Chat for another topic."] },
-      { id: "bible", title: "Use the Interactive Bible", steps: ["Open the Interactive Bible.", "Choose a book and chapter or search a reference.", "Click a verse; use Shift + click for a range.", "Write a note, choose a color, and save.", "Use Deepen for context, key ideas, references, and applications."] },
+      { id: "bible", title: "Use the Interactive Bible", steps: ["Open the Interactive Bible.", "Choose a book and chapter or search a reference.", "Click a verse; use Shift + click for a range.", "Write a note, choose a color, and save.", "Use Deepen for context, key ideas, references, and applications.", "Click Original Languages to perform an exegesis of the selected text in its original biblical language (Greek or Hebrew/Aramaic), showing pronunciation, Strong's number, grammatical parsing, and theological impact for each word."] },
       { id: "pastoral", title: "Use the Pastoral Office", steps: ["Open Pastoral Office.", "Choose Comfort for personal encouragement.", "Choose Counsel to prepare a pastoral response.", "Describe the situation clearly.", "Copy and adapt the result with your own pastoral voice."] },
       { id: "library", title: "Explore the Digital Library", plan: "plus", steps: ["Open the Digital Library from the sidebar menu.", "Use color tabs to filter by tradition: Protestant, Deuterocanonical, Dead Sea Scrolls, Gnostic, or Commentaries.", "Click any book to open the chapter reader or Interactive Bible.", "Protestant books open directly in the Bible; others have their own reader with chapter/section navigation.", "Use search to find books by name."] },
       { id: "commentary", title: "Browse Historical Commentaries", steps: ["Open the Interactive Bible and click Commentaries in the top bar.", "The side panel loads Church Fathers' commentaries on the current chapter.", "Each card shows author, year, quote, and original source.", "Click Show full to expand longer quotes.", "Use Deepen on a verse — the AI receives historical commentary context and cites them in its analysis.", "You can also access the Commentaries tab in the Digital Library to see which books have the most commentaries."] },
@@ -256,6 +259,7 @@ const HELP_CONTENT = {
       { title: "Preparar orientación pastoral", text: "Usa el Gabinete Pastoral para consuelo o aconsejamiento.", href: "/pastoral", plan: "all" },
       { title: "Consultar libros históricos", text: "Accede a la Biblioteca Digital con 133 libros de la tradición judeocristiana.", href: "/library", plan: "plus" },
       { title: "Ver comentarios de los Padres de la Iglesia", text: "Abre la Biblia y usa la pestaña Comentarios para leer citas históricas.", href: "/bible", plan: "all" },
+      { title: "Analizar idiomas originales", text: "Abre la Biblia Interactiva, selecciona un versículo y haz clic en Idiomas Originales para exégesis en griego o hebreo.", href: "/bible", plan: "all" },
     ],
     guides: [
       { id: "acceso", title: "Acceso, contraseña y perfil", steps: ["Entra con tu correo y contraseña.", "Usa Olvidé mi contraseña si necesitas un enlace de recuperación.", "Abre Mi Perfil para cambiar tu nombre o contraseña.", "El correo queda bloqueado por seguridad y no se cambia allí."] },
@@ -264,7 +268,7 @@ const HELP_CONTENT = {
       { id: "dashboard", title: "Acompañar el progreso en el Panel", plan: "plus", steps: ["Usa el Panel para ver la semana activa.", "Sigue la barra de progreso y el próximo paso sugerido.", "Marca la semana como concluida cuando todo esté listo.", "El sermón se guarda en Mis Sermones y la serie avanza."] },
       { id: "sermones", title: "Consultar sermones guardados", plan: "plus", steps: ["Abre Mis Sermones.", "Busca por título, pasaje, serie o contenido.", "Filtra por todos, predicados o planeados.", "Previsualiza o copia sermones predicados."] },
       { id: "chat", title: "Usar Pastor Rhema Chat", steps: ["Abre Pastor Rhema Chat.", "Pregunta sobre sermones, pasajes, series, estudios o aplicaciones.", "Presiona Enter para enviar o Shift + Enter para nueva línea.", "Abre conversaciones antiguas desde el historial.", "Usa Nuevo Chat para otro tema."] },
-      { id: "biblia", title: "Usar la Biblia Interactiva", steps: ["Abre Biblia Interactiva.", "Elige libro y capítulo o busca una referencia.", "Haz clic en un versículo; usa Shift + clic para intervalo.", "Escribe una nota, elige color y guarda.", "Usa Profundizar para contexto, ideas clave, referencias y aplicaciones."] },
+      { id: "biblia", title: "Usar la Biblia Interactiva", steps: ["Abre Biblia Interactiva.", "Elige libro y capítulo o busca una referencia.", "Haz clic en un versículo; usa Shift + clic para intervalo.", "Escribe una nota, elige color y guarda.", "Usa Profundizar para contexto, ideas clave, referencias y aplicaciones.", "Haz clic en Idiomas Originales para realizar una exégesis del texto seleccionado en su idioma bíblico original (griego o hebreo/arameo), revelando pronunciación, número de Strong, análisis gramatical e impacto teológico de cada palabra."] },
       { id: "pastoral", title: "Usar el Gabinete Pastoral", steps: ["Abre Gabinete Pastoral.", "Elige Consuelo para ánimo personal.", "Elige Aconsejamiento para preparar una respuesta pastoral.", "Describe la situación claramente.", "Copia y adapta el resultado con tu propia voz pastoral."] },
       { id: "biblioteca", title: "Explorar la Biblioteca Digital", plan: "plus", steps: ["Abre la Biblioteca Digital desde el menú lateral.", "Usa las pestañas de colores para filtrar por tradición: Protestante, Deuterocanónico, Mar Muerto, Gnóstico o Comentarios.", "Haz clic en cualquier libro para abrir el lector de capítulos o la Biblia Interactiva.", "Los libros protestantes abren directamente en la Biblia; los demás tienen su propio lector con navegación.", "Usa la búsqueda para encontrar libros por nombre."] },
       { id: "comentarios", title: "Consultar Comentarios Históricos", steps: ["Abre la Biblia Interactiva y haz clic en Comentarios en la barra superior.", "El panel lateral carga los comentarios de los Padres de la Iglesia sobre el capítulo actual.", "Cada tarjeta muestra el autor, año, cita y fuente original.", "Haz clic en Ver completo para expandir citas largas.", "Usa Profundizar en un versículo — la IA recibe contexto de comentarios históricos y los cita en el análisis.", "También puedes acceder a la pestaña Comentarios en la Biblioteca Digital para ver qué libros tienen más comentarios."] },
